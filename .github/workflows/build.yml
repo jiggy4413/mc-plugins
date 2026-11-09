@@ -1,5 +1,6 @@
-# Builds every plugin on each push and attaches the jars to the run.
-# Download them from the repo's Actions tab -> latest run -> "plugin-jars".
+# Builds every plugin on each push. The newest jars are published as the
+# "Latest build" release (Releases on the repo page) and also attached to
+# each run under the Actions tab as "plugin-jars".
 name: Build plugins
 
 on:
@@ -7,6 +8,9 @@ on:
     branches: [ main ]
   pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -31,3 +35,17 @@ jobs:
           name: plugin-jars
           path: '*/target/*.jar'
           if-no-files-found: error
+
+      # On pushes to main, replace the "latest" release with the new jars,
+      # so the newest build is always under Releases on the repo page.
+      - name: Publish latest release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --cleanup-tag --yes || true
+          gh release create latest */target/*.jar \
+            --title "Latest build" \
+            --notes "Built automatically from commit ${GITHUB_SHA::7}. Download the jar(s) below and upload them to the server's plugins folder." \
+            --target "$GITHUB_SHA" \
+            --latest
