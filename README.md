@@ -8,7 +8,7 @@ Every push builds automatically. Get the newest jar from **Releases → Latest b
 ## Modules
 | Module | Jar | Purpose |
 |---|---|---|
-| `prison-core` | `PrisonCore-1.0.0.jar` | Ranks & prestiges menu (more features to come) |
+| `prison-core` | `PrisonCore-1.1.0.jar` | Ranks & prestiges menu (more features to come) |
 | `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
 
 ## PrisonCore: ranks & prestiges menu
