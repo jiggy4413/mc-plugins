@@ -3,6 +3,7 @@ package io.github.jiggy4413.prisoncore;
 import io.github.jiggy4413.prisoncore.menu.MenuListener;
 import io.github.jiggy4413.prisoncore.menu.RanksMenu;
 import io.github.jiggy4413.prisoncore.rankup.RankupBridge;
+import io.github.jiggy4413.prisoncore.update.HotSwap;
 import io.github.jiggy4413.prisoncore.util.Text;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -28,9 +29,14 @@ public final class PrisonCore extends JavaPlugin {
     private FileConfiguration menuConfig;
     /** Null when Rankup isn't installed or failed to hook. */
     private RankupBridge rankup;
+    private HotSwap hotSwap;
 
     @Override
     public void onEnable() {
+        // Load classes needed while unloading now, in case the jar is replaced while running.
+        RanksMenu.class.getName();
+        hotSwap = new HotSwap(this, getFile());
+
         loadMenuConfig();
         hookRankup();
         getServer().getPluginManager().registerEvents(new MenuListener(this), this);
@@ -128,10 +134,22 @@ public final class PrisonCore extends JavaPlugin {
                 sender.sendMessage(Text.color("&cYou don't have permission to do that."));
                 return true;
             }
+            // a newer PrisonCore jar was dropped in: swap to it live
+            File update = hotSwap.findUpdate();
+            if (update != null) {
+                sender.sendMessage(Text.color("&eNew PrisonCore jar found (&f" + update.getName() + "&e), updating..."));
+                String error = hotSwap.start(update, sender);
+                if (error != null) {
+                    sender.sendMessage(Text.color("&c" + error));
+                }
+                return true;
+            }
+
+            // otherwise just reload the config
             try {
                 loadMenuConfig();
                 hookRankup();
-                sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml)."));
+                sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml). No new jar found."));
             } catch (Exception e) {
                 sender.sendMessage(Text.color("&cReload failed: " + e.getMessage() + " &7(check ranks-menu.yml for a YAML mistake)"));
                 getLogger().severe("Reload failed: " + e);
@@ -143,7 +161,7 @@ public final class PrisonCore extends JavaPlugin {
                 + getDescription().getVersion()));
         sender.sendMessage(Text.color("&7Ranks menu: " + (isRanksMenuAvailable() ? "&aactive" : "&cinactive (Rankup not found)")));
         if (sender.hasPermission("prisoncore.admin")) {
-            sender.sendMessage(Text.color("&e/prisoncore reload &7- reload ranks-menu.yml"));
+            sender.sendMessage(Text.color("&e/prisoncore reload &7- reload ranks-menu.yml, or load a newer PrisonCore jar"));
         }
         return true;
     }
