@@ -122,30 +122,28 @@ prestige-states:
 #   material / glow / model-data / name / lore:  override for every state
 #   completed: / current: / next: / locked:  override for just that state
 # Ranks not listed use the defaults above. Names that don't match a rank are ignored.
-ranks:
-  A:
-    display: "<gradient:#8E8E8E:#D9D9D9>Rank A</gradient>"
-    material: COAL
-  B:
-    display: "<gradient:#FFFFFF:#C0C0C0>Rank B</gradient>"
-    material: IRON_INGOT
-  C:
-    display: "<gradient:#FFD700:#FFA500>&lRank C</gradient>"
-    material: GOLD_INGOT
-    locked:
-      lore:
-        - "&7Cost: &f${cost}"
-        - ""
-        - "&6The golden rank awaits."
-  # D:
-  #   display: "&#00E5FF&l<smallcaps>Rank D</smallcaps>"
-  #   material: DIAMOND
-  #   model-data: 1001
+ranks: {}
+# To style ranks, replace "ranks: {}" above with entries like these (keys = LuckPerms group names):
+#ranks:
+#  a:
+#    display: "Prisoner"          # plain text keeps the green/gold/red state colors
+#  b:
+#    display: "Inmate"
+#  c:
+#    display: "<gradient:#FFD700:#FFA500>&lTrustee</gradient>"   # colors override state colors
+#    material: GOLD_INGOT         # replaces the glass pane for this rank
+#    glow: true
+#    locked:                      # change just the locked look of this rank
+#      lore:
+#        - "&7Cost: &f${cost}"
+#        - ""
+#        - "&6The golden rank awaits."
 
 # Same idea for prestiges (keys are prestige names from Rankup's prestiges.yml).
-prestiges:
-  P1:
-    display: "<gradient:#C77DFF:#FF7EDB>I</gradient>"
+prestiges: {}
+#prestiges:
+#  p1:
+#    display: "I"
 
 # ---------------------------------------------------------------- text bits
 status:
