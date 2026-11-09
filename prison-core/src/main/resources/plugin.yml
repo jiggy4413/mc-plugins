@@ -1,0 +1,17 @@
+name: PrisonCore
+version: ${project.version}
+main: io.github.jiggy4413.prisoncore.PrisonCore
+api-version: 1.16
+author: jiggy4413
+description: Shared core for the server's custom prison plugins.
+
+commands:
+  prisoncore:
+    description: Shows PrisonCore info.
+    usage: /prisoncore
+    permission: prisoncore.admin
+
+permissions:
+  prisoncore.admin:
+    description: Access to /prisoncore.
+    default: op
