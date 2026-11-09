@@ -11,6 +11,9 @@
     <packaging>pom</packaging>
 
     <modules>
+        <!-- compile-only stand-ins for other plugins' APIs; never shipped -->
+        <module>stubs/rankup-api</module>
+        <!-- real plugins -->
         <module>prison-core</module>
     </modules>
 

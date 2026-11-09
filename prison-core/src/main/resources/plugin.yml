@@ -3,15 +3,24 @@ version: ${project.version}
 main: io.github.jiggy4413.prisoncore.PrisonCore
 api-version: 1.16
 author: jiggy4413
-description: Shared core for the server's custom prison plugins.
+description: Custom features for the prison server, starting with the ranks and prestiges menu.
+# Load after these so we can hook into them. Neither is required.
+softdepend: [Rankup, PlaceholderAPI]
 
 commands:
   prisoncore:
-    description: Shows PrisonCore info.
-    usage: /prisoncore
-    permission: prisoncore.admin
+    description: PrisonCore info and admin commands.
+    usage: /prisoncore [reload]
+    aliases: [pcore]
+  prisonranks:
+    description: Opens the ranks menu.
+    usage: /prisonranks [prestiges]
+    permission: prisoncore.ranks
 
 permissions:
   prisoncore.admin:
-    description: Access to /prisoncore.
+    description: Use /prisoncore reload.
     default: op
+  prisoncore.ranks:
+    description: Open the ranks and prestiges menu.
+    default: true

@@ -18,6 +18,13 @@
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
         </dependency>
+        <!-- Rankup 3.11.3 API (provided by the Rankup plugin at runtime) -->
+        <dependency>
+            <groupId>io.github.jiggy4413</groupId>
+            <artifactId>rankup-api-stubs</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -27,6 +34,17 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+            <!-- Everything else is copied as-is (configs use {placeholders} and $ signs) -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>plugin.yml</exclude>
+                </excludes>
             </resource>
         </resources>
     </build>

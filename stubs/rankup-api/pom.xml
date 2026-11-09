@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+      Compile-only copy of the Rankup 3.11.3 (by Okx) method signatures that PrisonCore calls.
+      Rankup isn't published to a Maven repository, so these stubs let us compile against it.
+      They are NEVER packaged into PrisonCore: at runtime the real classes come from the
+      Rankup plugin on the server. Signatures must match Rankup 3.11.3 exactly.
+    -->
+    <parent>
+        <groupId>io.github.jiggy4413</groupId>
+        <artifactId>mc-plugins</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>rankup-api-stubs</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper-api</artifactId>
+        </dependency>
+    </dependencies>
+</project>

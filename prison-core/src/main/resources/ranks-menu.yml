@@ -1,0 +1,251 @@
+# ==============================================================================
+#  PrisonCore - Ranks & Prestiges menu
+#  After editing, run /prisoncore reload (no restart needed).
+#
+#  TEXT FORMATTING (works in every name, lore line and title):
+#    &a &l &o ...                      classic color and style codes
+#    &#FF8800  or  <#FF8800>           hex colors
+#    <gradient:#FF0000:#FFD700>Text</gradient>   2+ colors, style codes inside are kept
+#    <smallcaps>Text</smallcaps>       ꜱᴍᴀʟʟ ᴄᴀᴘꜱ letters
+#    %placeholders%                    any PlaceholderAPI placeholder, if installed
+#
+#  ITEM FIELDS (any item section):
+#    material, name, lore, glow (true/false), model-data (resource pack texture),
+#    amount, skull: viewer (shows the viewing player's head on a PLAYER_HEAD)
+#
+#  PLACEHOLDERS in rank / prestige items:
+#    {rank}            rank name as in Rankup (e.g. A)
+#    {display}         styled name from the "ranks:" section below (or Rankup's display-name)
+#    {position}        1, 2, 3...        {total}   number of ranks
+#    {cost}            money cost, Rankup formatting (e.g. 1.5K) or "Free"
+#    {progress}        0-100             {progress_bar}   bar made from the settings below
+#    {status}          status text from "status:" below
+#    {requirements}    ON ITS OWN LORE LINE: one line per requirement
+#  In the info item: {player} {current_rank} {next_rank} {current_prestige} {next_prestige}
+# ==============================================================================
+
+# Commands that open this menu instead of Rankup's own. Remove a line to give it back to Rankup.
+# /prisonranks always works too.
+open-commands:
+  ranks: [ranks]
+  prestiges: [prestiges]
+
+titles:
+  ranks: "<gradient:#FFB347:#FFD700>&lRanks</gradient> &8(Page {page}/{pages})"
+  prestiges: "<gradient:#C77DFF:#7FDBFF>&lPrestiges</gradient> &8(Page {page}/{pages})"
+
+# 1-6 rows. 6 rows = 54 slots, numbered 0-53 left to right, top to bottom.
+rows: 6
+
+# Slots ranks are placed in, in order. Ranges like 10-16 work. Extra ranks go on more pages.
+# The default fits 28 ranks per page (A-Z fits on one page).
+rank-slots: "10-16, 19-25, 28-34, 37-43"
+
+# ---------------------------------------------------------------- rank appearance
+# How each state looks by default. Every rank uses these unless overridden in "ranks:" below.
+states:
+  completed:
+    material: LIME_STAINED_GLASS_PANE
+    name: "&a&l✔ {display}"
+    lore:
+      - "<smallcaps>&7Rank {position} of {total}</smallcaps>"
+      - ""
+      - "&aCompleted"
+  current:
+    material: GOLD_BLOCK
+    glow: true
+    name: "&6&l★ {display} &6&l★"
+    lore:
+      - "<smallcaps>&7Rank {position} of {total}</smallcaps>"
+      - ""
+      - "&eThis is your current rank."
+  next:
+    material: ORANGE_STAINED_GLASS_PANE
+    glow: true
+    name: "&e&l➜ {display}"
+    lore:
+      - "<smallcaps>&7Rank {position} of {total}</smallcaps>"
+      - ""
+      - "&7Requirements:"
+      - "{requirements}"
+      - ""
+      - "&7Progress: {progress_bar} &f{progress}%"
+      - ""
+      - "&a&lCLICK &7to rank up!"
+  locked:
+    material: RED_STAINED_GLASS_PANE
+    name: "&c&l✖ &7{display}"
+    lore:
+      - "<smallcaps>&7Rank {position} of {total}</smallcaps>"
+      - ""
+      - "&7Cost: &f${cost}"
+      - ""
+      - "&cLocked"
+
+# Prestige items. Any state left out here falls back to "states:" above.
+prestige-states:
+  completed:
+    material: MAGENTA_STAINED_GLASS_PANE
+    name: "&d&l✔ Prestige {display}"
+    lore:
+      - "&aCompleted"
+  current:
+    material: NETHER_STAR
+    glow: true
+    name: "<gradient:#C77DFF:#7FDBFF>&l★ Prestige {display} ★</gradient>"
+    lore:
+      - "&eYour current prestige."
+  next:
+    material: END_CRYSTAL
+    glow: true
+    name: "&d&l➜ Prestige {display}"
+    lore:
+      - "&7Requirements:"
+      - "{requirements}"
+      - ""
+      - "&7Progress: {progress_bar} &f{progress}%"
+      - ""
+      - "&7Reach the max rank, then"
+      - "&a&lCLICK &7to prestige!"
+  locked:
+    material: GRAY_DYE
+    name: "&8&l✖ &7Prestige {display}"
+    lore:
+      - "&7Cost: &f${cost}"
+      - ""
+      - "&cLocked"
+
+# ---------------------------------------------------------------- per-rank styling
+# Give any rank its own look. Keys are the rank names from Rankup's rankups.yml.
+# Every field is optional:
+#   display:  the styled name used for {display}
+#   material / glow / model-data / name / lore:  override for every state
+#   completed: / current: / next: / locked:  override for just that state
+# Ranks not listed use the defaults above. Names that don't match a rank are ignored.
+ranks:
+  A:
+    display: "<gradient:#8E8E8E:#D9D9D9>Rank A</gradient>"
+    material: COAL
+  B:
+    display: "<gradient:#FFFFFF:#C0C0C0>Rank B</gradient>"
+    material: IRON_INGOT
+  C:
+    display: "<gradient:#FFD700:#FFA500>&lRank C</gradient>"
+    material: GOLD_INGOT
+    locked:
+      lore:
+        - "&7Cost: &f${cost}"
+        - ""
+        - "&6The golden rank awaits."
+  # D:
+  #   display: "&#00E5FF&l<smallcaps>Rank D</smallcaps>"
+  #   material: DIAMOND
+  #   model-data: 1001
+
+# Same idea for prestiges (keys are prestige names from Rankup's prestiges.yml).
+prestiges:
+  P1:
+    display: "<gradient:#C77DFF:#FF7EDB>I</gradient>"
+
+# ---------------------------------------------------------------- text bits
+status:
+  completed: "&aCompleted"
+  current: "&eCurrent"
+  next: "&6Next"
+  locked: "&cLocked"
+
+# One line per requirement for {requirements}.
+# {name} {done} {total} {remaining} {percent} {mark} are available.
+requirement-line:
+  met: "  &a✔ &7{name}: &a{done}&8/&a{total}"
+  unmet: "  &c✖ &7{name}: &c{done}&8/&7{total}"
+  # for yes/no requirements (permission, group, world...)
+  simple-met: "  &a✔ &7{name}"
+  simple-unmet: "  &c✖ &7{name}"
+
+# Friendly names for Rankup requirement types. Unlisted ones show their raw name.
+requirement-names:
+  money: "Money"
+  moneyh: "Money"
+  xp-level: "XP Levels"
+  xp-leveldeductible: "XP Levels"
+  playtime-minutes: "Playtime (min)"
+  mobkills: "Mob Kills"
+  total-mobkills: "Total Mob Kills"
+  playerkills: "Player Kills"
+  block-break: "Blocks Mined"
+  tokens: "Tokens"
+  tokensdeductible: "Tokens"
+
+progress-bar:
+  length: 20
+  symbol: "|"
+  filled: "&a"
+  empty: "&8"
+
+free-cost: "Free"
+none: "None"
+max: "MAX"
+
+# ---------------------------------------------------------------- other items
+filler:
+  material: BLACK_STAINED_GLASS_PANE
+  name: " "
+
+info:
+  slot: 4
+  material: PLAYER_HEAD
+  skull: viewer
+  name: "&e&l{player}"
+  lore:
+    - "&7Rank: &f{current_rank}"
+    - "&7Next rank: &f{next_rank}"
+    - "&7Prestige: &f{current_prestige}"
+    - ""
+    - "&7Progress to next: {progress_bar} &f{progress}%"
+
+buttons:
+  previous-page:
+    slot: 45
+    material: ARROW
+    name: "&e« Previous page"
+  next-page:
+    slot: 53
+    material: ARROW
+    name: "&eNext page »"
+  ranks-tab:
+    slot: 47
+    material: EXPERIENCE_BOTTLE
+    name: "<gradient:#FFB347:#FFD700>&lRanks</gradient>"
+    lore:
+      - "&7View all ranks."
+  prestiges-tab:
+    slot: 51
+    material: NETHER_STAR
+    name: "<gradient:#C77DFF:#7FDBFF>&lPrestiges</gradient>"
+    lore:
+      - "&7View all prestiges."
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+  # shown in the prestiges tab when prestiges are turned off in Rankup's config.yml
+  prestiges-disabled:
+    slot: 22
+    material: BARRIER
+    name: "&cPrestiges are disabled"
+
+# Sound names: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html (1.16 names)
+# Use "" to turn a sound off.
+sounds:
+  open: BLOCK_CHEST_OPEN
+  click: UI_BUTTON_CLICK
+  page: ITEM_BOOK_PAGE_TURN
+  deny: BLOCK_NOTE_BLOCK_BASS
+
+messages:
+  locked: "&cYou need to reach the ranks before this one first."
+  completed: "&7You've already completed that rank."
+  max-rank: "&aYou're at the highest rank!"
+  prestige-not-eligible: "&cReach the highest rank before you can prestige."
+  unavailable: "&cThe ranks menu isn't available right now. Is Rankup installed and loaded?"

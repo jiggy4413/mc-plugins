@@ -2,15 +2,29 @@
 
 Custom plugins for a Paper 1.16.5 prison server. Java 8.
 
+## Download
+Every push builds automatically. Get the newest jar from **Releases → Latest build** on the repo page.
+
 ## Modules
 | Module | Jar | Purpose |
 |---|---|---|
-| `prison-core` | `PrisonCore-1.0.0.jar` | Starter plugin; will hold shared code (GUIs, config, hooks) |
+| `prison-core` | `PrisonCore-1.0.0.jar` | Ranks & prestiges menu (more features to come) |
+| `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
 
-Planned: custom `/ranks` GUI, ore golem spawners, custom crate tools and weapons.
+## PrisonCore: ranks & prestiges menu
+Replaces `/ranks` and `/prestiges` from **Rankup 3.11.3 (by Okx)** with a fully styled menu.
+Rankup still does the actual rankups, costs and permissions; clicking the next rank runs `/rankup`
+and clicking the next prestige runs `/prestige` for the player.
 
-## Build
+- **Config:** `plugins/PrisonCore/ranks-menu.yml` (created on first start, every option is commented)
+- **Apply config changes:** `/prisoncore reload` (permission `prisoncore.admin`, ops by default)
+- **Open the menu:** `/ranks`, `/prestiges`, or `/prisonranks [prestiges]` (permission `prisoncore.ranks`, everyone by default)
+- **Formatting:** `&` codes, hex `&#FF8800`, `<gradient:#FF0000:#FFD700>text</gradient>`, `<smallcaps>text</smallcaps>`, and PlaceholderAPI placeholders
+- **Per-rank styling:** add the rank's name under `ranks:` in the config to give it its own name, material, glow, texture or lore
+- To give `/ranks` back to Rankup, remove `ranks` from `open-commands` and reload
+
+Requires Rankup. If Rankup is missing, PrisonCore leaves `/ranks` alone.
+
+## Build locally
 In IntelliJ: open the **Maven** tab on the right → `mc-plugins` → **Lifecycle** → double-click **package**.
-
-Jars land in each module's `target/` folder, e.g. `prison-core/target/PrisonCore-1.0.0.jar`.
-Upload the jar to the server's `plugins/` folder and restart.
+The jar lands in `prison-core/target/`.
