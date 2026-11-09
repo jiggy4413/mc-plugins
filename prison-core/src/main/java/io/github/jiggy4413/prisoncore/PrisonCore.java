@@ -6,9 +6,14 @@ import io.github.jiggy4413.prisoncore.rankup.RankupBridge;
 import io.github.jiggy4413.prisoncore.update.HotSwap;
 import io.github.jiggy4413.prisoncore.util.Text;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.configuration.InvalidConfigurationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,17 +61,69 @@ public final class PrisonCore extends JavaPlugin {
 
     // ------------------------------------------------------------------ config
 
-    /** Reads ranks-menu.yml, creating it from the default the first time. */
-    public void loadMenuConfig() {
+    /**
+     * Reads ranks-menu.yml, creating it from the default the first time.
+     * If the file has a mistake, the menu keeps its previous settings and this returns a
+     * short description of the problem (null when everything loaded fine).
+     */
+    public String loadMenuConfig() {
         File file = new File(getDataFolder(), MENU_FILE);
         if (!file.exists()) {
             saveResource(MENU_FILE, false);
         }
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+        YamlConfiguration builtIn = YamlConfiguration.loadConfiguration(
+                new InputStreamReader(getResource(MENU_FILE), StandardCharsets.UTF_8));
+        String problem = null;
+        YamlConfiguration config = new YamlConfiguration();
+        try {
+            String text = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+            problem = findTab(text);
+            if (problem == null) {
+                config.loadFromString(text);
+            }
+        } catch (InvalidConfigurationException e) {
+            problem = describeYamlError(e.getMessage());
+        } catch (IOException e) {
+            problem = "Couldn't read " + MENU_FILE + ": " + e.getMessage();
+        }
+
+        if (problem != null) {
+            getLogger().severe(MENU_FILE + " has a mistake: " + problem);
+            if (menuConfig != null) {
+                return problem; // keep the settings that were working
+            }
+            config = new YamlConfiguration(); // first start: use built-in settings only
+        }
         // fall back to built-in defaults for anything missing from the file
-        Reader defaults = new InputStreamReader(getResource(MENU_FILE), StandardCharsets.UTF_8);
-        config.setDefaults(YamlConfiguration.loadConfiguration(defaults));
+        config.setDefaults(builtIn);
         menuConfig = config;
+        return problem;
+    }
+
+    /** YAML doesn't allow tab characters for indentation, a very common mistake. */
+    private static String findTab(String text) {
+        String[] lines = text.split("\n", -1);
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            int hash = line.indexOf('#');
+            String beforeComment = hash >= 0 ? line.substring(0, hash) : line;
+            if (beforeComment.indexOf('\t') >= 0) {
+                return "line " + (i + 1) + " has a Tab character. Use spaces to indent instead.";
+            }
+        }
+        return null;
+    }
+
+    /** Keeps the useful part of SnakeYAML's long error, e.g. "line 12, column 5". */
+    private static String describeYamlError(String message) {
+        if (message == null) {
+            return "invalid YAML";
+        }
+        Matcher m = Pattern.compile("line (\\d+), column (\\d+)").matcher(message);
+        String where = m.find() ? " near line " + m.group(1) + ", column " + m.group(2) : "";
+        String first = message.trim().split("\n")[0].trim();
+        return "invalid YAML" + where + " (" + first + "). Check indentation and quotes.";
     }
 
     public FileConfiguration getMenuConfig() {
@@ -147,9 +204,15 @@ public final class PrisonCore extends JavaPlugin {
 
             // otherwise just reload the config
             try {
-                loadMenuConfig();
+                String problem = loadMenuConfig();
                 hookRankup();
-                sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml). No new jar found."));
+                if (problem != null) {
+                    // color codes off on purpose so the message shows exactly what's in the file
+                    sender.sendMessage(Text.color("&cranks-menu.yml has a mistake, so nothing changed:"));
+                    sender.sendMessage(ChatColor.GRAY + problem);
+                } else {
+                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml). No new jar found."));
+                }
             } catch (Exception e) {
                 sender.sendMessage(Text.color("&cReload failed: " + e.getMessage() + " &7(check ranks-menu.yml for a YAML mistake)"));
                 getLogger().severe("Reload failed: " + e);

@@ -7,7 +7,7 @@
     <!-- Parent project: holds shared settings. Each plugin is a module listed below. -->
     <groupId>io.github.jiggy4413</groupId>
     <artifactId>mc-plugins</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <packaging>pom</packaging>
 
     <modules>
