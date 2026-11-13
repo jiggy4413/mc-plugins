@@ -8,7 +8,7 @@ Every push builds automatically. Get the newest jar from **Releases → Latest b
 ## Modules
 | Module | Jar | Purpose |
 |---|---|---|
-| `prison-core` | `PrisonCore-1.2.2.jar` | Ranks & prestiges menu (more features to come) |
+| `prison-core` | `PrisonCore-1.3.0.jar` | Ranks & prestiges menu (more features to come) |
 | `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
 
 ## PrisonCore: ranks & prestiges menu
@@ -24,6 +24,12 @@ and clicking the next prestige runs `/prestige` for the player.
 - To give `/ranks` back to Rankup, remove `ranks` from `open-commands` and reload
 
 Requires Rankup. If Rankup is missing, PrisonCore leaves `/ranks` alone.
+
+## Void worlds
+PrisonCore includes an empty-world generator (one bedrock block under spawn at 0, 64, 0):
+```
+/mv create <name> normal -g PrisonCore
+```
 
 ## Updating PrisonCore without a restart
 1. Download the new jar from **Releases → Latest build**.

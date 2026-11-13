@@ -6,6 +6,8 @@ author: jiggy4413
 description: Custom features for the prison server, starting with the ranks and prestiges menu.
 # Load after these so we can hook into them. Neither is required.
 softdepend: [Rankup, PlaceholderAPI]
+# Enable before Multiverse so worlds using PrisonCore's void generator can load at startup.
+loadbefore: [Multiverse-Core]
 
 commands:
   prisoncore:

@@ -5,6 +5,7 @@ import io.github.jiggy4413.prisoncore.menu.RanksMenu;
 import io.github.jiggy4413.prisoncore.rankup.RankupBridge;
 import io.github.jiggy4413.prisoncore.update.HotSwap;
 import io.github.jiggy4413.prisoncore.util.Text;
+import io.github.jiggy4413.prisoncore.world.VoidGenerator;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,6 +24,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -40,12 +42,21 @@ public final class PrisonCore extends JavaPlugin {
     public void onEnable() {
         // Load classes needed while unloading now, in case the jar is replaced while running.
         RanksMenu.class.getName();
+        VoidGenerator.class.getName();
         hotSwap = new HotSwap(this, getFile());
 
         loadMenuConfig();
         hookRankup();
         getServer().getPluginManager().registerEvents(new MenuListener(this), this);
         getLogger().info("PrisonCore " + getDescription().getVersion() + " enabled.");
+    }
+
+    /**
+     * Lets Multiverse (or bukkit.yml) create empty worlds: /mv create <name> normal -g PrisonCore
+     */
+    @Override
+    public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
+        return new VoidGenerator();
     }
 
     @Override
