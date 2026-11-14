@@ -56,6 +56,11 @@ public final class ServerMenus {
             if (config != null) {
                 return FILE + " has a mistake, kept the old settings: " + msg;
             }
+            // first start with a broken file: use the built-in menu so nobody loses their compass
+            loaded = YamlConfiguration.loadConfiguration(new java.io.InputStreamReader(
+                    plugin.getResource(FILE), java.nio.charset.StandardCharsets.UTF_8));
+            config = loaded;
+            return FILE + " has a mistake, using the built-in menu until it's fixed: " + msg;
         }
         config = loaded;
         return null;
@@ -123,15 +128,40 @@ public final class ServerMenus {
             return;
         }
         if (current != null && current.getType() != org.bukkit.Material.AIR) {
-            inv.setItem(slot, null);
-            Map<Integer, ItemStack> left = inv.addItem(current);
-            for (ItemStack drop : left.values()) {
-                p.getWorld().dropItemNaturally(p.getLocation(), drop);
-                p.sendMessage(Text.color(p, config.getString("messages.slot-item-dropped",
-                        "&eYour inventory was full, so an item was dropped at your feet to make room for the menu.")));
+            // move the item to a free storage slot; never drop or delete it
+            int free = -1;
+            for (int i = 0; i < 36; i++) {
+                ItemStack it = inv.getItem(i);
+                if (i != slot && (it == null || it.getType() == org.bukkit.Material.AIR)) {
+                    free = i;
+                    break;
+                }
             }
+            if (free < 0) {
+                long now = System.currentTimeMillis();
+                Long last = fullWarned.get(p.getUniqueId());
+                if (last == null || now - last > 60000L) {
+                    fullWarned.put(p.getUniqueId(), now);
+                    p.sendMessage(Text.color(p, config.getString("messages.inventory-full",
+                            "&eFree up one inventory slot to get your server menu compass back.")));
+                }
+                return;   // try again on the next check
+            }
+            inv.setItem(free, current);
         }
         inv.setItem(slot, createCompass(p));
+    }
+
+    private final Map<java.util.UUID, Long> fullWarned = new java.util.HashMap<java.util.UUID, Long>();
+
+    /** Cheap check run often: only does work when the compass is missing from its slot. */
+    public void quickCheck(Player p) {
+        if (!compassEnabled() || p.getGameMode() == GameMode.SPECTATOR) {
+            return;
+        }
+        if (!isCompass(p.getInventory().getItem(compassSlot()))) {
+            ensureCompass(p);
+        }
     }
 
     public void removeCompasses(Player p) {
@@ -147,7 +177,12 @@ public final class ServerMenus {
     // =================================================================== menus
 
     public boolean hasMenu(String id) {
-        return config.isConfigurationSection("menus." + id);
+        return id != null && id.indexOf('.') < 0 && config.isConfigurationSection("menus." + id);
+    }
+
+    /** Only menus with command: true can be opened directly with /menu <name>. */
+    public boolean openableByCommand(String id) {
+        return hasMenu(id) && (id.equals(mainMenu()) || config.getBoolean("menus." + id + ".command", false));
     }
 
     public String mainMenu() {
@@ -155,10 +190,15 @@ public final class ServerMenus {
     }
 
     public void open(Player p, String id) {
-        ConfigurationSection m = config.getConfigurationSection("menus." + id);
+        ConfigurationSection m = hasMenu(id) ? config.getConfigurationSection("menus." + id) : null;
         if (m == null) {
             p.sendMessage(Text.color(p, "&cThat menu doesn't exist: " + id));
             plugin.getLogger().warning("Menu '" + id + "' is used but not defined in " + FILE);
+            return;
+        }
+        String menuPerm = m.getString("permission", "");
+        if (menuPerm != null && !menuPerm.isEmpty() && !p.hasPermission(menuPerm)) {
+            p.sendMessage(Text.color(p, config.getString("messages.locked", "&cYou haven't unlocked this yet.")));
             return;
         }
         int rows = Math.max(1, Math.min(6, m.getInt("rows", 5)));
@@ -270,7 +310,11 @@ public final class ServerMenus {
         String a = raw.trim();
         String lower = a.toLowerCase(Locale.ROOT);
         String arg = a.indexOf(']') >= 0 ? a.substring(a.indexOf(']') + 1).trim() : a;
-        arg = arg.replace("{player}", p.getName());
+        if (arg.contains("{player}") && !p.getName().matches("[A-Za-z0-9_]{1,16}")) {
+            plugin.getLogger().warning("Skipped a menu action for '" + p.getName() + "': unusual name.");
+            return;
+        }
+        arg = arg.replace("{player}", p.getName()).replace("{uuid}", p.getUniqueId().toString());
         if (arg.startsWith("/")) {
             arg = arg.substring(1);
         }

@@ -52,8 +52,17 @@ public final class PrisonCore extends JavaPlugin {
     @Override
     public void onEnable() {
         // Load classes needed while unloading now, in case the jar is replaced while running.
-        RanksMenu.class.getName();
-        VoidGenerator.class.getName();
+        preload("io.github.jiggy4413.prisoncore.menu.RanksMenu",
+                "io.github.jiggy4413.prisoncore.world.VoidGenerator",
+                "io.github.jiggy4413.prisoncore.util.ItemTemplate",
+                "io.github.jiggy4413.prisoncore.util.Text",
+                "io.github.jiggy4413.prisoncore.servermenu.ServerMenus",
+                "io.github.jiggy4413.prisoncore.servermenu.ServerMenu",
+                "io.github.jiggy4413.prisoncore.servermenu.ServerMenuListener",
+                "io.github.jiggy4413.prisoncore.mines.MineManager",
+                "io.github.jiggy4413.prisoncore.mines.Mine",
+                "io.github.jiggy4413.prisoncore.mines.ResetJob",
+                "io.github.jiggy4413.prisoncore.mines.Composition");
         hotSwap = new HotSwap(this, getFile());
 
         loadMenuConfig();
@@ -74,6 +83,15 @@ public final class PrisonCore extends JavaPlugin {
         for (Player p : getServer().getOnlinePlayers()) {
             serverMenus.ensureCompass(p);
         }
+        // every 10 seconds, give back compasses that other plugins (sell, trade, clear) removed
+        getServer().getScheduler().runTaskTimer(this, new Runnable() {
+            @Override
+            public void run() {
+                for (Player p : getServer().getOnlinePlayers()) {
+                    serverMenus.quickCheck(p);
+                }
+            }
+        }, 200L, 200L);
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             try {
@@ -91,6 +109,32 @@ public final class PrisonCore extends JavaPlugin {
     @Override
     public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
         return new VoidGenerator();
+    }
+
+    /** Loads classes (and their anonymous inner classes) now, so a live jar swap can't break them. */
+    private void preload(String... names) {
+        ClassLoader cl = getClass().getClassLoader();
+        for (String name : names) {
+            try {
+                Class.forName(name, false, cl);
+                for (int i = 1; i <= 9; i++) {
+                    try {
+                        Class.forName(name + "$" + i, false, cl);
+                    } catch (ClassNotFoundException e) {
+                        break;
+                    }
+                }
+            } catch (ClassNotFoundException e) {
+                getLogger().warning("Couldn't preload " + name);
+            }
+        }
+        // named inner classes
+        try {
+            Class.forName("io.github.jiggy4413.prisoncore.servermenu.ServerMenuListener$CheckTask", false, cl);
+            Class.forName("io.github.jiggy4413.prisoncore.mines.MrlImporter$Result", false, cl);
+        } catch (ClassNotFoundException ignored) {
+            // not critical
+        }
     }
 
     @Override
@@ -236,8 +280,8 @@ public final class PrisonCore extends JavaPlugin {
                 sender.sendMessage("Only players can open the server menu.");
                 return true;
             }
-            String id = args.length > 0 ? args[0].toLowerCase() : serverMenus.mainMenu();
-            if (args.length > 0 && !serverMenus.hasMenu(id)) {
+            String id = args.length > 0 ? args[0].toLowerCase(java.util.Locale.ROOT) : serverMenus.mainMenu();
+            if (!serverMenus.openableByCommand(id)) {
                 id = serverMenus.mainMenu();
             }
             serverMenus.open((Player) sender, id);

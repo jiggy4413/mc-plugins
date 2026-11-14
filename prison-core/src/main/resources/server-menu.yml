@@ -6,6 +6,14 @@
 #   Every player gets it in hotbar slot "slot" (1-9). It can't be dropped, moved, stored or
 #   lost on death. Right-click it (or click it in the inventory) to open the "opens" menu.
 #   Set enabled: false to remove it from everyone. /servermenu (or /menu) also opens the menu.
+#   If the compass's slot is taken, that item moves to a free slot. If the inventory is full,
+#   nothing is dropped: the player is asked to free a slot and gets the compass after that.
+#   Don't make COMPASS sellable in your shop plugin: the menu compass is a compass too.
+# 
+#  MENU OPTIONS (under menus.<menu>)
+#   title, rows (1-6), filler, items
+#   permission:         players need it to open this menu at all
+#   command: true       allow opening it directly with /menu <name> (main always can)
 # 
 #  MENU ITEMS (under menus.<menu>.items.<any name>)
 #   slot: 13            or  slots: [12, 13, 14]     (0 = top left, rows of 9)
@@ -46,7 +54,7 @@ sounds:
 
 messages:
   locked: '&cYou haven''t unlocked this yet.'
-  slot-item-dropped: '&eYour inventory was full, so an item was dropped at your feet to make room for the menu.'
+  inventory-full: '&eFree up one inventory slot to get your server menu compass back.'
 
 menus:
   main:
