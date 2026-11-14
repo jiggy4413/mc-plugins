@@ -82,8 +82,8 @@ public final class MinePlaceholders extends PlaceholderExpansion {
             Class<?> api = Class.forName("me.clip.placeholderapi.PlaceholderAPI");
             Method m = api.getMethod("unregisterPlaceholderHook", String.class);
             m.invoke(null, getIdentifier());
-        } catch (Exception ignored) {
-            // nothing else to try
+        } catch (Exception e) {
+            plugin.getLogger().warning("Couldn't unregister the prisoncore placeholders: " + e);
         }
     }
 

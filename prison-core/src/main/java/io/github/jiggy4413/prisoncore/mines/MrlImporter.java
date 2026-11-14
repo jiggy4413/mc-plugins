@@ -129,13 +129,14 @@ final class MrlImporter {
                 resetPercent = rp <= 1 ? rp * 100 : rp;
             }
         }
-        manager.importMine(id, world, region, blocks, fill, surface, spawn, resetPercent);
+        Integer timer = me.get("resetDelay") instanceof Number ? ((Number) me.get("resetDelay")).intValue() : null;
+        manager.importMine(id, world, region, blocks, fill, surface, spawn, resetPercent, timer);
         result.imported.add(name + " -> " + id);
     }
 
     /** "A", "mineA", "Mine A" all become "a"; anything else is lowercased without spaces. */
     static String normalizeId(String name) {
-        String n = name.toLowerCase(Locale.ROOT).replace(" ", "").replace("_", "").replace("-", "");
+        String n = name.toLowerCase(Locale.ROOT).replace(" ", "").replace("_", "").replace("-", "").replace(".", "");
         if (n.startsWith("mine") && n.length() > 4) {
             n = n.substring(4);
         }

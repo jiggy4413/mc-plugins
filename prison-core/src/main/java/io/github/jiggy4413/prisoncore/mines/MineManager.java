@@ -44,6 +44,10 @@ public final class MineManager {
     /** True when mines.yml couldn't be read at startup; saving would then wipe the user's file. */
     private boolean loadFailed;
     private final Map<String, Mine> mines = new LinkedHashMap<String, Mine>();
+    /** Read-only copy for other threads (PlaceholderAPI may ask from async scoreboards). */
+    private volatile Map<String, Mine> snapshot = Collections.emptyMap();
+    /** mines.yml's last-modified time when we loaded or saved it. */
+    private long fileStamp;
 
     private final Deque<Mine> queue = new ArrayDeque<Mine>();
     private ResetJob job;
@@ -81,6 +85,7 @@ public final class MineManager {
             String msg = e.getMessage() == null ? e.toString() : e.getMessage().split("\n")[0];
             plugin.getLogger().severe(FILE + " has a mistake: " + msg);
             if (config != null) {
+                loadFailed = true;   // don't let /pmine overwrite the user's edits with old settings
                 return FILE + " has a mistake, kept the old settings: " + msg;
             }
             loaded = new YamlConfiguration();
@@ -89,6 +94,7 @@ public final class MineManager {
         if (loaded.getConfigurationSection("mines") != null || loaded.getConfigurationSection("settings") != null) {
             loadFailed = false;
         }
+        fileStamp = file.lastModified();
         // finish a running reset before swapping settings
         finishCurrentJob();
 
@@ -116,6 +122,7 @@ public final class MineManager {
                 mines.put(mine.id, mine);
             }
         }
+        publish();
         return null;
     }
 
@@ -132,9 +139,21 @@ public final class MineManager {
         bossBarRange = Math.max(0, s.getInt("bossbar.range", 8));
     }
 
+    private static final ConfigurationSection EMPTY = new org.bukkit.configuration.MemoryConfiguration();
+
     private ConfigurationSection settings() {
-        ConfigurationSection s = config.getConfigurationSection("settings");
-        return s != null ? s : config.createSection("settings");
+        YamlConfiguration c = config;
+        ConfigurationSection s = c == null ? null : c.getConfigurationSection("settings");
+        return s != null ? s : EMPTY;
+    }
+
+    private void publish() {
+        snapshot = Collections.unmodifiableMap(new LinkedHashMap<String, Mine>(mines));
+    }
+
+    /** Ids can't contain '.', which YAML would treat as nesting. */
+    static String cleanId(String id) {
+        return id.toLowerCase(Locale.ROOT).replace(".", "").replace(" ", "");
     }
 
     private Mine readMine(String id, ConfigurationSection s) {
@@ -223,7 +242,7 @@ public final class MineManager {
     // =================================================================== saving (from commands)
 
     Mine getOrCreate(String id) {
-        String key = id.toLowerCase(Locale.ROOT);
+        String key = cleanId(id);
         Mine m = mines.get(key);
         if (m == null) {
             m = new Mine(key);
@@ -231,6 +250,7 @@ public final class MineManager {
             m.timerMinutes = defaultTimerMinutes;
             m.timerMinimumMined = defaultTimerMinimum;
             mines.put(key, m);
+            publish();
         }
         return m;
     }
@@ -261,7 +281,7 @@ public final class MineManager {
 
     /** Used by the MineResetLite importer. */
     void importMine(String id, String world, int[] region, Map<Material, Double> blocks, boolean fillMode,
-                    Material surface, double[] spawn, Double resetPercent) {
+                    Material surface, double[] spawn, Double resetPercent, Integer timerMinutes) {
         Mine m = getOrCreate(id);
         m.composition = new Composition();
         ConfigurationSection s = mineSection(id);
@@ -293,8 +313,14 @@ public final class MineManager {
             s.set("world", world);
             s.set("region", m.regionString());
         }
-        if (spawn != null && w != null) {
-            setSpawn(m, new Location(w, spawn[0], spawn[1], spawn[2], (float) spawn[3], (float) spawn[4]));
+        if (spawn != null) {
+            m.spawn = spawn;
+            s.set("spawn", String.format(Locale.ROOT, "%.2f,%.2f,%.2f,%.1f,%.1f",
+                    spawn[0], spawn[1], spawn[2], spawn[3], spawn[4]));
+        }
+        if (timerMinutes != null && timerMinutes > 0) {
+            m.timerMinutes = timerMinutes;
+            s.set("timer-minutes", timerMinutes);
         }
     }
 
@@ -305,10 +331,14 @@ public final class MineManager {
 
     String save() {
         if (loadFailed) {
-            return FILE + " couldn't be read, so it wasn't overwritten. Fix it, then /prisoncore reload.";
+            return FILE + " has a mistake, so it wasn't overwritten. Fix it, then /prisoncore reload.";
+        }
+        if (file.exists() && file.lastModified() != fileStamp) {
+            return FILE + " was edited since the last reload, so it wasn't overwritten. Run /prisoncore reload, then repeat the command.";
         }
         try {
             config.save(file);
+            fileStamp = file.lastModified();
             return null;
         } catch (IOException e) {
             return e.getMessage();
@@ -375,6 +405,9 @@ public final class MineManager {
     }
 
     private void runJob() {
+        if (job != null && tickCounter % 5 == 0) {
+            moveOut(job.mine);   // anyone who walked or jumped in during the refill
+        }
         if (job == null) {
             Mine next = queue.poll();
             if (next == null) {
@@ -408,12 +441,7 @@ public final class MineManager {
         m.resetProgress = 0;
         m.countGeneration++;          // throw away any count still running
         m.counting = false;
-        Location safe = m.safeLocation();
-        for (Player p : w.getPlayers()) {
-            if (m.isInside(p.getLocation()) && safe != null) {
-                p.teleport(safe);
-            }
-        }
+        moveOut(m);
         message(m, "reset-started", null);
         job = new ResetJob(m, w);
     }
@@ -426,7 +454,34 @@ public final class MineManager {
         m.resetting = false;
         m.resetProgress = 1;
         job = null;
+        // anyone still inside (e.g. a mine with no spawn set) stands on the full mine now
+        World w = m.world();
+        if (w != null) {
+            Location top = m.topLocation();
+            for (Player p : w.getPlayers()) {
+                if (m.isInside(p.getLocation())) {
+                    p.teleport(top);
+                }
+            }
+        }
         message(m, "reset-done", null);
+    }
+
+    /** Teleports players inside a mine to its spawn, or to the world spawn if none is set. */
+    private void moveOut(Mine m) {
+        World w = m.world();
+        if (w == null) {
+            return;
+        }
+        Location safe = m.spawn != null ? m.safeLocation() : w.getSpawnLocation();
+        if (safe == null || m.isInside(safe)) {
+            safe = null;   // a spawn inside the mine isn't safe: leave them, they're lifted out at the end
+        }
+        for (Player p : w.getPlayers()) {
+            if (m.isInside(p.getLocation()) && safe != null) {
+                p.teleport(safe);
+            }
+        }
     }
 
     private Mine job() {
@@ -436,7 +491,8 @@ public final class MineManager {
     private void everySecond() {
         long now = System.currentTimeMillis();
         for (Mine m : mines.values()) {
-            if (!m.hasRegion || m.resetting || m.queued) {
+            if (!m.hasRegion || m.resetting || m.queued || m.composition.isEmpty() || m.world() == null) {
+                m.warningLeft = -1;
                 continue;
             }
             if (m.warningLeft >= 0) {
@@ -474,7 +530,7 @@ public final class MineManager {
 
     /** Adds a mine to the reset line. Mines reset one at a time. */
     public void queueReset(Mine m) {
-        if (m == null || !m.hasRegion || m.resetting || m.queued) {
+        if (m == null || !m.hasRegion || m.resetting || m.queued || m.composition.isEmpty()) {
             return;
         }
         m.warningLeft = -1;
@@ -540,37 +596,55 @@ public final class MineManager {
         m.lastCountMillis = System.currentTimeMillis();
         final int generation = m.countGeneration;
         final int minX = m.minX, minY = m.minY, minZ = m.minZ, maxX = m.maxX, maxY = m.maxY, maxZ = m.maxZ;
+        final JavaPlugin owner = plugin;
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
                 long air = 0;
-                for (ChunkSnapshot snap : snaps) {
-                    int baseX = snap.getX() << 4;
-                    int baseZ = snap.getZ() << 4;
-                    int x1 = Math.max(minX, baseX), x2 = Math.min(maxX, baseX + 15);
-                    int z1 = Math.max(minZ, baseZ), z2 = Math.min(maxZ, baseZ + 15);
-                    for (int y = minY; y <= maxY; y++) {
-                        for (int x = x1; x <= x2; x++) {
-                            for (int z = z1; z <= z2; z++) {
-                                if (snap.getBlockType(x & 15, y, z & 15).isAir()) {
-                                    air++;
+                boolean ok = true;
+                try {
+                    for (ChunkSnapshot snap : snaps) {
+                        int baseX = snap.getX() << 4;
+                        int baseZ = snap.getZ() << 4;
+                        int x1 = Math.max(minX, baseX), x2 = Math.min(maxX, baseX + 15);
+                        int z1 = Math.max(minZ, baseZ), z2 = Math.min(maxZ, baseZ + 15);
+                        for (int y = minY; y <= maxY; y++) {
+                            for (int x = x1; x <= x2; x++) {
+                                for (int z = z1; z <= z2; z++) {
+                                    if (snap.getBlockType(x & 15, y, z & 15).isAir()) {
+                                        air++;
+                                    }
                                 }
                             }
                         }
                     }
+                } catch (Throwable t) {
+                    ok = false;
                 }
                 final long counted = air;
-                Bukkit.getScheduler().runTask(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        if (m.countGeneration != generation || !m.counting) {
-                            return;   // a reset started meanwhile; its own result wins
+                final boolean success = ok;
+                if (!owner.isEnabled()) {
+                    return;
+                }
+                try {
+                    Bukkit.getScheduler().runTask(owner, new Runnable() {
+                        @Override
+                        public void run() {
+                            if (m.countGeneration != generation || !m.counting) {
+                                return;   // a reset started meanwhile; its own result wins
+                            }
+                            m.counting = false;
+                            if (success) {
+                                m.airNow = Math.max(0, Math.min(m.volume(), counted + m.pendingDelta));
+                            } else {
+                                owner.getLogger().warning("Couldn't count mine " + m.id + "; will try again.");
+                            }
+                            m.pendingDelta = 0;
                         }
-                        m.counting = false;
-                        m.airNow = Math.max(0, Math.min(m.volume(), counted + m.pendingDelta));
-                        m.pendingDelta = 0;
-                    }
-                });
+                    });
+                } catch (Throwable ignored) {
+                    // the plugin was disabled while counting
+                }
             }
         });
         return true;
@@ -579,17 +653,17 @@ public final class MineManager {
     // =================================================================== lookups
 
     public Collection<Mine> mines() {
-        return Collections.unmodifiableCollection(mines.values());
+        return snapshot.values();
     }
 
     public Mine get(String id) {
-        return id == null ? null : mines.get(id.toLowerCase(Locale.ROOT));
+        return id == null ? null : snapshot.get(cleanId(id));
     }
 
     public Mine mineAt(Block block) {
         World w = block.getWorld();
         int x = block.getX(), y = block.getY(), z = block.getZ();
-        for (Mine m : mines.values()) {
+        for (Mine m : snapshot.values()) {
             if (m.contains(w, x, y, z)) {
                 return m;
             }
@@ -599,7 +673,7 @@ public final class MineManager {
 
     /** The mine a player is in or standing next to (for boss bars and placeholders). */
     public Mine mineNear(Location loc) {
-        for (Mine m : mines.values()) {
+        for (Mine m : snapshot.values()) {
             if (m.isNear(loc, bossBarRange)) {
                 return m;
             }

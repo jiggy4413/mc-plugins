@@ -3,22 +3,23 @@
 #  Apply changes made in this file with /prisoncore reload (no restart needed).
 #  Note: /pmine commands save this file, which removes comments below this header,
 #  so all the documentation lives up here.
-#
+# 
 #  HOW IT WORKS
 #   Each mine refills itself when it is reset-at-percent mined (e.g. 75%). It refills a
 #   slice at a time (max-ms-per-tick per tick), so even huge mines don't freeze the server.
 #   Mines reset one at a time. Players standing in a mine are moved to its spawn first.
 #   An optional timer also resets a mine every timer-minutes, but only if at least
 #   timer-minimum-mined percent of it was mined (no pointless resets of untouched mines).
-#
+# 
 #  SETTING UP A MINE (in game, needs prisoncore.mines.admin)
 #   1. Look at one corner block of the mine area:       /pmine pos1
 #   2. Look at the opposite corner (other side, depth):  /pmine pos2
 #   3. Save it:                                          /pmine setregion a
-#   4. Optional, where players go on reset:              /pmine setspawn a
+#   4. Where players go during a reset:                  /pmine setspawn a
+#      (without one they're sent to the world spawn)
 #   5. Check it:                                         /pmine info a
 #   Copy existing MineResetLite mines with /pmine import  (then remove MineResetLite's jar)
-#
+# 
 #  PER-MINE OPTIONS (under mines.<id>)
 #   display:            name shown in messages, the boss bar and placeholders
 #   world / region:     set by /pmine setregion  (region = minX,minY,minZ,maxX,maxY,maxZ)
@@ -30,16 +31,16 @@
 #   reset-at-percent:   override settings.reset-at-percent for this mine
 #   timer-minutes:      override settings.timer-minutes for this mine (0 = no timer)
 #   timer-minimum-mined: override settings.timer-minimum-mined
-#
+# 
 #  PLACEHOLDERS (needs PlaceholderAPI) - for scoreboards, holograms, tab:
 #   %prisoncore_mine_a_mined%  %prisoncore_mine_a_remaining%  %prisoncore_mine_a_until%
 #   %prisoncore_mine_a_resetat%  %prisoncore_mine_a_status%  %prisoncore_mine_a_timer%
 #   %prisoncore_mine_a_bar%  %prisoncore_mine_a_name%
 #   Replace "mine_a" with "current_mine" for the mine the player is at.
-#
+# 
 #  MESSAGES: start a message with [actionbar] to show it above the hotbar instead of chat.
 #  Leave a message empty ("") to turn it off. {mine} {seconds} are filled in.
-#
+# 
 #  The block mixes for I-Z below are starting points: adjust them to your economy.
 # ==============================================================================
 settings:

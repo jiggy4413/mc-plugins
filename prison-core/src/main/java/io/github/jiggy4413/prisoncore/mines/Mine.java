@@ -148,18 +148,24 @@ public final class Mine {
         return new Location(w, (minX + maxX + 1) / 2.0, maxY + 1, (minZ + maxZ + 1) / 2.0);
     }
 
+    /** Standing on top of the (full) mine, in the middle. */
+    public Location topLocation() {
+        World w = world();
+        return w == null ? null : new Location(w, (minX + maxX + 1) / 2.0, maxY + 1, (minZ + maxZ + 1) / 2.0);
+    }
+
     String regionString() {
         return minX + "," + minY + "," + minZ + "," + maxX + "," + maxY + "," + maxZ;
     }
 
     void setRegion(int x1, int y1, int z1, int x2, int y2, int z2) {
         minX = Math.min(x1, x2);
-        minY = Math.min(y1, y2);
+        minY = Math.max(0, Math.min(y1, y2));        // 1.16 worlds are 0-255 tall
         minZ = Math.min(z1, z2);
         maxX = Math.max(x1, x2);
-        maxY = Math.max(y1, y2);
+        maxY = Math.min(255, Math.max(y1, y2));
         maxZ = Math.max(z1, z2);
-        hasRegion = true;
+        hasRegion = maxY >= minY;   // a region entirely outside 0-255 isn't usable
     }
 
     boolean sameRegionAs(Mine other) {

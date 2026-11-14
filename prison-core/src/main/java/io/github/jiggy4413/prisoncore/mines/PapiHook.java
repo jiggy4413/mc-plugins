@@ -14,7 +14,12 @@ public final class PapiHook {
     /** Returns the registered expansion (as Object), or null if registering failed. */
     public static Object register(JavaPlugin plugin, MineManager manager) {
         MinePlaceholders expansion = new MinePlaceholders(plugin, manager);
-        return expansion.registerNow() ? expansion : null;
+        if (expansion.registerNow()) {
+            return expansion;
+        }
+        plugin.getLogger().warning("PlaceholderAPI refused the prisoncore placeholders. "
+                + "If PrisonCore was just updated live, restart the server to refresh them.");
+        return null;
     }
 
     public static void unregister(Object expansion) {

@@ -75,7 +75,7 @@ final class ResetJob {
                     y++;
                 }
             }
-            if ((processed & 255) == 0 && System.nanoTime() > deadlineNanos) {
+            if ((processed & 63) == 0 && System.nanoTime() > deadlineNanos) {
                 return y > maxY;
             }
         }

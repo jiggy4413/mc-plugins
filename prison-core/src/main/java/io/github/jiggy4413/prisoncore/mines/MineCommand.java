@@ -110,6 +110,7 @@ public final class MineCommand implements TabExecutor {
             say(s, "&7Region: &f" + m.regionString() + " &8(" + String.format(Locale.ROOT, "%,d", m.volume()) + " blocks)");
             say(s, "&7Mined: &f" + (m.isCounted() ? (int) m.minedPercent() + "%" : "checking...")
                     + " &7- resets at &f" + (int) m.resetAtPercent() + "%");
+            say(s, "&7Spawn: &f" + (m.spawn == null ? "not set &7(players go to the world spawn on reset)" : "set"));
             say(s, "&7Timer: &f" + (m.timerMinutes > 0 ? m.timerMinutes + " min &7(next in " + manager.formatTimer(m) + ")" : "off"));
         }
         say(s, "&7Fill mode: &f" + m.fillMode + " &7Surface: &f" + (m.surface == null ? "none" : m.surface.name()));
@@ -162,6 +163,10 @@ public final class MineCommand implements TabExecutor {
         String err = manager.save();
         say(p, "&aMine " + m.id + " now covers &f" + m.regionString() + " &8("
                 + String.format(Locale.ROOT, "%,d", m.volume()) + " blocks)");
+        if (m.spawn == null) {
+            say(p, "&eTip: stand where players should go during a reset and run /" + label + " setspawn " + m.id
+                    + " &7(otherwise they're sent to the world spawn).");
+        }
         if (m.composition.isEmpty()) {
             say(p, "&eIt has no blocks yet: add them under mines." + m.id + ".blocks in mines.yml, then /prisoncore reload.");
         }
