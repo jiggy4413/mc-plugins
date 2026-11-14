@@ -8,7 +8,7 @@ Every push builds automatically. Get the newest jar from **Releases → Latest b
 ## Modules
 | Module | Jar | Purpose |
 |---|---|---|
-| `prison-core` | `PrisonCore-1.4.1.jar` | Ranks & prestiges menu, mines with percentage resets, void worlds |
+| `prison-core` | `PrisonCore-1.5.0.jar` | Ranks & prestiges menu, mines with percentage resets, server menu compass, void worlds |
 | `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
 | `stubs/placeholderapi` | none | Compile-only copy of PlaceholderAPI's expansion API. Never installed on the server. |
 
@@ -35,6 +35,15 @@ Resets refill a few milliseconds' worth of blocks per tick, one mine at a time, 
 - **Copy from MineResetLite:** `/pmine import`, then remove MineResetLite's jar so it stops resetting too
 - **Other commands:** `/pmine list`, `info`, `setspawn`, `reset` (permission `prisoncore.mines.admin`)
 - **Display:** a boss bar near each mine, plus PlaceholderAPI placeholders like `%prisoncore_mine_a_mined%`
+
+## Server menu
+Every player gets a compass locked in their hotbar (slot 9 by default) that opens a configurable
+menu: spawn, mines, kits, shop, auction house, ranks, prestiges, lottery, factions.
+
+- **Config:** `plugins/PrisonCore/server-menu.yml` (all options documented at the top)
+- **Open:** right-click the compass, click it in the inventory, or `/servermenu` (`/menu`)
+- **Item actions:** `[player]`, `[console]`, `[menu]`, `[close]`, `[message]`, `[sound]`
+- **Locked items:** give an item a `permission` and a `locked` look; the mines menu uses `essentials.warps.<mine>`
 
 ## Void worlds
 PrisonCore includes an empty-world generator (one bedrock block under spawn at 0, 64, 0):

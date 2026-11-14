@@ -1,0 +1,601 @@
+# ==============================================================================
+#  PrisonCore - Server menu
+#  Apply changes with /prisoncore reload. Players get the compass back automatically.
+# 
+#  THE COMPASS
+#   Every player gets it in hotbar slot "slot" (1-9). It can't be dropped, moved, stored or
+#   lost on death. Right-click it (or click it in the inventory) to open the "opens" menu.
+#   Set enabled: false to remove it from everyone. /servermenu (or /menu) also opens the menu.
+# 
+#  MENU ITEMS (under menus.<menu>.items.<any name>)
+#   slot: 13            or  slots: [12, 13, 14]     (0 = top left, rows of 9)
+#   material, name, lore, glow, model-data, amount, skull: viewer  (same as ranks-menu.yml)
+#   permission:         only players with it can use the item
+#   locked:             how the item looks without the permission (leave out to hide it):
+#                         material/name/lore like above, plus message: shown when clicked
+#   close: true/false   close the menu when clicked (default: true unless it opens a menu)
+#   actions:            run in order when clicked:
+#     - '[player] spawn'          command run by the player (needs their own permission)
+#     - '[console] give {player} diamond 1'   command run by the console
+#     - '[menu] warps'            open another menu from this file
+#     - '[close]'                 close the menu
+#     - '[message] &aHello!'      send a chat message
+#     - '[sound] ENTITY_PLAYER_LEVELUP'
+#   {player} is replaced with the player's name. Text supports &codes, &#hex,
+#   <gradient:#A:#B>..</gradient>, <smallcaps>..</smallcaps> and PlaceholderAPI.
+# 
+#  Commands below are common defaults (EssentialsX, EconomyShopGUI, ...). Change them to
+#  the commands your plugins actually use.
+#  Mine warps use per-warp permissions (essentials.warps.a ...). EssentialsX needs
+#  per-warp-permission: true in its config.yml for those to apply.
+# ==============================================================================
+compass:
+  enabled: true
+  slot: 9
+  opens: main
+  material: COMPASS
+  glow: true
+  name: '<gradient:#FFD700:#FFFFFF>&lServer Menu</gradient> &7(Right-click)'
+  lore:
+    - '&7Warps, kits, shop, ranks and more.'
+
+sounds:
+  open: BLOCK_CHEST_OPEN
+  click: UI_BUTTON_CLICK
+  locked: BLOCK_NOTE_BLOCK_BASS
+
+messages:
+  locked: '&cYou haven''t unlocked this yet.'
+  slot-item-dropped: '&eYour inventory was full, so an item was dropped at your feet to make room for the menu.'
+
+menus:
+  main:
+    title: '<gradient:#FFD700:#FFFFFF>&lClassic Prison</gradient>'
+    rows: 5
+    filler:
+      material: BLACK_STAINED_GLASS_PANE
+      name: ' '
+    items:
+      profile:
+        slot: 4
+        material: PLAYER_HEAD
+        skull: viewer
+        name: '&e&l{player}'
+        lore:
+          - '&7Balance: &a$%vault_eco_balance_formatted%'
+        actions: []
+        close: false
+      spawn:
+        slot: 11
+        material: BEACON
+        name: '&b&lSpawn'
+        lore:
+          - '&7Go back to spawn.'
+        actions:
+          - '[player] spawn'
+      warps:
+        slot: 13
+        material: ENDER_PEARL
+        name: '&d&lMines'
+        lore:
+          - '&7Warp to any mine you''ve unlocked.'
+        actions:
+          - '[menu] warps'
+      kits:
+        slot: 15
+        material: CHEST
+        name: '&6&lKits'
+        lore:
+          - '&7Claim your kits.'
+        actions:
+          - '[player] kits'
+      shop:
+        slot: 20
+        material: EMERALD
+        name: '&a&lShop'
+        lore:
+          - '&7Buy and sell items.'
+        actions:
+          - '[player] shop'
+      auction:
+        slot: 22
+        material: GOLD_INGOT
+        name: '&e&lAuction House'
+        lore:
+          - '&7Trade with other players.'
+        actions:
+          - '[player] ah'
+      ranks:
+        slot: 24
+        material: EXPERIENCE_BOTTLE
+        name: '<gradient:#FFB347:#FFD700>&lRanks</gradient>'
+        lore:
+          - '&7See every rank and rank up.'
+        actions:
+          - '[player] ranks'
+      prestiges:
+        slot: 29
+        material: NETHER_STAR
+        name: '<gradient:#C77DFF:#7FDBFF>&lPrestiges</gradient>'
+        lore:
+          - '&7See every prestige.'
+        actions:
+          - '[player] prestiges'
+      lottery:
+        slot: 31
+        material: SUNFLOWER
+        name: '&e&lLottery'
+        lore:
+          - '&7Try your luck.'
+        actions:
+          - '[player] lottery'
+      factions:
+        slot: 33
+        material: SHIELD
+        name: '&c&lFactions'
+        lore:
+          - '&7Go to the factions world.'
+        actions:
+          - '[player] f'
+      close:
+        slot: 40
+        material: BARRIER
+        name: '&cClose'
+        actions:
+          - '[close]'
+
+  warps:
+    title: '<gradient:#FFD700:#FFFFFF>&lMines</gradient>'
+    rows: 6
+    filler:
+      material: BLACK_STAINED_GLASS_PANE
+      name: ' '
+    items:
+      minea:
+        slot: 10
+        material: COAL_ORE
+        name: '&e&lMine A'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_a_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.a
+        actions:
+          - '[player] warp a'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine A'
+          lore:
+            - '&7Reach rank A to unlock.'
+          message: '&cReach rank A to warp to Mine A.'
+      mineb:
+        slot: 11
+        material: COAL_ORE
+        name: '&e&lMine B'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_b_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.b
+        actions:
+          - '[player] warp b'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine B'
+          lore:
+            - '&7Reach rank B to unlock.'
+          message: '&cReach rank B to warp to Mine B.'
+      minec:
+        slot: 12
+        material: COAL_ORE
+        name: '&e&lMine C'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_c_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.c
+        actions:
+          - '[player] warp c'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine C'
+          lore:
+            - '&7Reach rank C to unlock.'
+          message: '&cReach rank C to warp to Mine C.'
+      mined:
+        slot: 13
+        material: COAL_ORE
+        name: '&e&lMine D'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_d_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.d
+        actions:
+          - '[player] warp d'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine D'
+          lore:
+            - '&7Reach rank D to unlock.'
+          message: '&cReach rank D to warp to Mine D.'
+      minee:
+        slot: 14
+        material: COAL_ORE
+        name: '&e&lMine E'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_e_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.e
+        actions:
+          - '[player] warp e'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine E'
+          lore:
+            - '&7Reach rank E to unlock.'
+          message: '&cReach rank E to warp to Mine E.'
+      minef:
+        slot: 15
+        material: IRON_ORE
+        name: '&e&lMine F'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_f_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.f
+        actions:
+          - '[player] warp f'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine F'
+          lore:
+            - '&7Reach rank F to unlock.'
+          message: '&cReach rank F to warp to Mine F.'
+      mineg:
+        slot: 16
+        material: IRON_ORE
+        name: '&e&lMine G'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_g_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.g
+        actions:
+          - '[player] warp g'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine G'
+          lore:
+            - '&7Reach rank G to unlock.'
+          message: '&cReach rank G to warp to Mine G.'
+      mineh:
+        slot: 19
+        material: IRON_ORE
+        name: '&e&lMine H'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_h_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.h
+        actions:
+          - '[player] warp h'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine H'
+          lore:
+            - '&7Reach rank H to unlock.'
+          message: '&cReach rank H to warp to Mine H.'
+      minei:
+        slot: 20
+        material: IRON_ORE
+        name: '&e&lMine I'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_i_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.i
+        actions:
+          - '[player] warp i'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine I'
+          lore:
+            - '&7Reach rank I to unlock.'
+          message: '&cReach rank I to warp to Mine I.'
+      minej:
+        slot: 21
+        material: IRON_ORE
+        name: '&e&lMine J'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_j_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.j
+        actions:
+          - '[player] warp j'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine J'
+          lore:
+            - '&7Reach rank J to unlock.'
+          message: '&cReach rank J to warp to Mine J.'
+      minek:
+        slot: 22
+        material: GOLD_ORE
+        name: '&e&lMine K'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_k_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.k
+        actions:
+          - '[player] warp k'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine K'
+          lore:
+            - '&7Reach rank K to unlock.'
+          message: '&cReach rank K to warp to Mine K.'
+      minel:
+        slot: 23
+        material: GOLD_ORE
+        name: '&e&lMine L'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_l_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.l
+        actions:
+          - '[player] warp l'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine L'
+          lore:
+            - '&7Reach rank L to unlock.'
+          message: '&cReach rank L to warp to Mine L.'
+      minem:
+        slot: 24
+        material: GOLD_ORE
+        name: '&e&lMine M'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_m_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.m
+        actions:
+          - '[player] warp m'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine M'
+          lore:
+            - '&7Reach rank M to unlock.'
+          message: '&cReach rank M to warp to Mine M.'
+      minen:
+        slot: 25
+        material: GOLD_ORE
+        name: '&e&lMine N'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_n_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.n
+        actions:
+          - '[player] warp n'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine N'
+          lore:
+            - '&7Reach rank N to unlock.'
+          message: '&cReach rank N to warp to Mine N.'
+      mineo:
+        slot: 28
+        material: GOLD_ORE
+        name: '&e&lMine O'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_o_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.o
+        actions:
+          - '[player] warp o'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine O'
+          lore:
+            - '&7Reach rank O to unlock.'
+          message: '&cReach rank O to warp to Mine O.'
+      minep:
+        slot: 29
+        material: LAPIS_ORE
+        name: '&e&lMine P'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_p_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.p
+        actions:
+          - '[player] warp p'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine P'
+          lore:
+            - '&7Reach rank P to unlock.'
+          message: '&cReach rank P to warp to Mine P.'
+      mineq:
+        slot: 30
+        material: LAPIS_ORE
+        name: '&e&lMine Q'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_q_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.q
+        actions:
+          - '[player] warp q'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine Q'
+          lore:
+            - '&7Reach rank Q to unlock.'
+          message: '&cReach rank Q to warp to Mine Q.'
+      miner:
+        slot: 31
+        material: LAPIS_ORE
+        name: '&e&lMine R'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_r_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.r
+        actions:
+          - '[player] warp r'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine R'
+          lore:
+            - '&7Reach rank R to unlock.'
+          message: '&cReach rank R to warp to Mine R.'
+      mines:
+        slot: 32
+        material: LAPIS_ORE
+        name: '&e&lMine S'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_s_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.s
+        actions:
+          - '[player] warp s'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine S'
+          lore:
+            - '&7Reach rank S to unlock.'
+          message: '&cReach rank S to warp to Mine S.'
+      minet:
+        slot: 33
+        material: LAPIS_ORE
+        name: '&e&lMine T'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_t_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.t
+        actions:
+          - '[player] warp t'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine T'
+          lore:
+            - '&7Reach rank T to unlock.'
+          message: '&cReach rank T to warp to Mine T.'
+      mineu:
+        slot: 34
+        material: EMERALD_ORE
+        name: '&e&lMine U'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_u_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.u
+        actions:
+          - '[player] warp u'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine U'
+          lore:
+            - '&7Reach rank U to unlock.'
+          message: '&cReach rank U to warp to Mine U.'
+      minev:
+        slot: 37
+        material: EMERALD_ORE
+        name: '&e&lMine V'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_v_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.v
+        actions:
+          - '[player] warp v'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine V'
+          lore:
+            - '&7Reach rank V to unlock.'
+          message: '&cReach rank V to warp to Mine V.'
+      minew:
+        slot: 38
+        material: EMERALD_ORE
+        name: '&e&lMine W'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_w_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.w
+        actions:
+          - '[player] warp w'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine W'
+          lore:
+            - '&7Reach rank W to unlock.'
+          message: '&cReach rank W to warp to Mine W.'
+      minex:
+        slot: 39
+        material: EMERALD_ORE
+        name: '&e&lMine X'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_x_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.x
+        actions:
+          - '[player] warp x'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine X'
+          lore:
+            - '&7Reach rank X to unlock.'
+          message: '&cReach rank X to warp to Mine X.'
+      miney:
+        slot: 40
+        material: EMERALD_ORE
+        name: '&e&lMine Y'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_y_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.y
+        actions:
+          - '[player] warp y'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine Y'
+          lore:
+            - '&7Reach rank Y to unlock.'
+          message: '&cReach rank Y to warp to Mine Y.'
+      minez:
+        slot: 41
+        material: DIAMOND_ORE
+        name: '&e&lMine Z'
+        lore:
+          - '&7Mined: &f%prisoncore_mine_z_mined%%'
+          - ''
+          - '&aClick to warp'
+        permission: essentials.warps.z
+        actions:
+          - '[player] warp z'
+        locked:
+          material: GRAY_STAINED_GLASS_PANE
+          name: '&8&lMine Z'
+          lore:
+            - '&7Reach rank Z to unlock.'
+          message: '&cReach rank Z to warp to Mine Z.'
+      back:
+        slot: 49
+        material: ARROW
+        name: '&7« Back'
+        actions:
+          - '[menu] main'
