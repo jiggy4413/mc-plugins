@@ -8,8 +8,9 @@ Every push builds automatically. Get the newest jar from **Releases → Latest b
 ## Modules
 | Module | Jar | Purpose |
 |---|---|---|
-| `prison-core` | `PrisonCore-1.3.0.jar` | Ranks & prestiges menu (more features to come) |
+| `prison-core` | `PrisonCore-1.4.0.jar` | Ranks & prestiges menu, mines with percentage resets, void worlds |
 | `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
+| `stubs/placeholderapi` | none | Compile-only copy of PlaceholderAPI's expansion API. Never installed on the server. |
 
 ## PrisonCore: ranks & prestiges menu
 Replaces `/ranks` and `/prestiges` from **Rankup 3.11.3 (by Okx)** with a fully styled menu.
@@ -24,6 +25,16 @@ and clicking the next prestige runs `/prestige` for the player.
 - To give `/ranks` back to Rankup, remove `ranks` from `open-commands` and reload
 
 Requires Rankup. If Rankup is missing, PrisonCore leaves `/ranks` alone.
+
+## Mines
+PrisonCore resets mines when they're a set percentage mined (default 75%), with an optional timer.
+Resets refill a few milliseconds' worth of blocks per tick, one mine at a time, so big mines don't lag.
+
+- **Config:** `plugins/PrisonCore/mines.yml` (mines A-Z included; documentation at the top)
+- **Set up a mine:** `/pmine pos1`, `/pmine pos2` (look at opposite corners), then `/pmine setregion <mine>`
+- **Copy from MineResetLite:** `/pmine import`, then remove MineResetLite's jar so it stops resetting too
+- **Other commands:** `/pmine list`, `info`, `setspawn`, `reset` (permission `prisoncore.mines.admin`)
+- **Display:** a boss bar near each mine, plus PlaceholderAPI placeholders like `%prisoncore_mine_a_mined%`
 
 ## Void worlds
 PrisonCore includes an empty-world generator (one bedrock block under spawn at 0, 64, 0):

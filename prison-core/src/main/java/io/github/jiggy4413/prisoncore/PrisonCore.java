@@ -2,6 +2,10 @@ package io.github.jiggy4413.prisoncore;
 
 import io.github.jiggy4413.prisoncore.menu.MenuListener;
 import io.github.jiggy4413.prisoncore.menu.RanksMenu;
+import io.github.jiggy4413.prisoncore.mines.MineCommand;
+import io.github.jiggy4413.prisoncore.mines.MineListener;
+import io.github.jiggy4413.prisoncore.mines.MineManager;
+import io.github.jiggy4413.prisoncore.mines.PapiHook;
 import io.github.jiggy4413.prisoncore.rankup.RankupBridge;
 import io.github.jiggy4413.prisoncore.update.HotSwap;
 import io.github.jiggy4413.prisoncore.util.Text;
@@ -37,6 +41,9 @@ public final class PrisonCore extends JavaPlugin {
     /** Null when Rankup isn't installed or failed to hook. */
     private RankupBridge rankup;
     private HotSwap hotSwap;
+    private MineManager mines;
+    /** The PlaceholderAPI expansion, kept as Object so this class never needs PlaceholderAPI. */
+    private Object placeholders;
 
     @Override
     public void onEnable() {
@@ -48,6 +55,21 @@ public final class PrisonCore extends JavaPlugin {
         loadMenuConfig();
         hookRankup();
         getServer().getPluginManager().registerEvents(new MenuListener(this), this);
+
+        mines = new MineManager(this);
+        mines.load();
+        getServer().getPluginManager().registerEvents(new MineListener(mines), this);
+        MineCommand mineCommand = new MineCommand(mines, getDataFolder().getParentFile());
+        getCommand("pmine").setExecutor(mineCommand);
+        getCommand("pmine").setTabCompleter(mineCommand);
+        mines.start();
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            try {
+                placeholders = PapiHook.register(this, mines);
+            } catch (Throwable t) {
+                getLogger().warning("Couldn't add PlaceholderAPI placeholders: " + t);
+            }
+        }
         getLogger().info("PrisonCore " + getDescription().getVersion() + " enabled.");
     }
 
@@ -61,6 +83,17 @@ public final class PrisonCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (placeholders != null) {
+            try {
+                PapiHook.unregister(placeholders);
+            } catch (Throwable ignored) {
+                // PlaceholderAPI may already be gone during shutdown
+            }
+            placeholders = null;
+        }
+        if (mines != null) {
+            mines.shutdown();   // finishes a half-done reset so no mine is left half full
+        }
         // close any open menus so nobody keeps a stale one
         for (Player p : getServer().getOnlinePlayers()) {
             InventoryHolder holder = p.getOpenInventory().getTopInventory().getHolder();
@@ -217,12 +250,16 @@ public final class PrisonCore extends JavaPlugin {
             try {
                 String problem = loadMenuConfig();
                 hookRankup();
+                String minesProblem = mines.load();
+                if (minesProblem != null) {
+                    sender.sendMessage(Text.color("&c" + minesProblem));
+                }
                 if (problem != null) {
                     // color codes off on purpose so the message shows exactly what's in the file
                     sender.sendMessage(Text.color("&cranks-menu.yml has a mistake, so nothing changed:"));
                     sender.sendMessage(ChatColor.GRAY + problem);
                 } else {
-                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml). No new jar found."));
+                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml). No new jar found."));
                 }
             } catch (Exception e) {
                 sender.sendMessage(Text.color("&cReload failed: " + e.getMessage() + " &7(check ranks-menu.yml for a YAML mistake)"));

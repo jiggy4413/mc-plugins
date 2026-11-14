@@ -1,0 +1,394 @@
+# ==============================================================================
+#  PrisonCore - Mines
+#  Apply changes made in this file with /prisoncore reload (no restart needed).
+#  Note: /pmine commands save this file, which removes comments below this header,
+#  so all the documentation lives up here.
+#
+#  HOW IT WORKS
+#   Each mine refills itself when it is reset-at-percent mined (e.g. 75%). It refills a
+#   slice at a time (max-ms-per-tick per tick), so even huge mines don't freeze the server.
+#   Mines reset one at a time. Players standing in a mine are moved to its spawn first.
+#   An optional timer also resets a mine every timer-minutes, but only if at least
+#   timer-minimum-mined percent of it was mined (no pointless resets of untouched mines).
+#
+#  SETTING UP A MINE (in game, needs prisoncore.mines.admin)
+#   1. Look at one corner block of the mine area:       /pmine pos1
+#   2. Look at the opposite corner (other side, depth):  /pmine pos2
+#   3. Save it:                                          /pmine setregion a
+#   4. Optional, where players go on reset:              /pmine setspawn a
+#   5. Check it:                                         /pmine info a
+#   Copy existing MineResetLite mines with /pmine import  (then remove MineResetLite's jar)
+#
+#  PER-MINE OPTIONS (under mines.<id>)
+#   display:            name shown in messages, the boss bar and placeholders
+#   world / region:     set by /pmine setregion  (region = minX,minY,minZ,maxX,maxY,maxZ)
+#   spawn:              set by /pmine setspawn   (empty = top middle of the mine)
+#   blocks:             block mix. Numbers are relative weights, they don't need to add to 100.
+#                       Use 1.16 block names (STONE, COAL_ORE, ...). AIR is allowed.
+#   surface:            optional block for the top layer only, e.g. GRASS_BLOCK
+#   fill-mode:          true = only refill mined (air) blocks, keep the rest. Faster.
+#   reset-at-percent:   override settings.reset-at-percent for this mine
+#   timer-minutes:      override settings.timer-minutes for this mine (0 = no timer)
+#   timer-minimum-mined: override settings.timer-minimum-mined
+#
+#  PLACEHOLDERS (needs PlaceholderAPI) - for scoreboards, holograms, tab:
+#   %prisoncore_mine_a_mined%  %prisoncore_mine_a_remaining%  %prisoncore_mine_a_until%
+#   %prisoncore_mine_a_resetat%  %prisoncore_mine_a_status%  %prisoncore_mine_a_timer%
+#   %prisoncore_mine_a_bar%  %prisoncore_mine_a_name%
+#   Replace "mine_a" with "current_mine" for the mine the player is at.
+#
+#  MESSAGES: start a message with [actionbar] to show it above the hotbar instead of chat.
+#  Leave a message empty ("") to turn it off. {mine} {seconds} are filled in.
+#
+#  The block mixes for I-Z below are starting points: adjust them to your economy.
+# ==============================================================================
+settings:
+  reset-at-percent: 75
+  timer-minutes: 15
+  timer-minimum-mined: 5
+  warning-seconds: 5
+  max-ms-per-tick: 8
+  recount-seconds: 30
+  reset-on-startup: false
+  bossbar:
+    enabled: true
+    range: 8
+    color: YELLOW
+    style: SEGMENTED_10
+    title: '{mine} &7- &f{mined}% &7mined &8| &7resets at &f{reset-at}%'
+    resetting-title: '{mine} &7- &eRefilling... &f{progress}%'
+    counting-title: '{mine} &7- &7Checking...'
+  messages:
+    reset-warning: '[actionbar]&e{mine} &7resets in &f{seconds}s'
+    reset-started: '&7{mine} &7is being refilled...'
+    reset-done: '&a{mine} &ahas been reset!'
+    resetting-no-break: '[actionbar]&c{mine} is refilling, hold on!'
+  placeholders:
+    status-ready: '&aReady'
+    status-warning: '&6Resetting soon'
+    status-resetting: '&eResetting'
+    timer-off: 'Off'
+    bar-length: 10
+    bar-symbol: '■'
+    bar-filled: '&c'
+    bar-empty: '&a'
+mines:
+  a:
+    display: '&7Mine A'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 70
+      COAL_ORE: 20
+      IRON_ORE: 8
+      GOLD_ORE: 2
+  b:
+    display: '&7Mine B'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 68
+      COAL_ORE: 20
+      IRON_ORE: 9
+      GOLD_ORE: 3
+  c:
+    display: '&7Mine C'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 68
+      COAL_ORE: 20
+      IRON_ORE: 9
+      GOLD_ORE: 3
+  d:
+    display: '&7Mine D'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 66
+      COAL_ORE: 20
+      IRON_ORE: 10
+      GOLD_ORE: 4
+  e:
+    display: '&7Mine E'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 65
+      COAL_ORE: 20
+      IRON_ORE: 11
+      GOLD_ORE: 4
+  f:
+    display: '&7Mine F'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 64
+      COAL_ORE: 20
+      IRON_ORE: 11
+      GOLD_ORE: 5
+  g:
+    display: '&7Mine G'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 63
+      COAL_ORE: 19
+      IRON_ORE: 12
+      GOLD_ORE: 6
+  h:
+    display: '&7Mine H'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 62
+      COAL_ORE: 19
+      IRON_ORE: 13
+      GOLD_ORE: 6
+  i:
+    display: '&7Mine I'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 60
+      COAL_ORE: 19
+      IRON_ORE: 14
+      GOLD_ORE: 7
+  j:
+    display: '&7Mine J'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 58
+      COAL_ORE: 19
+      IRON_ORE: 14
+      GOLD_ORE: 8
+      LAPIS_ORE: 1
+  k:
+    display: '&7Mine K'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 56
+      COAL_ORE: 19
+      IRON_ORE: 15
+      GOLD_ORE: 8
+      LAPIS_ORE: 2
+  l:
+    display: '&7Mine L'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 54
+      COAL_ORE: 18
+      IRON_ORE: 16
+      GOLD_ORE: 9
+      LAPIS_ORE: 3
+  m:
+    display: '&7Mine M'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 52
+      COAL_ORE: 18
+      IRON_ORE: 16
+      GOLD_ORE: 10
+      LAPIS_ORE: 4
+  n:
+    display: '&7Mine N'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 50
+      COAL_ORE: 18
+      IRON_ORE: 17
+      GOLD_ORE: 10
+      LAPIS_ORE: 5
+  o:
+    display: '&7Mine O'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 48
+      COAL_ORE: 17
+      IRON_ORE: 18
+      GOLD_ORE: 11
+      LAPIS_ORE: 6
+  p:
+    display: '&7Mine P'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 44
+      COAL_ORE: 17
+      IRON_ORE: 18
+      GOLD_ORE: 12
+      LAPIS_ORE: 7
+      EMERALD_ORE: 2
+  q:
+    display: '&7Mine Q'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 42
+      COAL_ORE: 16
+      IRON_ORE: 19
+      GOLD_ORE: 12
+      LAPIS_ORE: 8
+      EMERALD_ORE: 3
+  r:
+    display: '&7Mine R'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 38
+      COAL_ORE: 16
+      IRON_ORE: 19
+      GOLD_ORE: 13
+      LAPIS_ORE: 9
+      EMERALD_ORE: 5
+  s:
+    display: '&7Mine S'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 36
+      COAL_ORE: 15
+      IRON_ORE: 20
+      GOLD_ORE: 13
+      LAPIS_ORE: 10
+      EMERALD_ORE: 6
+  t:
+    display: '&7Mine T'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 33
+      COAL_ORE: 15
+      IRON_ORE: 20
+      GOLD_ORE: 14
+      LAPIS_ORE: 11
+      EMERALD_ORE: 7
+  u:
+    display: '&7Mine U'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 29
+      COAL_ORE: 14
+      IRON_ORE: 21
+      GOLD_ORE: 15
+      LAPIS_ORE: 12
+      EMERALD_ORE: 9
+  v:
+    display: '&7Mine V'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 27
+      COAL_ORE: 13
+      IRON_ORE: 21
+      GOLD_ORE: 15
+      LAPIS_ORE: 12
+      EMERALD_ORE: 10
+      DIAMOND_ORE: 2
+  w:
+    display: '&7Mine W'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 23
+      COAL_ORE: 13
+      IRON_ORE: 21
+      GOLD_ORE: 15
+      LAPIS_ORE: 13
+      EMERALD_ORE: 11
+      DIAMOND_ORE: 4
+  x:
+    display: '&7Mine X'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 21
+      COAL_ORE: 12
+      IRON_ORE: 21
+      GOLD_ORE: 15
+      LAPIS_ORE: 14
+      EMERALD_ORE: 12
+      DIAMOND_ORE: 5
+  y:
+    display: '&7Mine Y'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 19
+      COAL_ORE: 11
+      IRON_ORE: 21
+      GOLD_ORE: 15
+      LAPIS_ORE: 14
+      EMERALD_ORE: 13
+      DIAMOND_ORE: 7
+  z:
+    display: '&7Mine Z'
+    world: ''
+    region: ''
+    spawn: ''
+    fill-mode: false
+    blocks:
+      STONE: 16
+      COAL_ORE: 10
+      IRON_ORE: 21
+      GOLD_ORE: 16
+      LAPIS_ORE: 15
+      EMERALD_ORE: 14
+      DIAMOND_ORE: 8

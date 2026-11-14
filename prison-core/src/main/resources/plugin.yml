@@ -3,7 +3,7 @@ version: ${project.version}
 main: io.github.jiggy4413.prisoncore.PrisonCore
 api-version: 1.16
 author: jiggy4413
-description: Custom features for the prison server, starting with the ranks and prestiges menu.
+description: Custom features for the prison server - ranks menu, mines, void worlds.
 # Load after these so we can hook into them. Neither is required.
 softdepend: [Rankup, PlaceholderAPI]
 # Enable before Multiverse so worlds using PrisonCore's void generator can load at startup.
@@ -14,12 +14,20 @@ commands:
     description: PrisonCore info and admin commands.
     usage: /prisoncore [reload]
     aliases: [pcore]
+  pmine:
+    description: Set up and manage PrisonCore mines.
+    usage: /pmine <list|info|pos1|pos2|setregion|setspawn|reset|import>
+    aliases: [pmines, prisonmine]
+    permission: prisoncore.mines.admin
   prisonranks:
     description: Opens the ranks menu.
     usage: /prisonranks [prestiges]
     permission: prisoncore.ranks
 
 permissions:
+  prisoncore.mines.admin:
+    description: Use /pmine to set up and reset mines.
+    default: op
   prisoncore.admin:
     description: Use /prisoncore reload.
     default: op

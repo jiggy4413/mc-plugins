@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+      Compile-only copy of the PlaceholderAPI (2.10.x) methods PrisonCore uses.
+      NEVER packaged into PrisonCore: at runtime the real classes come from the PlaceholderAPI plugin.
+    -->
+    <parent>
+        <groupId>io.github.jiggy4413</groupId>
+        <artifactId>mc-plugins</artifactId>
+        <version>1.4.0</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>placeholderapi-stubs</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper-api</artifactId>
+        </dependency>
+    </dependencies>
+</project>
