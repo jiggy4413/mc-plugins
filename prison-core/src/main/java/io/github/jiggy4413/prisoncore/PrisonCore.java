@@ -6,9 +6,7 @@ import io.github.jiggy4413.prisoncore.mines.MineCommand;
 import io.github.jiggy4413.prisoncore.mines.MineListener;
 import io.github.jiggy4413.prisoncore.mines.MineManager;
 import io.github.jiggy4413.prisoncore.mines.PapiHook;
-import io.github.jiggy4413.prisoncore.servermenu.ServerMenu;
-import io.github.jiggy4413.prisoncore.servermenu.ServerMenuListener;
-import io.github.jiggy4413.prisoncore.servermenu.ServerMenus;
+import io.github.jiggy4413.prisoncore.util.LegacyCompassCleanup;
 import io.github.jiggy4413.prisoncore.rankup.RankupBridge;
 import io.github.jiggy4413.prisoncore.update.HotSwap;
 import io.github.jiggy4413.prisoncore.util.Text;
@@ -45,7 +43,6 @@ public final class PrisonCore extends JavaPlugin {
     private RankupBridge rankup;
     private HotSwap hotSwap;
     private MineManager mines;
-    private ServerMenus serverMenus;
     /** The PlaceholderAPI expansion, kept as Object so this class never needs PlaceholderAPI. */
     private Object placeholders;
 
@@ -56,9 +53,6 @@ public final class PrisonCore extends JavaPlugin {
                 "io.github.jiggy4413.prisoncore.world.VoidGenerator",
                 "io.github.jiggy4413.prisoncore.util.ItemTemplate",
                 "io.github.jiggy4413.prisoncore.util.Text",
-                "io.github.jiggy4413.prisoncore.servermenu.ServerMenus",
-                "io.github.jiggy4413.prisoncore.servermenu.ServerMenu",
-                "io.github.jiggy4413.prisoncore.servermenu.ServerMenuListener",
                 "io.github.jiggy4413.prisoncore.mines.MineManager",
                 "io.github.jiggy4413.prisoncore.mines.Mine",
                 "io.github.jiggy4413.prisoncore.mines.ResetJob",
@@ -76,22 +70,10 @@ public final class PrisonCore extends JavaPlugin {
         getCommand("pmine").setExecutor(mineCommand);
         getCommand("pmine").setTabCompleter(mineCommand);
         mines.start();
-        serverMenus = new ServerMenus(this);
-        serverMenus.load();
-        getServer().getPluginManager().registerEvents(new ServerMenuListener(this, serverMenus), this);
-        // players already online (e.g. after a live update) get their compass now
-        for (Player p : getServer().getOnlinePlayers()) {
-            serverMenus.ensureCompass(p);
-        }
-        // every 10 seconds, give back compasses that other plugins (sell, trade, clear) removed
-        getServer().getScheduler().runTaskTimer(this, new Runnable() {
-            @Override
-            public void run() {
-                for (Player p : getServer().getOnlinePlayers()) {
-                    serverMenus.quickCheck(p);
-                }
-            }
-        }, 200L, 200L);
+        // the server menu compass (1.5.x) is shelved: remove leftover compasses
+        LegacyCompassCleanup cleanup = new LegacyCompassCleanup(this);
+        getServer().getPluginManager().registerEvents(cleanup, this);
+        cleanup.cleanOnline();
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             try {
@@ -130,7 +112,6 @@ public final class PrisonCore extends JavaPlugin {
         }
         // named inner classes
         try {
-            Class.forName("io.github.jiggy4413.prisoncore.servermenu.ServerMenuListener$CheckTask", false, cl);
             Class.forName("io.github.jiggy4413.prisoncore.mines.MrlImporter$Result", false, cl);
         } catch (ClassNotFoundException ignored) {
             // not critical
@@ -153,7 +134,7 @@ public final class PrisonCore extends JavaPlugin {
         // close any open menus so nobody keeps a stale one
         for (Player p : getServer().getOnlinePlayers()) {
             InventoryHolder holder = p.getOpenInventory().getTopInventory().getHolder();
-            if (holder instanceof RanksMenu || holder instanceof ServerMenu) {
+            if (holder instanceof RanksMenu) {
                 p.closeInventory();
             }
         }
@@ -275,18 +256,6 @@ public final class PrisonCore extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (command.getName().equalsIgnoreCase("servermenu")) {
-            if (!(sender instanceof Player)) {
-                sender.sendMessage("Only players can open the server menu.");
-                return true;
-            }
-            String id = args.length > 0 ? args[0].toLowerCase(java.util.Locale.ROOT) : serverMenus.mainMenu();
-            if (!serverMenus.openableByCommand(id)) {
-                id = serverMenus.mainMenu();
-            }
-            serverMenus.open((Player) sender, id);
-            return true;
-        }
         if (command.getName().equalsIgnoreCase("prisonranks")) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage("Only players can open the ranks menu.");
@@ -322,19 +291,12 @@ public final class PrisonCore extends JavaPlugin {
                 if (minesProblem != null) {
                     sender.sendMessage(Text.color("&c" + minesProblem));
                 }
-                String menuProblem = serverMenus.load();
-                if (menuProblem != null) {
-                    sender.sendMessage(Text.color("&c" + menuProblem));
-                }
-                for (Player p : getServer().getOnlinePlayers()) {
-                    serverMenus.ensureCompass(p);
-                }
                 if (problem != null) {
                     // color codes off on purpose so the message shows exactly what's in the file
                     sender.sendMessage(Text.color("&cranks-menu.yml has a mistake, so nothing changed:"));
                     sender.sendMessage(ChatColor.GRAY + problem);
                 } else {
-                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml, server-menu.yml). No new jar found."));
+                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml). No new jar found."));
                 }
             } catch (Exception e) {
                 sender.sendMessage(Text.color("&cReload failed: " + e.getMessage() + " &7(check ranks-menu.yml for a YAML mistake)"));
@@ -354,7 +316,7 @@ public final class PrisonCore extends JavaPlugin {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length != 1 || command.getName().equalsIgnoreCase("servermenu")) {
+        if (args.length != 1) {
             return Collections.emptyList();
         }
         List<String> options = command.getName().equalsIgnoreCase("prisonranks")
