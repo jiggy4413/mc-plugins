@@ -6,7 +6,6 @@ import io.github.jiggy4413.prisoncore.mines.MineCommand;
 import io.github.jiggy4413.prisoncore.mines.MineListener;
 import io.github.jiggy4413.prisoncore.mines.MineManager;
 import io.github.jiggy4413.prisoncore.mines.PapiHook;
-import io.github.jiggy4413.prisoncore.util.LegacyCompassCleanup;
 import io.github.jiggy4413.prisoncore.rankup.RankupBridge;
 import io.github.jiggy4413.prisoncore.update.HotSwap;
 import io.github.jiggy4413.prisoncore.util.Text;
@@ -70,10 +69,6 @@ public final class PrisonCore extends JavaPlugin {
         getCommand("pmine").setExecutor(mineCommand);
         getCommand("pmine").setTabCompleter(mineCommand);
         mines.start();
-        // the server menu compass (1.5.x) is shelved: remove leftover compasses
-        LegacyCompassCleanup cleanup = new LegacyCompassCleanup(this);
-        getServer().getPluginManager().registerEvents(cleanup, this);
-        cleanup.cleanOnline();
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             try {

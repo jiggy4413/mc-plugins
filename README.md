@@ -36,11 +36,6 @@ Resets refill a few milliseconds' worth of blocks per tick, one mine at a time, 
 - **Other commands:** `/pmine list`, `info`, `setspawn`, `reset` (permission `prisoncore.mines.admin`)
 - **Display:** a boss bar near each mine, plus PlaceholderAPI placeholders like `%prisoncore_mine_a_mined%`
 
-## Shelved: server menu
-A compass-opened server menu was built in 1.5.1 and then shelved. Its code lives on the
-`shelf/server-menu` branch, and the 1.5.1 jar is kept in `archive/`. Newer versions don't include it,
-and they remove any leftover menu compasses from players' inventories.
-
 ## Void worlds
 PrisonCore includes an empty-world generator (one bedrock block under spawn at 0, 64, 0):
 ```
