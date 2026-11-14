@@ -134,7 +134,7 @@ public final class MinePlaceholders extends PlaceholderExpansion {
         ConfigurationSection t = manager.text();
         double mined = m.minedPercent();
         if (field.equals("mined")) {
-            return String.valueOf((int) Math.floor(mined));
+            return m.minedText();
         }
         if (field.equals("remaining")) {
             return String.valueOf((int) Math.ceil(100 - mined));

@@ -95,7 +95,7 @@ public final class MineCommand implements TabExecutor {
             } else if (!m.isCounted()) {
                 state = "&7checking...";
             } else {
-                state = "&f" + (int) m.minedPercent() + "% &7mined &8(resets at " + (int) m.resetAtPercent() + "%)";
+                state = "&f" + m.minedText() + "% &7mined &8(resets at " + (int) m.resetAtPercent() + "%)";
             }
             say(s, "&e" + m.id + " &7" + m.display() + " &8- " + state);
         }
@@ -108,7 +108,7 @@ public final class MineCommand implements TabExecutor {
         } else {
             say(s, "&7World: &f" + m.worldName + (m.world() == null ? " &c(not loaded)" : ""));
             say(s, "&7Region: &f" + m.regionString() + " &8(" + String.format(Locale.ROOT, "%,d", m.volume()) + " blocks)");
-            say(s, "&7Mined: &f" + (m.isCounted() ? (int) m.minedPercent() + "%" : "checking...")
+            say(s, "&7Mined: &f" + (m.isCounted() ? m.minedText() + "%" : "checking...")
                     + " &7- resets at &f" + (int) m.resetAtPercent() + "%");
             say(s, "&7Spawn: &f" + (m.spawn == null ? "not set &7(players go to the world spawn on reset)" : "set"));
             say(s, "&7Timer: &f" + (m.timerMinutes > 0 ? m.timerMinutes + " min &7(next in " + manager.formatTimer(m) + ")" : "off"));

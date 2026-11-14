@@ -95,6 +95,11 @@ public final class Mine {
         return Math.max(0, Math.min(100, p));
     }
 
+    /** Mined percent with one decimal, e.g. "12.4", so big mines visibly move. */
+    public String minedText() {
+        return String.format(java.util.Locale.ROOT, "%.1f", Math.floor(minedPercent() * 10) / 10.0);
+    }
+
     /** Milliseconds until the timer resets the mine, or -1 when the timer is off. */
     public long millisUntilTimer() {
         if (timerMinutes <= 0) {

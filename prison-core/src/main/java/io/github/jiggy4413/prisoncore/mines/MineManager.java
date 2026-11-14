@@ -133,7 +133,7 @@ public final class MineManager {
         defaultTimerMinimum = clamp(s.getDouble("timer-minimum-mined", 5), 0, 100);
         warningSeconds = Math.max(0, s.getInt("warning-seconds", 5));
         budgetNanos = (long) (clamp(s.getDouble("max-ms-per-tick", 8), 1, 40) * 1_000_000L);
-        recountSeconds = Math.max(5, s.getInt("recount-seconds", 30));
+        recountSeconds = Math.max(5, s.getInt("recount-seconds", 10));
         resetOnStartup = s.getBoolean("reset-on-startup", false);
         bossBarEnabled = s.getBoolean("bossbar.enabled", true);
         bossBarRange = Math.max(0, s.getInt("bossbar.range", 8));
@@ -772,7 +772,7 @@ public final class MineManager {
             progress = Math.min(1, m.minedPercent() / m.resetAtPercent);
         }
         title = title.replace("{mine}", m.display())
-                .replace("{mined}", String.valueOf((int) Math.floor(m.minedPercent())))
+                .replace("{mined}", m.minedText())
                 .replace("{remaining}", String.valueOf((int) Math.ceil(100 - m.minedPercent())))
                 .replace("{reset-at}", String.valueOf((int) m.resetAtPercent))
                 .replace("{progress}", String.valueOf((int) Math.floor(m.resetProgress * 100)))

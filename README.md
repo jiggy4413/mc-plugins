@@ -8,7 +8,7 @@ Every push builds automatically. Get the newest jar from **Releases → Latest b
 ## Modules
 | Module | Jar | Purpose |
 |---|---|---|
-| `prison-core` | `PrisonCore-1.4.0.jar` | Ranks & prestiges menu, mines with percentage resets, void worlds |
+| `prison-core` | `PrisonCore-1.4.1.jar` | Ranks & prestiges menu, mines with percentage resets, void worlds |
 | `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
 | `stubs/placeholderapi` | none | Compile-only copy of PlaceholderAPI's expansion API. Never installed on the server. |
 

@@ -49,7 +49,7 @@ settings:
   timer-minimum-mined: 5
   warning-seconds: 5
   max-ms-per-tick: 8
-  recount-seconds: 30
+  recount-seconds: 10
   reset-on-startup: false
   bossbar:
     enabled: true
