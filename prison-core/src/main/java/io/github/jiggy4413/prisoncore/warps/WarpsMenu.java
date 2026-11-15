@@ -255,7 +255,11 @@ public final class WarpsMenu implements InventoryHolder {
         }
         char letter = (char) ('a' + n - 1);
         // heads pasted into warps-menu.yml under letter-head-textures: win over the built-in ones
-        String custom = warps.config().getString("letter-head-textures." + letter, "");
+        // keyed by the mine's own name (amine, l...), or just its letter
+        String custom = warps.config().getString("letter-head-textures." + e.mine.id(), "");
+        if (custom == null || custom.trim().isEmpty()) {
+            custom = warps.config().getString("letter-head-textures." + letter, "");
+        }
         if (custom != null && !custom.trim().isEmpty()) {
             return custom.trim();
         }
