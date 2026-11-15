@@ -190,6 +190,19 @@ public final class HotSwap {
                     throw new IllegalStateException("Bukkit refused to load " + target.getName());
                 }
                 fresh.onLoad();
+                // the server only registers plugin.yml permissions at startup, so do it here,
+                // or new permissions (default: true) would be missing for non-ops until a restart
+                for (org.bukkit.permissions.Permission perm : fresh.getDescription().getPermissions()) {
+                    try {
+                        org.bukkit.permissions.Permission old = pm.getPermission(perm.getName());
+                        if (old != null) {
+                            pm.removePermission(old);
+                        }
+                        pm.addPermission(perm);
+                    } catch (Throwable t) {
+                        Bukkit.getLogger().warning("[PrisonCore] Couldn't register permission " + perm.getName() + ": " + t);
+                    }
+                }
                 pm.enablePlugin(fresh);
                 syncCommands();
 
