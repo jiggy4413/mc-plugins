@@ -80,6 +80,12 @@ public final class WarpsMenu implements InventoryHolder {
                     e.section.getConfigurationSection(locked ? "locked-item" : "item"),
                     templateSection);
             ItemStack item = template.build(player, placeholders(e, c), null);
+            if (item.getType() == Material.PLAYER_HEAD) {
+                ItemTemplate.applyTexture(item, headTexture(e));
+            }
+            if (!locked && viewer.isCurrent(e)) {
+                highlight(item, c);
+            }
 
             if (c.getBoolean("numbered-icons", true) && e.mine != null) {
                 int number = letterNumber(e.mine.id());
@@ -133,6 +139,9 @@ public final class WarpsMenu implements InventoryHolder {
             display = e.mine != null ? e.mine.display() : capitalize(e.key);
         }
         String icon = e.section.getString("icon", "");
+        if ((icon == null || icon.isEmpty()) && headTexture(e) != null) {
+            icon = "PLAYER_HEAD";
+        }
         if (icon == null || icon.isEmpty()) {
             Material main = e.mine == null ? null : e.mine.mainBlock();
             icon = main != null ? main.name() : "ENDER_PEARL";
@@ -228,6 +237,41 @@ public final class WarpsMenu implements InventoryHolder {
         } catch (IllegalArgumentException ex) {
             warps.plugin().getLogger().warning("Unknown sound in " + Warps.FILE + ": " + name);
         }
+    }
+
+    /** The entry's own "head:" texture, or the built-in letter head for a lettered mine. */
+    private String headTexture(Warps.Entry e) {
+        String own = e.section.getString("head", "");
+        if (own != null && !own.isEmpty()) {
+            return own;
+        }
+        if (e.mine == null || !warps.config().getBoolean("letter-heads", true)) {
+            return null;
+        }
+        int n = letterNumber(e.mine.id());
+        return n > 0 ? LetterHeads.texture((char) ('a' + n - 1)) : null;
+    }
+
+    /** Marks the mine for the player's current rank: a line on top of the lore, and a glint. */
+    private void highlight(ItemStack item, FileConfiguration c) {
+        org.bukkit.inventory.meta.ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return;
+        }
+        List<String> lore = meta.hasLore() ? new java.util.ArrayList<String>(meta.getLore()) : new java.util.ArrayList<String>();
+        List<String> top = c.isList("text.current-mine") ? c.getStringList("text.current-mine")
+                : java.util.Collections.singletonList(c.getString("text.current-mine", "&a&l\u2605 YOUR MINE \u2605"));
+        for (int i = top.size() - 1; i >= 0; i--) {
+            lore.add(0, Text.color(player, "&r" + top.get(i)));
+        }
+        meta.setLore(lore);
+        String prefix = c.getString("text.current-mine-name", "&a\u2605 ");
+        if (prefix != null && !prefix.isEmpty() && meta.hasDisplayName()) {
+            meta.setDisplayName(Text.color(player, prefix) + meta.getDisplayName());
+        }
+        meta.addEnchant(org.bukkit.enchantments.Enchantment.LUCK, 1, true);
+        meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
     }
 
     /** a → 1 ... z → 26 for mines named like "amine"; 0 for anything else. */

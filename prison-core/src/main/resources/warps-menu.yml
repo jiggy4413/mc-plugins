@@ -61,7 +61,7 @@ templates:
       - ""
       - "&eClick to teleport"
   mine-locked:
-    material: IRON_BARS
+    material: RED_STAINED_GLASS_PANE
     name: "{name} &8(Locked)"
     lore:
       - "{requirement}"

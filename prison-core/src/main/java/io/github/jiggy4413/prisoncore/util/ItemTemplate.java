@@ -18,7 +18,8 @@ import org.bukkit.inventory.meta.SkullMeta;
  * other: the first section that sets a field wins. That's how a single rank can override just
  * its material while keeping the shared name and lore.
  *
- * Fields: material, name, lore, glow, model-data, amount, skull ("viewer" = the player's head).
+ * Fields: material, name, lore, glow, model-data, amount, skull ("viewer" = the player's head),
+ * texture (a head texture: Minecraft-Heads "Value", a textures.minecraft.net URL, or its id).
  */
 public final class ItemTemplate {
 
@@ -29,6 +30,7 @@ public final class ItemTemplate {
     private Integer modelData;
     private Integer amount;
     private String skull;
+    private String texture;
 
     private ItemTemplate() {
     }
@@ -60,6 +62,9 @@ public final class ItemTemplate {
             }
             if (t.skull == null && s.isString("skull")) {
                 t.skull = s.getString("skull");
+            }
+            if (t.texture == null && s.isString("texture")) {
+                t.texture = s.getString("texture");
             }
         }
         return t;
@@ -116,7 +121,44 @@ public final class ItemTemplate {
         }
         meta.addItemFlags(ItemFlag.values());
         item.setItemMeta(meta);
+        if (texture != null && !texture.isEmpty()) {
+            applyTexture(item, apply(texture, placeholders));
+        }
         return item;
+    }
+
+    /**
+     * Gives a player head a custom texture. Accepts a Minecraft-Heads "Value" (base64),
+     * a textures.minecraft.net URL, or just the id at the end of that URL.
+     * Does nothing for items that aren't player heads or when the texture is blank.
+     */
+    public static void applyTexture(ItemStack item, String texture) {
+        if (item == null || texture == null || texture.trim().isEmpty()) {
+            return;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (!(meta instanceof SkullMeta)) {
+            return;
+        }
+        String t = texture.trim();
+        String value;
+        if (t.startsWith("eyJ")) {
+            value = t;
+        } else {
+            String url = t.startsWith("http") ? t : "http://textures.minecraft.net/texture/" + t;
+            String json = "{\"textures\":{\"SKIN\":{\"url\":\"" + url + "\"}}}";
+            value = java.util.Base64.getEncoder().encodeToString(json.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        }
+        try {
+            // same texture → same id, so the client caches it instead of reloading every refresh
+            java.util.UUID id = java.util.UUID.nameUUIDFromBytes(value.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            com.destroystokyo.paper.profile.PlayerProfile profile = org.bukkit.Bukkit.createProfile(id, "PrisonCore");
+            profile.setProperty(new com.destroystokyo.paper.profile.ProfileProperty("textures", value));
+            ((SkullMeta) meta).setPlayerProfile(profile);
+            item.setItemMeta(meta);
+        } catch (Throwable ignored) {
+            // not on Paper, or a bad texture: keep the plain head
+        }
     }
 
     private static String apply(String text, Map<String, String> placeholders) {

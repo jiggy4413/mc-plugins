@@ -338,6 +338,15 @@ public final class Warps implements CommandExecutor {
             return rankLocked(e);
         }
 
+        /** True for the mine that goes with the player's current rank. */
+        boolean isCurrent(Entry e) {
+            if (e.mine == null || e.rank == null || e.rank.isEmpty()) {
+                return false;
+            }
+            LadderEntry rank = findRank(e.rank);
+            return rank != null && rank.state == LadderEntry.State.CURRENT;
+        }
+
         private boolean rankLocked(Entry e) {
             if (e.rank == null || e.rank.isEmpty()) {
                 return false;
