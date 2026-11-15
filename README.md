@@ -8,7 +8,7 @@ Every push builds automatically. Get the newest jar from **Releases → Latest b
 ## Modules
 | Module | Jar | Purpose |
 |---|---|---|
-| `prison-core` | `PrisonCore-1.5.2.jar` | Ranks & prestiges menu, mines with percentage resets, void worlds |
+| `prison-core` | `PrisonCore-1.6.0.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
 | `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
 | `stubs/placeholderapi` | none | Compile-only copy of PlaceholderAPI's expansion API. Never installed on the server. |
 
@@ -35,6 +35,18 @@ Resets refill a few milliseconds' worth of blocks per tick, one mine at a time, 
 - **Copy from MineResetLite:** `/pmine import`, then remove MineResetLite's jar so it stops resetting too
 - **Other commands:** `/pmine list`, `info`, `setspawn`, `reset` (permission `prisoncore.mines.admin`)
 - **Display:** a boss bar near each mine, plus PlaceholderAPI placeholders like `%prisoncore_mine_a_mined%`
+
+## Warps menu
+`/warps` opens a menu of every mine plus spawn, with live stats (% mined, status, reset timer).
+EssentialsX still does the teleport: clicking a warp runs `/warp <name>` for the player, so its
+permissions, delay and cooldowns still apply.
+
+- **Config:** `plugins/PrisonCore/warps-menu.yml` (mines A-Z, wood mine, PvP mine and spawn included)
+- **Open the menu:** `/warps`, `/warp` with no name, or `/prisonwarps` (permission `prisoncore.warps`, everyone by default)
+- **Locked mines:** shown as iron bars with the rank needed. With Essentials' `per-warp-permission` on,
+  a warp is locked until the player has `essentials.warps.<name>`; otherwise until they reach its rank
+- **Warp names:** lettered mines find their Essentials warp automatically (`a`, `amine`, `a-mine`, `mine_a`...)
+- **Check the setup:** `/prisonwarps check` lists which warp, permission and rank each menu entry uses
 
 ## Void worlds
 PrisonCore includes an empty-world generator (one bedrock block under spawn at 0, 64, 0):

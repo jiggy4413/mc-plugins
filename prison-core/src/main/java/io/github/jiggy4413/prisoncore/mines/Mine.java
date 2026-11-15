@@ -100,6 +100,31 @@ public final class Mine {
         return String.format(java.util.Locale.ROOT, "%.1f", Math.floor(minedPercent() * 10) / 10.0);
     }
 
+    /** The block the mix has most of, not counting stone or air. Used as the mine's menu icon. */
+    public Material mainBlock() {
+        Material best = null;
+        double bestWeight = -1;
+        boolean hasStone = false;
+        for (java.util.Map.Entry<Material, Double> e : composition.weights().entrySet()) {
+            Material mat = e.getKey();
+            if (mat.isAir() || !mat.isItem()) {
+                continue;
+            }
+            if (mat == Material.STONE) {
+                hasStone = true;
+                continue;
+            }
+            if (e.getValue() > bestWeight) {
+                best = mat;
+                bestWeight = e.getValue();
+            }
+        }
+        if (best == null) {
+            best = hasStone ? Material.STONE : null;
+        }
+        return best;
+    }
+
     /** Milliseconds until the timer resets the mine, or -1 when the timer is off. */
     public long millisUntilTimer() {
         if (timerMinutes <= 0) {

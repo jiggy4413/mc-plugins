@@ -9,6 +9,8 @@ import io.github.jiggy4413.prisoncore.mines.PapiHook;
 import io.github.jiggy4413.prisoncore.rankup.RankupBridge;
 import io.github.jiggy4413.prisoncore.update.HotSwap;
 import io.github.jiggy4413.prisoncore.util.Text;
+import io.github.jiggy4413.prisoncore.warps.Warps;
+import io.github.jiggy4413.prisoncore.warps.WarpsListener;
 import io.github.jiggy4413.prisoncore.world.VoidGenerator;
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +44,7 @@ public final class PrisonCore extends JavaPlugin {
     private RankupBridge rankup;
     private HotSwap hotSwap;
     private MineManager mines;
+    private Warps warps;
     /** The PlaceholderAPI expansion, kept as Object so this class never needs PlaceholderAPI. */
     private Object placeholders;
 
@@ -55,7 +58,11 @@ public final class PrisonCore extends JavaPlugin {
                 "io.github.jiggy4413.prisoncore.mines.MineManager",
                 "io.github.jiggy4413.prisoncore.mines.Mine",
                 "io.github.jiggy4413.prisoncore.mines.ResetJob",
-                "io.github.jiggy4413.prisoncore.mines.Composition");
+                "io.github.jiggy4413.prisoncore.mines.Composition",
+                "io.github.jiggy4413.prisoncore.mines.MineText",
+                "io.github.jiggy4413.prisoncore.util.YamlFile",
+                "io.github.jiggy4413.prisoncore.warps.Warps",
+                "io.github.jiggy4413.prisoncore.warps.WarpsMenu");
         hotSwap = new HotSwap(this, getFile());
 
         loadMenuConfig();
@@ -69,6 +76,12 @@ public final class PrisonCore extends JavaPlugin {
         getCommand("pmine").setExecutor(mineCommand);
         getCommand("pmine").setTabCompleter(mineCommand);
         mines.start();
+
+        warps = new Warps(this, mines);
+        warps.load();
+        getServer().getPluginManager().registerEvents(new WarpsListener(warps), this);
+        getCommand("prisonwarps").setExecutor(warps);
+        warps.start();
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             try {
@@ -106,10 +119,14 @@ public final class PrisonCore extends JavaPlugin {
             }
         }
         // named inner classes
-        try {
-            Class.forName("io.github.jiggy4413.prisoncore.mines.MrlImporter$Result", false, cl);
-        } catch (ClassNotFoundException ignored) {
-            // not critical
+        for (String inner : new String[] {"io.github.jiggy4413.prisoncore.mines.MrlImporter$Result",
+                "io.github.jiggy4413.prisoncore.warps.Warps$Entry",
+                "io.github.jiggy4413.prisoncore.warps.Warps$Viewer"}) {
+            try {
+                Class.forName(inner, false, cl);
+            } catch (ClassNotFoundException ignored) {
+                // not critical
+            }
         }
     }
 
@@ -122,6 +139,10 @@ public final class PrisonCore extends JavaPlugin {
                 // PlaceholderAPI may already be gone during shutdown
             }
             placeholders = null;
+        }
+        if (warps != null) {
+            warps.stop();
+            warps.closeAll();
         }
         if (mines != null) {
             mines.shutdown();   // finishes a half-done reset so no mine is left half full
@@ -286,12 +307,17 @@ public final class PrisonCore extends JavaPlugin {
                 if (minesProblem != null) {
                     sender.sendMessage(Text.color("&c" + minesProblem));
                 }
+                String warpsProblem = warps.load();
+                warps.start();
+                if (warpsProblem != null) {
+                    sender.sendMessage(ChatColor.RED + warpsProblem);
+                }
                 if (problem != null) {
                     // color codes off on purpose so the message shows exactly what's in the file
                     sender.sendMessage(Text.color("&cranks-menu.yml has a mistake, so nothing changed:"));
                     sender.sendMessage(ChatColor.GRAY + problem);
                 } else {
-                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml). No new jar found."));
+                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml, warps-menu.yml). No new jar found."));
                 }
             } catch (Exception e) {
                 sender.sendMessage(Text.color("&cReload failed: " + e.getMessage() + " &7(check ranks-menu.yml for a YAML mistake)"));

@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.util.Locale;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -26,7 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public final class MinePlaceholders extends PlaceholderExpansion {
 
-    private static final String[] FIELDS = {"mined", "remaining", "until", "resetat", "status", "timer", "bar", "name"};
+    private static final String[] FIELDS = MineText.FIELDS;
 
     private final JavaPlugin plugin;
     private final MineManager manager;
@@ -131,47 +130,6 @@ public final class MinePlaceholders extends PlaceholderExpansion {
     }
 
     private String value(Mine m, String field) {
-        ConfigurationSection t = manager.text();
-        double mined = m.minedPercent();
-        if (field.equals("mined")) {
-            return m.minedText();
-        }
-        if (field.equals("remaining")) {
-            return String.valueOf((int) Math.ceil(100 - mined));
-        }
-        if (field.equals("until")) {
-            return String.valueOf((int) Math.max(0, Math.ceil(m.resetAtPercent() - mined)));
-        }
-        if (field.equals("resetat")) {
-            return String.valueOf((int) m.resetAtPercent());
-        }
-        if (field.equals("status")) {
-            if (m.isResetting()) {
-                return Text.color(t.getString("placeholders.status-resetting", "&eResetting"));
-            }
-            if (m.isWarning()) {
-                return Text.color(t.getString("placeholders.status-warning", "&6Resetting soon"));
-            }
-            return Text.color(t.getString("placeholders.status-ready", "&aReady"));
-        }
-        if (field.equals("timer")) {
-            return manager.formatTimer(m);
-        }
-        if (field.equals("name")) {
-            return Text.color(m.display());
-        }
-        // bar
-        int length = Math.max(1, t.getInt("placeholders.bar-length", 10));
-        String symbol = t.getString("placeholders.bar-symbol", "■");
-        int filled = (int) Math.round(Math.min(1, mined / m.resetAtPercent()) * length);
-        StringBuilder sb = new StringBuilder(t.getString("placeholders.bar-filled", "&c"));
-        for (int i = 0; i < filled; i++) {
-            sb.append(symbol);
-        }
-        sb.append(t.getString("placeholders.bar-empty", "&a"));
-        for (int i = filled; i < length; i++) {
-            sb.append(symbol);
-        }
-        return Text.color(sb.toString());
+        return MineText.value(manager, m, field);
     }
 }
