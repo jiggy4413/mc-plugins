@@ -87,7 +87,8 @@ public final class WarpsMenu implements InventoryHolder {
                 highlight(item, c);
             }
 
-            if (c.getBoolean("numbered-icons", true) && e.mine != null) {
+            // no stack number on letter heads: the letter already says which mine it is
+            if (c.getBoolean("numbered-icons", true) && e.mine != null && item.getType() != Material.PLAYER_HEAD) {
                 int number = letterNumber(e.mine.id());
                 if (number > 0) {
                     item.setAmount(number);
@@ -249,7 +250,16 @@ public final class WarpsMenu implements InventoryHolder {
             return null;
         }
         int n = letterNumber(e.mine.id());
-        return n > 0 ? LetterHeads.texture((char) ('a' + n - 1)) : null;
+        if (n <= 0) {
+            return null;
+        }
+        char letter = (char) ('a' + n - 1);
+        // heads pasted into warps-menu.yml under letter-head-textures: win over the built-in ones
+        String custom = warps.config().getString("letter-head-textures." + letter, "");
+        if (custom != null && !custom.trim().isEmpty()) {
+            return custom.trim();
+        }
+        return LetterHeads.texture(letter);
     }
 
     /** Marks the mine for the player's current rank: a line on top of the lore, and a glint. */
