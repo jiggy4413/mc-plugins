@@ -103,12 +103,12 @@ menus:
         display: "<gradient:#FFAA00:#FFFF55>&lMines</gradient>"
         icon: DIAMOND_PICKAXE
       crates:
-        slot: 11
+        slot: 12
         display: "&d&lCrates"
         icon: TRIPWIRE_HOOK
       free:
-        slot: 12
-        display: "&a&lFree"
+        slot: 16
+        display: "&6&lFree"
         icon: CHEST
       spawn:
         slot: 13
@@ -125,8 +125,8 @@ menus:
         icon: FISHING_ROD
       # hidden until you /setwarp cells
       cells:
-        slot: 16
-        display: "&6&lCells"
+        slot: 11
+        display: "&e&lCells"
         icon: IRON_DOOR
     buttons:
       close:
@@ -150,23 +150,21 @@ menus:
       imine: {slot: 20, rank: I}
       jmine: {slot: 21, rank: J}
       kmine: {slot: 22, rank: K}
-      lmine: {slot: 23, rank: L}
-      mmine: {slot: 24, rank: M}
-      nmine: {slot: 25, rank: N}
-      omine: {slot: 28, rank: O}
-      pmine: {slot: 29, rank: P}
-      qmine: {slot: 30, rank: Q}
-      rmine: {slot: 31, rank: R}
-      smine: {slot: 32, rank: S}
-      tmine: {slot: 33, rank: T}
-      umine: {slot: 34, rank: U}
-      vmine: {slot: 37, rank: V}
-      wmine: {slot: 38, rank: W}
-      xmine: {slot: 39, rank: X}
-      ymine: {slot: 40, rank: Y}
-      zmine: {slot: 41, rank: Z}
-      woodmine: {slot: 47}
-      pvpmine: {slot: 51, icon: DIAMOND_SWORD}
+      l: {slot: 23, rank: L}
+      m: {slot: 24, rank: M}
+      n: {slot: 25, rank: N}
+      o: {slot: 28, rank: O}
+      p: {slot: 29, rank: P}
+      q: {slot: 30, rank: Q}
+      r: {slot: 31, rank: R}
+      s: {slot: 32, rank: S}
+      t: {slot: 33, rank: T}
+      u: {slot: 34, rank: U}
+      v: {slot: 37, rank: V}
+      w: {slot: 38, rank: W}
+      x: {slot: 39, rank: X}
+      y: {slot: 40, rank: Y}
+      z: {slot: 41, rank: Z}
 
 filler:
   material: BLACK_STAINED_GLASS_PANE

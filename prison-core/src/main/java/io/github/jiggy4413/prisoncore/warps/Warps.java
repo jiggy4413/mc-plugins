@@ -233,6 +233,14 @@ public final class Warps implements CommandExecutor {
             e.permission = s.getString("permission", "");
             String mineId = s.getString("mine", key);
             e.mine = mineId == null || mineId.isEmpty() ? null : mines.get(mineId);
+            if (e.mine == null && !s.contains("mine")) {
+                // an entry named "l" (or "l-mine"...) shows the stats of the mine "lmine"
+                String letter = letterOf(key);
+                if (letter != null) {
+                    e.mine = mines.get(letter + "mine");
+                    mineId = letter + "mine";
+                }
+            }
 
             String command = s.getString("command", "");
             String open = s.getString("open", "");
