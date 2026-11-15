@@ -21,19 +21,23 @@ import org.bukkit.inventory.ItemStack;
 public final class WarpsMenu implements InventoryHolder {
 
     private static final String CLOSE = "\u0000close";
+    private static final String BACK = "\u0000back";
 
     private final Warps warps;
     private final Player player;
+    /** Which page of warps-menu.yml this is, e.g. "main" or "mines". */
+    private final String pageId;
     private Inventory inventory;
-    /** Slot → entry key (or CLOSE). */
+    /** Slot → entry key (or CLOSE / BACK). */
     private final Map<Integer, String> actions = new HashMap<Integer, String>();
     private final Map<String, Warps.Entry> entriesByKey = new HashMap<String, Warps.Entry>();
     private final Map<String, Boolean> lockedByKey = new HashMap<String, Boolean>();
     private long lastClick;
 
-    WarpsMenu(Warps warps, Player player) {
+    WarpsMenu(Warps warps, Player player, String pageId) {
         this.warps = warps;
         this.player = player;
+        this.pageId = pageId;
     }
 
     @Override
@@ -42,9 +46,9 @@ public final class WarpsMenu implements InventoryHolder {
     }
 
     void open() {
-        FileConfiguration c = warps.config();
-        int rows = Math.max(1, Math.min(6, c.getInt("rows", 6)));
-        inventory = Bukkit.createInventory(this, rows * 9, Text.color(player, c.getString("title", "Warps")));
+        ConfigurationSection page = warps.page(pageId);
+        int rows = Math.max(1, Math.min(6, page.getInt("rows", 6)));
+        inventory = Bukkit.createInventory(this, rows * 9, Text.color(player, page.getString("title", "Warps")));
         render();
         player.openInventory(inventory);
         sound("open");
@@ -52,6 +56,7 @@ public final class WarpsMenu implements InventoryHolder {
 
     void render() {
         FileConfiguration c = warps.config();
+        ConfigurationSection page = warps.page(pageId);
         int size = inventory.getSize();
         Map<Integer, ItemStack> items = new HashMap<Integer, ItemStack>();
         actions.clear();
@@ -59,16 +64,21 @@ public final class WarpsMenu implements InventoryHolder {
         lockedByKey.clear();
 
         Warps.Viewer viewer = warps.new Viewer(player);
-        List<Warps.Entry> entries = warps.entries();
+        List<Warps.Entry> entries = warps.entries(pageId);
         for (Warps.Entry e : entries) {
             if (!e.exists || e.slot < 0 || e.slot >= size) {
                 continue;
             }
             boolean locked = viewer.locked(e);
-            String templateName = (e.mine != null ? "templates.mine" : "templates.other") + (locked ? "-locked" : "");
+            String kind = e.mine != null ? "mine" : e.open != null ? "page" : "other";
+            String templateName = "templates." + kind + (locked ? "-locked" : "");
+            ConfigurationSection templateSection = c.getConfigurationSection(templateName);
+            if (templateSection == null) {
+                templateSection = c.getConfigurationSection("templates.other" + (locked ? "-locked" : ""));
+            }
             ItemTemplate template = ItemTemplate.of(
                     e.section.getConfigurationSection(locked ? "locked-item" : "item"),
-                    c.getConfigurationSection(templateName));
+                    templateSection);
             ItemStack item = template.build(player, placeholders(e, c), null);
 
             if (c.getBoolean("numbered-icons", true) && e.mine != null) {
@@ -83,20 +93,36 @@ public final class WarpsMenu implements InventoryHolder {
             lockedByKey.put(e.key, locked);
         }
 
-        ConfigurationSection close = c.getConfigurationSection("buttons.close");
-        if (close != null) {
-            int slot = close.getInt("slot", -1);
-            if (slot >= 0 && slot < size && !items.containsKey(slot)) {
-                items.put(slot, ItemTemplate.of(close).build(player, null, null));
-                actions.put(slot, CLOSE);
-            }
+        button(page, c, "close", CLOSE, items, size);
+        if (warps.backPage(pageId) != null) {
+            button(page, c, "back", BACK, items, size);
         }
 
-        ConfigurationSection fillerSection = c.getConfigurationSection("filler");
+        ConfigurationSection fillerSection = page.getConfigurationSection("filler");
+        if (fillerSection == null) {
+            fillerSection = c.getConfigurationSection("filler");
+        }
         ItemStack filler = fillerSection == null ? null : ItemTemplate.of(fillerSection).build(player, null, null);
         for (int i = 0; i < size; i++) {
             ItemStack item = items.get(i);
             inventory.setItem(i, item != null ? item : filler);
+        }
+    }
+
+    /** Places a button from the page's "buttons:" section, or the shared one at the top of the file. */
+    private void button(ConfigurationSection page, FileConfiguration c, String name, String action,
+                        Map<Integer, ItemStack> items, int size) {
+        ConfigurationSection b = page.getConfigurationSection("buttons." + name);
+        if (b == null) {
+            b = c.getConfigurationSection("buttons." + name);
+        }
+        if (b == null) {
+            return;
+        }
+        int slot = b.getInt("slot", -1);
+        if (slot >= 0 && slot < size && !items.containsKey(slot)) {
+            items.put(slot, ItemTemplate.of(b).build(player, null, null));
+            actions.put(slot, action);
         }
     }
 
@@ -115,7 +141,7 @@ public final class WarpsMenu implements InventoryHolder {
         ph.put("{name}", display);
         ph.put("{icon}", icon);
         ph.put("{rank}", rank);
-        ph.put("{warp}", e.warp != null ? e.warp : "/" + e.command);
+        ph.put("{warp}", e.warp != null ? e.warp : e.command != null ? "/" + e.command : e.open);
         ph.put("{player}", player.getName());
         ph.put("{requirement}", rank.isEmpty()
                 ? c.getString("text.no-access", "&7You can't use this warp yet.")
@@ -138,6 +164,10 @@ public final class WarpsMenu implements InventoryHolder {
             player.closeInventory();
             return;
         }
+        if (key.equals(BACK)) {
+            openLater(warps.backPage(pageId));
+            return;
+        }
         long now = System.currentTimeMillis();
         if (now - lastClick < 600) {
             return; // ignore double clicks so the warp only runs once
@@ -157,9 +187,29 @@ public final class WarpsMenu implements InventoryHolder {
             sound("locked");
             return;
         }
+        if (e.open != null) {
+            openLater(e.open);
+            return;
+        }
         player.closeInventory();
         sound("teleport");
         player.performCommand(e.command != null ? e.command.replace("{player}", player.getName()) : "warp " + e.warp);
+    }
+
+    /** Opens another page on the next tick (opening a menu inside a click event isn't safe). */
+    private void openLater(final String page) {
+        if (page == null || !warps.hasPage(page)) {
+            warps.plugin().getLogger().warning(Warps.FILE + ": there's no page called '" + page + "' under menus:");
+            return;
+        }
+        Bukkit.getScheduler().runTask(warps.plugin(), new Runnable() {
+            @Override
+            public void run() {
+                if (player.isOnline()) {
+                    warps.open(player, page);
+                }
+            }
+        });
     }
 
     private void send(String message) {

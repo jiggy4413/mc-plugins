@@ -126,13 +126,71 @@ public final class Warps implements CommandExecutor {
     }
 
     public void open(Player player) {
+        open(player, "main");
+    }
+
+    public void open(Player player, String page) {
         try {
-            new WarpsMenu(this, player).open();
+            new WarpsMenu(this, player, hasPage(page) ? page : "main").open();
         } catch (Throwable t) {
             player.sendMessage(Text.color("&cThe warps menu couldn't open. Tell staff to check the console."));
             plugin.getLogger().severe("Error opening the warps menu for " + player.getName() + ": " + t);
             t.printStackTrace();
         }
+    }
+
+    // ================================================================== pages
+
+    /**
+     * Files from 1.6.0-1.6.2 have one page at the top level ("warps:" with no "menus:").
+     * Those still work as a single "main" page.
+     */
+    private boolean singlePage() {
+        return !config.contains("menus", true) && config.contains("warps", true);
+    }
+
+    /** The settings for a page: title, rows, warps, buttons. */
+    ConfigurationSection page(String id) {
+        if (singlePage()) {
+            return config;
+        }
+        ConfigurationSection p = config.getConfigurationSection("menus." + id);
+        if (p == null) {
+            p = config.getConfigurationSection("menus.main");
+        }
+        return p != null ? p : config;
+    }
+
+    boolean hasPage(String id) {
+        if (id == null) {
+            return false;
+        }
+        if (singlePage()) {
+            return id.equals("main");
+        }
+        return config.getConfigurationSection("menus." + id) != null;
+    }
+
+    /** The page a back button goes to: the page's "back:" setting, or main for any other page. */
+    String backPage(String id) {
+        if (singlePage() || "main".equals(id)) {
+            return null;
+        }
+        String back = page(id).getString("back", "main");
+        return back == null || back.isEmpty() || back.equalsIgnoreCase("none") ? null : back;
+    }
+
+    List<String> pageIds() {
+        List<String> out = new ArrayList<String>();
+        if (singlePage()) {
+            out.add("main");
+            return out;
+        }
+        ConfigurationSection menus = config.getConfigurationSection("menus");
+        if (menus != null) {
+            out.addAll(menus.getKeys(false));
+        }
+        return out;
     }
 
     // ================================================================== warp entries
@@ -146,6 +204,8 @@ public final class Warps implements CommandExecutor {
         String warp;
         /** Command to run instead of a warp, without the slash. */
         String command;
+        /** Page of this menu to open instead of a warp. */
+        String open;
         Mine mine;
         String rank;
         String permission;
@@ -153,10 +213,10 @@ public final class Warps implements CommandExecutor {
         boolean exists;
     }
 
-    List<Entry> entries() {
+    List<Entry> entries(String pageId) {
         refreshEssentials();
         List<Entry> out = new ArrayList<Entry>();
-        ConfigurationSection all = config.getConfigurationSection("warps");
+        ConfigurationSection all = page(pageId).getConfigurationSection("warps");
         if (all == null) {
             return out;
         }
@@ -175,7 +235,12 @@ public final class Warps implements CommandExecutor {
             e.mine = mineId == null || mineId.isEmpty() ? null : mines.get(mineId);
 
             String command = s.getString("command", "");
-            if (command != null && !command.trim().isEmpty()) {
+            String open = s.getString("open", "");
+            if (open != null && !open.trim().isEmpty()) {
+                e.open = open.trim();
+                e.mine = null;
+                e.exists = true;
+            } else if (command != null && !command.trim().isEmpty()) {
                 command = command.trim();
                 e.command = command.startsWith("/") ? command.substring(1) : command;
                 e.exists = true;
@@ -380,14 +445,22 @@ public final class Warps implements CommandExecutor {
             sender.sendMessage("Only players can open the warps menu. Use /prisonwarps check to test the setup.");
             return true;
         }
-        open((Player) sender);
+        open((Player) sender, args.length > 0 ? args[0].toLowerCase(Locale.ROOT) : "main");
         return true;
     }
 
     /** Shows which Essentials warp and lock each menu entry uses, so setup mistakes are easy to spot. */
     private void check(CommandSender sender) {
-        List<Entry> list = entries();
-        sender.sendMessage(Text.color("&6&lWarps menu check &7(" + list.size() + " entries)"));
+        List<Entry> list = new ArrayList<Entry>();
+        List<String> pageOf = new ArrayList<String>();
+        for (String id : pageIds()) {
+            for (Entry e : entries(id)) {
+                list.add(e);
+                pageOf.add(id);
+            }
+        }
+        sender.sendMessage(Text.color("&6&lWarps menu check &7(" + list.size() + " entries on "
+                + pageIds().size() + " page(s): " + String.join(", ", pageIds()) + ")"));
         if (essentialsWarps == null) {
             sender.sendMessage(Text.color("&cEssentials isn't installed, so warps can't be checked."));
         } else {
@@ -404,9 +477,12 @@ public final class Warps implements CommandExecutor {
                 ladder = null;
             }
         }
-        for (Entry e : list) {
-            StringBuilder line = new StringBuilder("&f" + e.key + " &8(slot " + e.slot + ")&7: ");
-            if (e.command != null) {
+        for (int i = 0; i < list.size(); i++) {
+            Entry e = list.get(i);
+            StringBuilder line = new StringBuilder("&8[" + pageOf.get(i) + "] &f" + e.key + " &8(slot " + e.slot + ")&7: ");
+            if (e.open != null) {
+                line.append(hasPage(e.open) ? "opens page &a" + e.open : "&copens page '" + e.open + "', which doesn't exist");
+            } else if (e.command != null) {
                 line.append("runs &f/").append(e.command);
             } else if (e.exists) {
                 line.append("warp &a").append(e.warp);

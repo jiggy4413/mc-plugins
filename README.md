@@ -8,7 +8,7 @@ Every push builds automatically. Get the newest jar from **Releases → Latest b
 ## Modules
 | Module | Jar | Purpose |
 |---|---|---|
-| `prison-core` | `PrisonCore-1.6.2.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
+| `prison-core` | `PrisonCore-1.7.0.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
 | `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
 | `stubs/placeholderapi` | none | Compile-only copy of PlaceholderAPI's expansion API. Never installed on the server. |
 
@@ -37,11 +37,12 @@ Resets refill a few milliseconds' worth of blocks per tick, one mine at a time, 
 - **Display:** a boss bar near each mine, plus PlaceholderAPI placeholders like `%prisoncore_mine_a_mined%`
 
 ## Warps menu
-`/warps` opens a menu of every mine plus spawn, with live stats (% mined, status, reset timer).
+`/warps` opens a main page (mines, crates, spawn, black market, fishing...). Clicking **Mines** opens a
+second page with every mine and its live stats (% mined, status, reset timer).
 EssentialsX still does the teleport: clicking a warp runs `/warp <name>` for the player, so its
 permissions, delay and cooldowns still apply.
 
-- **Config:** `plugins/PrisonCore/warps-menu.yml` (mines A-Z, wood mine, PvP mine and spawn included)
+- **Config:** `plugins/PrisonCore/warps-menu.yml`. Pages live under `menus:`; an entry with `open: <page>` opens that page
 - **Open the menu:** `/warps`, `/warp` with no name, or `/prisonwarps` (permission `prisoncore.warps`, everyone by default)
 - **Locked mines:** shown as iron bars with the rank needed. With Essentials' `per-warp-permission` on,
   a warp is locked until the player has `essentials.warps.<name>`; otherwise until they reach its rank

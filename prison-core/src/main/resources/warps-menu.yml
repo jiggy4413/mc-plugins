@@ -5,12 +5,17 @@
 #  Clicking a warp runs "/warp <name>" as the player, so EssentialsX still does the
 #  teleport: its permissions, teleport delay and cooldowns all apply as usual.
 #
-#  Each entry under "warps:" can use:
+#  The menu has pages under "menus:". /warps opens "main"; an entry with "open: mines" opens the
+#  "mines" page. Pages other than main get a back button (set "back:" to choose where it goes).
+#  /prisonwarps <page> opens a page directly, e.g. /prisonwarps mines
+#
+#  Each entry under a page's "warps:" can use:
 #    slot:        where it goes. 6 rows = slots 0-53, left to right, top to bottom
 #    warp:        the Essentials warp name (defaults to the entry's name). For a lettered
 #                 mine, PrisonCore also tries a, amine, a-mine, a_mine, minea, mine-a, mine_a,
 #                 so it finds your warp whichever way you named it
 #    command:     run this command instead of a warp (no slash), e.g. spawn
+#    open:        open another page of this menu instead of warping
 #    mine:        the PrisonCore mine to show live stats for (defaults to the entry's name)
 #    rank:        the Rankup rank needed, shown on the locked icon
 #    permission:  a permission that unlocks it (see lock-by below)
@@ -32,8 +37,6 @@ open-commands: [warps]
 # Also open the menu when a player types /warp with no warp name.
 open-on-bare-warp: true
 
-title: "<gradient:#5CE1E6:#FFD700>&lWarps</gradient>"
-rows: 6
 # How often open menus update the live mine stats.
 refresh-seconds: 1
 # Show A-Mine as 1 item, B-Mine as 2 ... Z-Mine as 26.
@@ -62,6 +65,17 @@ templates:
     name: "{name} &8(Locked)"
     lore:
       - "{requirement}"
+  page:
+    material: "{icon}"
+    name: "{name}"
+    lore:
+      - ""
+      - "&eClick to open"
+  page-locked:
+    material: IRON_BARS
+    name: "{name} &8(Locked)"
+    lore:
+      - "{requirement}"
   other:
     material: "{icon}"
     name: "{name}"
@@ -78,53 +92,96 @@ text:
   need-rank: "&7Reach rank &f{rank} &7to unlock."
   no-access: "&7You can't use this warp yet."
 
-warps:
-  amine: {slot: 10, rank: A}
-  bmine: {slot: 11, rank: B}
-  cmine: {slot: 12, rank: C}
-  dmine: {slot: 13, rank: D}
-  emine: {slot: 14, rank: E}
-  fmine: {slot: 15, rank: F}
-  gmine: {slot: 16, rank: G}
-  hmine: {slot: 19, rank: H}
-  imine: {slot: 20, rank: I}
-  jmine: {slot: 21, rank: J}
-  kmine: {slot: 22, rank: K}
-  lmine: {slot: 23, rank: L}
-  mmine: {slot: 24, rank: M}
-  nmine: {slot: 25, rank: N}
-  omine: {slot: 28, rank: O}
-  pmine: {slot: 29, rank: P}
-  qmine: {slot: 30, rank: Q}
-  rmine: {slot: 31, rank: R}
-  smine: {slot: 32, rank: S}
-  tmine: {slot: 33, rank: T}
-  umine: {slot: 34, rank: U}
-  vmine: {slot: 37, rank: V}
-  wmine: {slot: 38, rank: W}
-  xmine: {slot: 39, rank: X}
-  ymine: {slot: 40, rank: Y}
-  zmine: {slot: 41, rank: Z}
-  woodmine:
-    slot: 47
-  spawn:
-    slot: 49
-    command: spawn
-    display: "&a&lSpawn"
-    icon: COMPASS
-  pvpmine:
-    slot: 51
-    icon: DIAMOND_SWORD
+menus:
+  main:
+    title: "<gradient:#FFAA00:#FFFF55>&lWarps</gradient>"
+    rows: 3
+    warps:
+      mines:
+        slot: 10
+        open: mines
+        display: "<gradient:#FFAA00:#FFFF55>&lMines</gradient>"
+        icon: DIAMOND_PICKAXE
+      crates:
+        slot: 11
+        display: "&d&lCrates"
+        icon: TRIPWIRE_HOOK
+      free:
+        slot: 12
+        display: "&a&lFree"
+        icon: CHEST
+      spawn:
+        slot: 13
+        command: spawn
+        display: "&a&lSpawn"
+        icon: COMPASS
+      blackmarket:
+        slot: 14
+        display: "&8&lBlack Market"
+        icon: ENDER_CHEST
+      fishing:
+        slot: 15
+        display: "&b&lFishing"
+        icon: FISHING_ROD
+      # hidden until you /setwarp cells
+      cells:
+        slot: 16
+        display: "&6&lCells"
+        icon: IRON_DOOR
+    buttons:
+      close:
+        slot: 22
+        material: BARRIER
+        name: "&cClose"
+
+  mines:
+    title: "<gradient:#FFAA00:#FFFF55>&lMines</gradient>"
+    rows: 6
+    back: main
+    warps:
+      amine: {slot: 10, rank: A}
+      bmine: {slot: 11, rank: B}
+      cmine: {slot: 12, rank: C}
+      dmine: {slot: 13, rank: D}
+      emine: {slot: 14, rank: E}
+      fmine: {slot: 15, rank: F}
+      gmine: {slot: 16, rank: G}
+      hmine: {slot: 19, rank: H}
+      imine: {slot: 20, rank: I}
+      jmine: {slot: 21, rank: J}
+      kmine: {slot: 22, rank: K}
+      lmine: {slot: 23, rank: L}
+      mmine: {slot: 24, rank: M}
+      nmine: {slot: 25, rank: N}
+      omine: {slot: 28, rank: O}
+      pmine: {slot: 29, rank: P}
+      qmine: {slot: 30, rank: Q}
+      rmine: {slot: 31, rank: R}
+      smine: {slot: 32, rank: S}
+      tmine: {slot: 33, rank: T}
+      umine: {slot: 34, rank: U}
+      vmine: {slot: 37, rank: V}
+      wmine: {slot: 38, rank: W}
+      xmine: {slot: 39, rank: X}
+      ymine: {slot: 40, rank: Y}
+      zmine: {slot: 41, rank: Z}
+      woodmine: {slot: 47}
+      pvpmine: {slot: 51, icon: DIAMOND_SWORD}
 
 filler:
   material: BLACK_STAINED_GLASS_PANE
   name: " "
 
+# Buttons every page uses unless the page has its own "buttons:".
 buttons:
   close:
     slot: 53
     material: BARRIER
     name: "&cClose"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&7Back"
 
 sounds:
   open: BLOCK_CHEST_OPEN
