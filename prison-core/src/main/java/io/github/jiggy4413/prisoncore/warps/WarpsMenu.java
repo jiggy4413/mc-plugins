@@ -121,6 +121,9 @@ public final class WarpsMenu implements InventoryHolder {
                 ? c.getString("text.no-access", "&7You can't use this warp yet.")
                 : c.getString("text.need-rank", "&7Reach rank &f{rank} &7to unlock.").replace("{rank}", rank));
         for (String field : MineText.FIELDS) {
+            if (field.equals("name")) {
+                continue; // {name} is the display set above, so a warp's own display isn't wiped
+            }
             ph.put("{" + field + "}", e.mine == null ? "" : MineText.value(warps.mines(), e.mine, field));
         }
         return ph;
