@@ -8,7 +8,7 @@ Every push builds automatically. Get the newest jar from **Releases → Latest b
 ## Modules
 | Module | Jar | Purpose |
 |---|---|---|
-| `prison-core` | `PrisonCore-1.8.2.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
+| `prison-core` | `PrisonCore-1.9.0.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
 | `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
 | `stubs/placeholderapi` | none | Compile-only copy of PlaceholderAPI's expansion API. Never installed on the server. |
 
@@ -48,6 +48,13 @@ permissions, delay and cooldowns still apply.
   a warp is locked until the player has `essentials.warps.<name>`; otherwise until they reach its rank
 - **Warp names:** lettered mines find their Essentials warp automatically (`a`, `amine`, `a-mine`, `mine_a`...)
 - **Check the setup:** `/prisonwarps check` lists which warp, permission and rank each menu entry uses
+
+## Help
+`/help` (and `/?`) shows a short, clickable list of the commands players actually need, instead
+of the server's list of every command. Commands with a permission only show to players who have it.
+
+- **Config:** `plugins/PrisonCore/help.yml`
+- **Staff:** `/help all` shows the server's full list (permission `prisoncore.help.all`, ops by default)
 
 ## Void worlds
 PrisonCore includes an empty-world generator (one bedrock block under spawn at 0, 64, 0):

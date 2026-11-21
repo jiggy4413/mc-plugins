@@ -1,0 +1,60 @@
+# ==============================================================================
+#  PrisonCore /help
+#  Replaces the server's long list of every command with this short one.
+#  Apply changes with /prisoncore reload.
+#
+#  Each line under "lines:" is either
+#    - a command:   {command: "/warps", description: "Open the warps menu"}
+#                   add permission: some.permission to only show it to players who have it
+#    - plain text:  {text: "&e&lHeading"}   ({text: ""} for an empty line)
+#  Clicking a command puts it in the player's chat box. Anything from the first <argument>
+#  on is left off, so "/pay <player> <amount>" fills in "/pay ".
+#
+#  Staff with prisoncore.help.all (ops by default) can still see the server's full list
+#  with /help all.
+#  Formatting: & codes, &#RRGGBB, <gradient:#FF0000:#FFD700>text</gradient>, <smallcaps>, PlaceholderAPI
+# ==============================================================================
+
+# Commands that open this help instead of the server's.
+open-commands: [help, "?"]
+
+# How many lines (commands and text) fit on one page. Long lists get Next/Previous buttons.
+lines-per-page: 12
+
+# suggest = clicking puts the command in the chat box; run = clicking runs it right away
+# (commands that need arguments are always suggested)
+click: suggest
+
+header:
+  - ""
+  - "<gradient:#FFAA00:#FFFF55>&lClassic Prison Help</gradient> &8(&7{page}/{pages}&8)"
+format: "&6{command} &8» &7{description}"
+hover: "&eClick to use &6{command}"
+footer:
+  - "{previous} &8| {next}"
+previous: "&e« Previous"
+next: "&eNext »"
+previous-none: "&8« Previous"
+next-none: "&8Next »"
+
+lines:
+  - {text: "&e&lGetting around"}
+  - {command: "/spawn", description: "Go back to spawn"}
+  - {command: "/warps", description: "Mines, crates, black market and more"}
+  - {text: "&e&lRanks"}
+  - {command: "/ranks", description: "See every rank and what's next"}
+  - {command: "/rankup", description: "Rank up to the next mine"}
+  - {command: "/prestiges", description: "See the prestiges"}
+  - {command: "/prestige", description: "Prestige once you reach Z"}
+  - {text: "&e&lMoney"}
+  - {command: "/sellall", description: "Sell everything in your inventory"}
+  - {command: "/shop", description: "Buy and sell items"}
+  - {command: "/balance", description: "Check your money"}
+  - {command: "/baltop", description: "The richest players"}
+  - {command: "/pay <player> <amount>", description: "Send money to a player"}
+  - {text: "&e&lOther"}
+  - {command: "/vote", description: "Vote for rewards"}
+  - {command: "/msg <player> <message>", description: "Message a player"}
+  - {command: "/r <message>", description: "Reply to your last message"}
+  - {command: "/nick <name>", description: "Change your nickname", permission: essentials.nick}
+  - {command: "/hat", description: "Wear the item in your hand", permission: essentials.hat}
