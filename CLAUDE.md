@@ -12,5 +12,8 @@ the "Latest build" release. See README.md for commands and setup.
   (CRLF line endings). Keep it as is in future builds unless asked for a change.
 - The `title:` and `lines:` in `prison-core/src/main/resources/scoreboard.yml` are the server's own
   scoreboard layout. Keep them exactly as they are unless asked for a change.
+- Never put real keys or tokens (Tebex public token, Tebex secret key, or any other credential)
+  in the repo or a build. Config files ship with them empty (`public-token: ""`); they're only
+  filled in on the server.
 - Commits are authored as `jiggy4413 <118291312+jiggy4413@users.noreply.github.com>`
   (set with `git config user.name` / `git config user.email` in a fresh clone), with Claude as co-author.
