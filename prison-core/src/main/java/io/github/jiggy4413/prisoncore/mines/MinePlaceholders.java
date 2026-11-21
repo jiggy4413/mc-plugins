@@ -31,6 +31,8 @@ public final class MinePlaceholders extends PlaceholderExpansion {
     private final MineManager manager;
 
     private final io.github.jiggy4413.prisoncore.tokens.Tokens tokens;
+    /** Set after creation; may be null. */
+    public static io.github.jiggy4413.prisoncore.tokens.PvpPoints pvp;
 
     public MinePlaceholders(JavaPlugin plugin, MineManager manager, io.github.jiggy4413.prisoncore.tokens.Tokens tokens) {
         this.tokens = tokens;
@@ -95,6 +97,9 @@ public final class MinePlaceholders extends PlaceholderExpansion {
             return null;
         }
         String p = params.toLowerCase(Locale.ROOT);
+        if (p.equals("pvppoints") && pvp != null && player != null) {
+            return String.valueOf(pvp.get(player.getUniqueId()));
+        }
         if (p.startsWith("tokens")) {
             long t = tokens == null || player == null ? 0 : tokens.get(player.getUniqueId());
             if (p.equals("tokens")) {

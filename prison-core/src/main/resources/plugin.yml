@@ -33,6 +33,16 @@ commands:
     usage: /tokens [player] | pay <player> <amount> | top | give|take|set <player> <amount>
     aliases: [token]
     permission: prisoncore.tokens
+  pvppoints:
+    description: Check and manage PvP points.
+    usage: /pvppoints [player] | give|take|set <player> <amount>
+    aliases: [pvppoint]
+    permission: prisoncore.tokens
+  prisonenchants:
+    description: Opens the enchant menu.
+    usage: /enchanter
+    aliases: [enchanter, upgrades]
+    permission: prisoncore.enchants
   prisonboard:
     description: Turns your scoreboard on or off.
     usage: /board [on|off]
@@ -65,6 +75,9 @@ permissions:
   prisoncore.tokens.admin:
     description: Give, take and set anyone's tokens (/tokens give, for Tebex and votes).
     default: op
+  prisoncore.enchants:
+    description: Use the enchant menu.
+    default: true
   prisoncore.board:
     description: Turn your own scoreboard on or off.
     default: true

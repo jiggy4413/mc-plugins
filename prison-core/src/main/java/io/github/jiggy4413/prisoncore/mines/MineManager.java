@@ -541,7 +541,7 @@ public final class MineManager {
     // =================================================================== counting
 
     /** Called by the listener whenever blocks inside a mine change. */
-    void blocksChanged(Mine m, int airDelta) {
+    public void blocksChanged(Mine m, int airDelta) {
         if (m.airNow >= 0) {
             m.airNow = Math.max(0, Math.min(m.volume(), m.airNow + airDelta));
         }

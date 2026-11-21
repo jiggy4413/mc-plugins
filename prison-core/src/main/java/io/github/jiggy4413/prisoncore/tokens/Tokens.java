@@ -52,6 +52,8 @@ public final class Tokens implements Listener, CommandExecutor, TabCompleter {
     private final Map<UUID, String> names = new HashMap<UUID, String>();
     private boolean dirty;
     private BukkitTask saveTask;
+    /** Extra token chance from the Token Finder enchant (1.0 = normal), set by the enchants. */
+    private java.util.function.ToDoubleFunction<Player> chanceBoost;
 
     public Tokens(JavaPlugin plugin, MineManager mines) {
         this.plugin = plugin;
@@ -97,6 +99,14 @@ public final class Tokens implements Listener, CommandExecutor, TabCompleter {
                 }
             }
         }
+    }
+
+    public FileConfiguration config() {
+        return config;
+    }
+
+    public void setChanceBoost(java.util.function.ToDoubleFunction<Player> boost) {
+        this.chanceBoost = boost;
     }
 
     public void start() {
@@ -227,6 +237,9 @@ public final class Tokens implements Listener, CommandExecutor, TabCompleter {
             return;
         }
         double chance = config.getDouble("earning.chance-percent", 2.0);
+        if (chanceBoost != null) {
+            chance *= Math.max(0, chanceBoost.applyAsDouble(player));
+        }
         ThreadLocalRandom r = ThreadLocalRandom.current();
         if (r.nextDouble() * 100 >= chance) {
             return;

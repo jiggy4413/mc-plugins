@@ -10,7 +10,9 @@ import io.github.jiggy4413.prisoncore.rankup.RankupBridge;
 import io.github.jiggy4413.prisoncore.update.HotSwap;
 import io.github.jiggy4413.prisoncore.util.Text;
 import io.github.jiggy4413.prisoncore.board.Board;
+import io.github.jiggy4413.prisoncore.enchants.Enchants;
 import io.github.jiggy4413.prisoncore.help.Help;
+import io.github.jiggy4413.prisoncore.tokens.PvpPoints;
 import io.github.jiggy4413.prisoncore.tokens.Tokens;
 import io.github.jiggy4413.prisoncore.warps.Warps;
 import io.github.jiggy4413.prisoncore.warps.WarpsListener;
@@ -51,6 +53,8 @@ public final class PrisonCore extends JavaPlugin {
     private Help help;
     private Tokens tokens;
     private Board board;
+    private PvpPoints pvp;
+    private Enchants enchants;
     /** The PlaceholderAPI expansion, kept as Object so this class never needs PlaceholderAPI. */
     private Object placeholders;
 
@@ -70,7 +74,10 @@ public final class PrisonCore extends JavaPlugin {
                 "io.github.jiggy4413.prisoncore.warps.Warps",
                 "io.github.jiggy4413.prisoncore.warps.WarpsMenu",
                 "io.github.jiggy4413.prisoncore.tokens.Tokens",
-                "io.github.jiggy4413.prisoncore.board.Board");
+                "io.github.jiggy4413.prisoncore.board.Board",
+                "io.github.jiggy4413.prisoncore.tokens.PvpPoints",
+                "io.github.jiggy4413.prisoncore.enchants.Enchants",
+                "io.github.jiggy4413.prisoncore.enchants.EnchantMenu");
         hotSwap = new HotSwap(this, getFile());
 
         loadMenuConfig();
@@ -104,6 +111,18 @@ public final class PrisonCore extends JavaPlugin {
         getCommand("tokens").setTabCompleter(tokens);
         tokens.start();
 
+        pvp = new PvpPoints(this, tokens);
+        pvp.loadBalances();
+        getServer().getPluginManager().registerEvents(pvp, this);
+        getCommand("pvppoints").setExecutor(pvp);
+        pvp.start();
+
+        enchants = new Enchants(this, mines, tokens, pvp);
+        enchants.load();
+        getServer().getPluginManager().registerEvents(enchants, this);
+        getCommand("prisonenchants").setExecutor(enchants);
+        enchants.start();
+
         board = new Board(this, tokens);
         board.load();
         getServer().getPluginManager().registerEvents(board, this);
@@ -112,6 +131,7 @@ public final class PrisonCore extends JavaPlugin {
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             try {
+                io.github.jiggy4413.prisoncore.mines.MinePlaceholders.pvp = pvp;
                 placeholders = PapiHook.register(this, mines, tokens);
             } catch (Throwable t) {
                 getLogger().warning("Couldn't add PlaceholderAPI placeholders: " + t);
@@ -173,6 +193,14 @@ public final class PrisonCore extends JavaPlugin {
         }
         if (board != null) {
             board.shutdown();
+        }
+        if (enchants != null) {
+            enchants.stop();
+            enchants.closeAll();
+        }
+        if (pvp != null) {
+            pvp.stop();
+            pvp.saveNow();
         }
         if (tokens != null) {
             tokens.stop();
@@ -354,6 +382,10 @@ public final class PrisonCore extends JavaPlugin {
                 if (tokensProblem != null) {
                     sender.sendMessage(ChatColor.RED + tokensProblem);
                 }
+                String enchantsProblem = enchants.load();
+                if (enchantsProblem != null) {
+                    sender.sendMessage(ChatColor.RED + enchantsProblem);
+                }
                 String boardProblem = board.load();
                 board.start();
                 if (boardProblem != null) {
@@ -364,7 +396,7 @@ public final class PrisonCore extends JavaPlugin {
                     sender.sendMessage(Text.color("&cranks-menu.yml has a mistake, so nothing changed:"));
                     sender.sendMessage(ChatColor.GRAY + problem);
                 } else {
-                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml, warps-menu.yml, help.yml, tokens.yml, scoreboard.yml). No new jar found."));
+                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml, warps-menu.yml, help.yml, tokens.yml, scoreboard.yml, enchants.yml). No new jar found."));
                 }
             } catch (Exception e) {
                 sender.sendMessage(Text.color("&cReload failed: " + e.getMessage() + " &7(check ranks-menu.yml for a YAML mistake)"));

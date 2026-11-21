@@ -39,3 +39,14 @@ messages:
   not-online: "&c{player} isn't online."
   top-header: "<gradient:#FFAA00:#FFFF55>&lTop Tokens</gradient>"
   top-line: "&e#{rank} &f{player} &7- &e{amount}"
+
+# PvP points: earned by killing players, spent on sword and armor enchants.
+# Commands: /pvppoints, /pvppoints <player>, /pvppoints give|take|set <player> <amount> (staff)
+# Placeholder: %prisoncore_pvppoints%
+pvp-points:
+  enabled: true
+  per-kill: 1
+  # Killing the same player again within this many seconds gives nothing (stops kill farming).
+  same-player-cooldown-seconds: 300
+  message: "&c+{amount} PvP Point &7for killing &f{player}"
+  cooldown-message: "&7No PvP point: you killed &f{player} &7too recently."

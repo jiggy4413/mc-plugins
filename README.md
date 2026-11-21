@@ -8,7 +8,7 @@ Every push builds automatically. Get the newest jar from **Releases → Latest b
 ## Modules
 | Module | Jar | Purpose |
 |---|---|---|
-| `prison-core` | `PrisonCore-1.10.3.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
+| `prison-core` | `PrisonCore-1.11.0.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
 | `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
 | `stubs/placeholderapi` | none | Compile-only copy of PlaceholderAPI's expansion API. Never installed on the server. |
 
@@ -69,6 +69,17 @@ A second currency found while mining (2% of blocks by default, more in higher mi
 - **Players:** `/tokens`, `/tokens <player>`, `/tokens pay <player> <amount>`, `/tokens top`
 - **Staff/console:** `/tokens give|take|set <player> <amount>` (permission `prisoncore.tokens.admin`)
 - **Placeholders:** `%prisoncore_tokens%`, `%prisoncore_tokens_formatted%`, `%prisoncore_tokens_short%`
+
+## Enchants
+Right-clicking an enchanting table (or `/enchanter`) opens the Enchanter: pickaxe, sword and armor,
+with the player's token and PvP point balances. Pickaxe enchants cost tokens; sword and armor
+enchants cost PvP points (1 per kill, no points for killing the same player again within 5 minutes).
+
+- **Pickaxe:** Efficiency, Fortune (more of every block in mines), Token Finder, Explosive (3x3x3 in mines), Haste, Unbreaking
+- **Sword:** Sharpness, Fire Aspect, Knockback, Lifesteal, Unbreaking
+- **Armor:** Protection, Thorns, Feather Falling (boots), Unbreaking
+- **Config:** `plugins/PrisonCore/enchants.yml` (max levels, costs, strength); PvP point settings in `tokens.yml`
+- **PvP points:** `/pvppoints [player]`, staff `/pvppoints give|take|set <player> <amount>`, placeholder `%prisoncore_pvppoints%`
 
 ## Void worlds
 PrisonCore includes an empty-world generator (one bedrock block under spawn at 0, 64, 0):

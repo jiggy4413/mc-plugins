@@ -1,0 +1,172 @@
+# ==============================================================================
+#  PrisonCore enchants
+#  Players open the menu by right-clicking an enchanting table, or with /enchanter.
+#  Pickaxe enchants cost Tokens (found while mining). Sword and armor enchants cost PvP points
+#  (1 per kill). Apply changes with /prisoncore reload.
+#
+#  Each enchant:
+#    name          what players see
+#    vanilla       a normal Minecraft enchant to use (efficiency, sharpness...). Leave it out
+#                  for prison enchants, which PrisonCore handles itself.
+#    max-level     highest level that can be bought
+#    cost          price of level 1
+#    cost-growth   each level costs this many times the last (1.1 = +10% per level)
+#    per-level     strength per level, for prison enchants (see each description)
+#    only-for      limit to some items, e.g. [BOOTS]
+#    icon          item shown in the menu
+#  Set enabled: false on an enchant to hide it.
+# ==============================================================================
+
+# Right-clicking an enchanting table opens this menu instead of the normal one.
+replace-enchanting-table: true
+
+# How enchants are listed on the item (normal Minecraft enchant names are hidden so levels
+# above 10 don't show as "enchantment.level.11").
+lore-format: "&7{name} &f{level}"
+
+# Fortune only works on blocks inside PrisonCore mines.
+fortune-only-in-mines: true
+# Explosive breaks a cube this many blocks out from the mined block (1 = 3x3x3).
+explosive-radius: 1
+# Fortune and Explosive put blocks straight into the inventory. When it's full, drop the rest
+# on the ground (true) or lose them (false, which avoids lag from piles of items).
+drop-when-inventory-full: false
+
+currency:
+  tokens: "&eTokens"
+  pvp-points: "&cPvP Points"
+
+menu:
+  title: "<gradient:#FFAA00:#FFFF55>&lEnchanter</gradient>"
+  armor-title: "<gradient:#FFAA00:#FFFF55>&lArmor</gradient>"
+  item-title: "<gradient:#FFAA00:#FFFF55>&lUpgrade {item}</gradient>"
+
+messages:
+  inventory-full: "&cYour inventory is full!"
+
+enchants:
+  pickaxe:
+    efficiency:
+      name: Efficiency
+      vanilla: efficiency
+      max-level: 25
+      cost: 20
+      cost-growth: 1.15
+      icon: SUGAR
+      description: ["Mine faster."]
+    fortune:
+      name: Fortune
+      max-level: 100
+      cost: 50
+      cost-growth: 1.07
+      per-level: 2
+      icon: DIAMOND
+      description: ["More of every block you mine.", "+2% per level (x3 at level 100)."]
+    token-finder:
+      name: Token Finder
+      max-level: 50
+      cost: 40
+      cost-growth: 1.09
+      per-level: 4
+      icon: SUNFLOWER
+      description: ["Find tokens more often.", "+4% chance per level (x3 at level 50)."]
+    explosive:
+      name: Explosive
+      max-level: 25
+      cost: 150
+      cost-growth: 1.18
+      per-level: 0.4
+      icon: TNT
+      description: ["Chance to blow up the blocks", "around the one you mine.", "0.4% per level (10% at level 25)."]
+    haste:
+      name: Haste
+      max-level: 3
+      cost: 500
+      cost-growth: 3
+      icon: GOLDEN_PICKAXE
+      description: ["Haste while holding the pickaxe."]
+    unbreaking:
+      name: Unbreaking
+      vanilla: unbreaking
+      max-level: 10
+      cost: 15
+      cost-growth: 1.3
+      icon: ANVIL
+      description: ["Your pickaxe lasts longer."]
+
+  sword:
+    sharpness:
+      name: Sharpness
+      vanilla: sharpness
+      max-level: 10
+      cost: 2
+      cost-growth: 1.35
+      icon: IRON_SWORD
+      description: ["More damage."]
+    fire-aspect:
+      name: Fire Aspect
+      vanilla: fire_aspect
+      max-level: 2
+      cost: 15
+      cost-growth: 2
+      icon: BLAZE_POWDER
+      description: ["Sets your target on fire."]
+    knockback:
+      name: Knockback
+      vanilla: knockback
+      max-level: 2
+      cost: 10
+      cost-growth: 2
+      icon: PISTON
+      description: ["Knocks your target back."]
+    lifesteal:
+      name: Lifesteal
+      max-level: 5
+      cost: 20
+      cost-growth: 1.6
+      per-level: 3
+      icon: REDSTONE
+      description: ["Heal for part of the damage you deal.", "3% per level (15% at level 5)."]
+    unbreaking:
+      name: Unbreaking
+      vanilla: unbreaking
+      max-level: 10
+      cost: 3
+      cost-growth: 1.3
+      icon: ANVIL
+      description: ["Your sword lasts longer."]
+
+  armor:
+    protection:
+      name: Protection
+      vanilla: protection
+      max-level: 6
+      cost: 3
+      cost-growth: 1.5
+      icon: SHIELD
+      description: ["Take less damage."]
+    thorns:
+      name: Thorns
+      vanilla: thorns
+      max-level: 3
+      cost: 15
+      cost-growth: 2
+      icon: CACTUS
+      description: ["Hurts players who hit you."]
+    feather-falling:
+      name: Feather Falling
+      vanilla: feather_falling
+      max-level: 4
+      cost: 5
+      cost-growth: 1.5
+      only-for: [BOOTS]
+      icon: FEATHER
+      description: ["Less fall damage."]
+    unbreaking:
+      name: Unbreaking
+      vanilla: unbreaking
+      max-level: 10
+      cost: 2
+      cost-growth: 1.3
+      icon: ANVIL
+      description: ["Your armor lasts longer."]
