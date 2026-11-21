@@ -5,7 +5,7 @@
 #  Up to 15 lines. Each line can be at most 64 characters once colored; long gradients are
 #  turned into the nearest normal colors automatically so they still fit.
 #  Placeholders:
-#    {player}  {rank}  {prestige} (0, 1, 2...)  {prestige_name} (the Rankup prestige, e.g. p1)
+#    {player}  {rank}  {rank_prefix}  {rank_name}  {prestige} (0, 1, 2...)  {prestige_name} (the Rankup prestige, e.g. p1)
 #    {balance} (1,234.5)  {balance_short} (1.2M)  {tokens}  {tokens_short}
 #    {online}  {max}
 #    and any PlaceholderAPI placeholder, e.g. %vault_eco_balance%
@@ -17,6 +17,9 @@ enabled: true
 update-ticks: 20
 # Worlds where nobody sees the scoreboard.
 disabled-worlds: []
+# What {rank} shows: prefix = the player's chat prefix from LuckPerms (through Vault), like in chat;
+# name = the Rankup rank name (e.g. ablock). {rank_prefix} and {rank_name} always show one or the other.
+rank-display: prefix
 # Shown for {rank} when Rankup has no rank for the player.
 no-rank: "None"
 # Shown for {prestige_name} before a player's first prestige.
@@ -24,15 +27,15 @@ no-prestige: "None"
 
 title: "<gradient:#FFAA00:#FFFF55>&lClassic Prison</gradient>"
 lines:
-  - "&8&m                      "
-  - "&6&l{player}"
+  - "&8&m                               "
+  - " &7User: &f{player}"
+  - "&8&m                               "
   - " &7Rank: &f{rank}"
-  - " &7Prestige: &d{prestige}"
+  - " &7Prestige: &e{prestige}"
   - " &7Balance: &a${balance_short}"
-  - " &7Tokens: &e{tokens_short}"
-  - ""
+  - " &7Tokens: &d{tokens_short}"
+  - "&8&m                               "
   - "&e&lVOTE! &7Rewards at &f/vote"
-  - "&8&m                      "
 
 messages:
   hidden: "&7Scoreboard hidden. &f/board &7to show it again."

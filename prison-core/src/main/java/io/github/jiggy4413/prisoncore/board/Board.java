@@ -301,9 +301,13 @@ public final class Board implements Listener, CommandExecutor {
                 out = out.replace("{balance}", new DecimalFormat("#,##0.##").format(bal))
                         .replace("{balance_short}", Tokens.formatShort((long) bal));
             }
-            if (out.contains("{rank}") || out.contains("{prestige")) {
+            if (out.contains("{rank") || out.contains("{prestige")) {
                 CachedRank r = rank(player);
-                out = out.replace("{rank}", r.text).replace("{prestige_name}", r.prestigeName)
+                String prefix = out.contains("{rank}") || out.contains("{rank_prefix}") ? prefix(player) : "";
+                boolean usePrefix = config.getString("rank-display", "prefix").equalsIgnoreCase("prefix") && !prefix.isEmpty();
+                out = out.replace("{rank_prefix}", prefix.isEmpty() ? r.text : prefix)
+                        .replace("{rank_name}", r.text)
+                        .replace("{rank}", usePrefix ? prefix : r.text).replace("{prestige_name}", r.prestigeName)
                         .replace("{prestige}", String.valueOf(r.prestige));
             }
             return out;
@@ -363,6 +367,36 @@ public final class Board implements Listener, CommandExecutor {
         c.prestigeName = prestigeName;
         c.at = now;
         return c;
+    }
+
+    private Object chat;
+    private Method getPrefix;
+    private boolean chatChecked;
+
+    /** The player's chat prefix from Vault (LuckPerms), trimmed; "" if there isn't one. */
+    private String prefix(Player p) {
+        if (!chatChecked || chat == null) {
+            chatChecked = true;
+            try {
+                Class<?> c = Class.forName("net.milkbowl.vault.chat.Chat");
+                RegisteredServiceProvider<?> rsp = Bukkit.getServicesManager().getRegistration(c);
+                if (rsp != null) {
+                    chat = rsp.getProvider();
+                    getPrefix = c.getMethod("getPlayerPrefix", Player.class);
+                }
+            } catch (Throwable ignored) {
+                chat = null;
+            }
+        }
+        if (chat == null) {
+            return "";
+        }
+        try {
+            Object v = getPrefix.invoke(chat, p);
+            return v == null ? "" : v.toString().trim();
+        } catch (Throwable t) {
+            return "";
+        }
     }
 
     private Object economy;
