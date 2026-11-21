@@ -182,9 +182,10 @@ public final class Store implements Listener, CommandExecutor {
             return e.getString("price", config.getString("tebex.price-unknown", "See store"));
         }
         String price = money(t.totalPrice, t.currency);
-        if (t.discount > 0 && t.basePrice > t.totalPrice) {
+        if (t.discount > 0) {
+            // Tebex's base_price is already the sale price; the price before the sale is base + discount
             return config.getString("tebex.sale-format", "&8&m{old}&r &a{price} &c&lSALE")
-                    .replace("{old}", money(t.basePrice, t.currency)).replace("{price}", price);
+                    .replace("{old}", money(t.basePrice + t.discount, t.currency)).replace("{price}", price);
         }
         return config.getString("tebex.price-format", "{price}").replace("{price}", price);
     }
