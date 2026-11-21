@@ -9,6 +9,7 @@ import io.github.jiggy4413.prisoncore.mines.PapiHook;
 import io.github.jiggy4413.prisoncore.rankup.RankupBridge;
 import io.github.jiggy4413.prisoncore.update.HotSwap;
 import io.github.jiggy4413.prisoncore.util.Text;
+import io.github.jiggy4413.prisoncore.help.Help;
 import io.github.jiggy4413.prisoncore.warps.Warps;
 import io.github.jiggy4413.prisoncore.warps.WarpsListener;
 import io.github.jiggy4413.prisoncore.world.VoidGenerator;
@@ -45,6 +46,7 @@ public final class PrisonCore extends JavaPlugin {
     private HotSwap hotSwap;
     private MineManager mines;
     private Warps warps;
+    private Help help;
     /** The PlaceholderAPI expansion, kept as Object so this class never needs PlaceholderAPI. */
     private Object placeholders;
 
@@ -82,6 +84,11 @@ public final class PrisonCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new WarpsListener(warps), this);
         getCommand("prisonwarps").setExecutor(warps);
         warps.start();
+
+        help = new Help(this);
+        help.load();
+        getServer().getPluginManager().registerEvents(help, this);
+        getCommand("prisonhelp").setExecutor(help);
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             try {
@@ -312,12 +319,16 @@ public final class PrisonCore extends JavaPlugin {
                 if (warpsProblem != null) {
                     sender.sendMessage(ChatColor.RED + warpsProblem);
                 }
+                String helpProblem = help.load();
+                if (helpProblem != null) {
+                    sender.sendMessage(ChatColor.RED + helpProblem);
+                }
                 if (problem != null) {
                     // color codes off on purpose so the message shows exactly what's in the file
                     sender.sendMessage(Text.color("&cranks-menu.yml has a mistake, so nothing changed:"));
                     sender.sendMessage(ChatColor.GRAY + problem);
                 } else {
-                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml, warps-menu.yml). No new jar found."));
+                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml, warps-menu.yml, help.yml). No new jar found."));
                 }
             } catch (Exception e) {
                 sender.sendMessage(Text.color("&cReload failed: " + e.getMessage() + " &7(check ranks-menu.yml for a YAML mistake)"));
