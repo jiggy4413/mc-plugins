@@ -204,6 +204,7 @@ public final class PrisonCore extends JavaPlugin {
             board.shutdown();
         }
         if (store != null) {
+            store.stop();
             store.closeAll();
         }
         if (enchants != null) {

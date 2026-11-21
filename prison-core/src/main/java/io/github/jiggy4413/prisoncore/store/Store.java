@@ -41,6 +41,19 @@ public final class Store implements Listener, CommandExecutor {
 
     private final JavaPlugin plugin;
     private FileConfiguration config;
+    /** Package id → live price info from Tebex (replaced as a whole on each refresh). */
+    private volatile Map<Long, TebexPackage> packages = new HashMap<Long, TebexPackage>();
+    private volatile String lastRefreshProblem;
+    private org.bukkit.scheduler.BukkitTask refreshTask;
+
+    /** One package as Tebex reports it. */
+    static final class TebexPackage {
+        String name;
+        double basePrice;
+        double totalPrice;
+        double discount;
+        String currency;
+    }
 
     public Store(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -56,7 +69,120 @@ public final class Store implements Listener, CommandExecutor {
             return FILE + " has a mistake, so the store menu didn't change: " + f.problem;
         }
         config = f.config;
+        startRefreshing();
         return null;
+    }
+
+    // ------------------------------------------------------------------ prices from Tebex
+
+    private void startRefreshing() {
+        if (refreshTask != null) {
+            refreshTask.cancel();
+            refreshTask = null;
+        }
+        String token = config.getString("tebex.public-token", "");
+        if (token == null || token.trim().isEmpty()) {
+            return;
+        }
+        long minutes = Math.max(1, config.getLong("tebex.refresh-minutes", 10));
+        refreshTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                refresh();
+            }
+        }, 20L, minutes * 60 * 20);
+    }
+
+    public void stop() {
+        if (refreshTask != null) {
+            refreshTask.cancel();
+            refreshTask = null;
+        }
+    }
+
+    /**
+     * Downloads every category and package from Tebex's Headless API (read-only, uses the store's
+     * public token). Runs off the main thread.
+     */
+    private void refresh() {
+        String token = config.getString("tebex.public-token", "").trim();
+        java.net.HttpURLConnection con = null;
+        try {
+            java.net.URL url = new java.net.URL("https://headless.tebex.io/api/accounts/"
+                    + java.net.URLEncoder.encode(token, "UTF-8") + "/categories?includePackages=1");
+            con = (java.net.HttpURLConnection) url.openConnection();
+            con.setConnectTimeout(10000);
+            con.setReadTimeout(15000);
+            con.setRequestProperty("Accept", "application/json");
+            con.setRequestProperty("User-Agent", "PrisonCore");
+            int code = con.getResponseCode();
+            if (code != 200) {
+                lastRefreshProblem = "Tebex answered HTTP " + code + (code == 404 || code == 403
+                        ? " (check tebex.public-token in store.yml)" : "");
+                plugin.getLogger().warning("Couldn't load store prices: " + lastRefreshProblem);
+                return;
+            }
+            java.io.Reader reader = new java.io.InputStreamReader(con.getInputStream(), java.nio.charset.StandardCharsets.UTF_8);
+            com.google.gson.JsonObject root = new com.google.gson.JsonParser().parse(reader).getAsJsonObject();
+            reader.close();
+            Map<Long, TebexPackage> found = new HashMap<Long, TebexPackage>();
+            for (com.google.gson.JsonElement cat : root.getAsJsonArray("data")) {
+                com.google.gson.JsonObject c = cat.getAsJsonObject();
+                if (!c.has("packages") || !c.get("packages").isJsonArray()) {
+                    continue;
+                }
+                for (com.google.gson.JsonElement pe : c.getAsJsonArray("packages")) {
+                    com.google.gson.JsonObject p = pe.getAsJsonObject();
+                    TebexPackage t = new TebexPackage();
+                    t.name = str(p, "name");
+                    t.basePrice = num(p, "base_price");
+                    t.totalPrice = num(p, "total_price");
+                    t.discount = num(p, "discount");
+                    t.currency = str(p, "currency");
+                    found.put(p.get("id").getAsLong(), t);
+                }
+            }
+            packages = found;
+            lastRefreshProblem = null;
+        } catch (Exception e) {
+            lastRefreshProblem = e.getClass().getSimpleName() + ": " + e.getMessage();
+            plugin.getLogger().warning("Couldn't load store prices: " + lastRefreshProblem);
+        } finally {
+            if (con != null) {
+                con.disconnect();
+            }
+        }
+    }
+
+    private static String str(com.google.gson.JsonObject o, String key) {
+        return o.has(key) && !o.get(key).isJsonNull() ? o.get(key).getAsString() : "";
+    }
+
+    private static double num(com.google.gson.JsonObject o, String key) {
+        return o.has(key) && !o.get(key).isJsonNull() ? o.get(key).getAsDouble() : 0;
+    }
+
+    /** The {price} text for an item: live from Tebex when it has a package id, else its "price:". */
+    private String priceText(ConfigurationSection e) {
+        long id = e.getLong("package", 0);
+        TebexPackage t = id > 0 ? packages.get(id) : null;
+        if (t == null) {
+            return e.getString("price", config.getString("tebex.price-unknown", "See store"));
+        }
+        String price = money(t.totalPrice, t.currency);
+        if (t.discount > 0 && t.basePrice > t.totalPrice) {
+            return config.getString("tebex.sale-format", "&8&m{old}&r &a{price} &c&lSALE")
+                    .replace("{old}", money(t.basePrice, t.currency)).replace("{price}", price);
+        }
+        return config.getString("tebex.price-format", "{price}").replace("{price}", price);
+    }
+
+    private static String money(double amount, String currency) {
+        String c = currency == null ? "" : currency.toUpperCase(Locale.ROOT);
+        String symbol = c.equals("USD") || c.equals("CAD") || c.equals("AUD") ? "$" : c.equals("EUR") ? "€"
+                : c.equals("GBP") ? "£" : "";
+        String number = new java.text.DecimalFormat("#,##0.00").format(amount);
+        return symbol.isEmpty() ? number + " " + c : symbol + number;
     }
 
     public void closeAll() {
@@ -71,8 +197,29 @@ public final class Store implements Listener, CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("refresh") && sender.hasPermission("prisoncore.admin")) {
+            sender.sendMessage(Text.color("&7Loading prices from Tebex..."));
+            final CommandSender to = sender;
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    refresh();
+                    final String problem = lastRefreshProblem;
+                    final int count = packages.size();
+                    Bukkit.getScheduler().runTask(plugin, new Runnable() {
+                        @Override
+                        public void run() {
+                            to.sendMessage(Text.color(problem == null
+                                    ? "&aLoaded " + count + " packages from Tebex."
+                                    : "&cCouldn't load prices: " + problem));
+                        }
+                    });
+                }
+            });
+            return true;
+        }
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can open the store menu.");
+            sender.sendMessage("Only players can open the store menu. Use /prisonstore refresh to reload prices.");
             return true;
         }
         open((Player) sender, args.length > 0 ? args[0].toLowerCase(Locale.ROOT) : "main");
@@ -179,7 +326,7 @@ public final class Store implements Listener, CommandExecutor {
                         continue;
                     }
                     Map<String, String> ph = new HashMap<String, String>();
-                    ph.put("{price}", e.getString("price", ""));
+                    ph.put("{price}", priceText(e));
                     ph.put("{player}", player.getName());
                     ItemStack item = ItemTemplate.of(e, config.getConfigurationSection("default-item")).build(player, ph, null);
                     if (e.isString("texture")) {
@@ -233,6 +380,10 @@ public final class Store implements Listener, CommandExecutor {
                 return;
             }
             String link = e.getString("link", "");
+            long pkg = e.getLong("package", 0);
+            if ((link == null || link.isEmpty()) && pkg > 0) {
+                link = "package/" + pkg; // a package id with no link opens that package's page
+            }
             if (link == null) {
                 return;
             }

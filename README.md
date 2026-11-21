@@ -8,7 +8,7 @@ Every push builds automatically. Get the newest jar from **Releases → Latest b
 ## Modules
 | Module | Jar | Purpose |
 |---|---|---|
-| `prison-core` | `PrisonCore-1.13.0.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
+| `prison-core` | `PrisonCore-1.14.0.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
 | `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
 | `stubs/placeholderapi` | none | Compile-only copy of PlaceholderAPI's expansion API. Never installed on the server. |
 
@@ -86,7 +86,8 @@ enchants cost PvP points (1 per kill, no points for killing the same player agai
 Crate Keys and Perks, each opening its own page. Clicking a package sends a clickable link to it
 on the Tebex store, where players pay as usual.
 
-- **Config:** `plugins/PrisonCore/store.yml` (store address, prices, links, icons, border colors)
+- **Config:** `plugins/PrisonCore/store.yml` (store address, package IDs, icons, border colors)
+- **Live prices:** set `tebex.public-token` and give each item its `package:` ID; prices (and sales) load from Tebex every 10 minutes, or now with `/prisonstore refresh`
 
 ## Void worlds
 PrisonCore includes an empty-world generator (one bedrock block under spawn at 0, 64, 0):
