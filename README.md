@@ -8,7 +8,7 @@ Every push builds automatically. Get the newest jar from **Releases → Latest b
 ## Modules
 | Module | Jar | Purpose |
 |---|---|---|
-| `prison-core` | `PrisonCore-1.11.0.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
+| `prison-core` | `PrisonCore-1.12.0.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
 | `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
 | `stubs/placeholderapi` | none | Compile-only copy of PlaceholderAPI's expansion API. Never installed on the server. |
 
@@ -75,10 +75,10 @@ Right-clicking an enchanting table (or `/enchanter`) opens the Enchanter: pickax
 with the player's token and PvP point balances. Pickaxe enchants cost tokens; sword and armor
 enchants cost PvP points (1 per kill, no points for killing the same player again within 5 minutes).
 
-- **Pickaxe:** Efficiency, Fortune (more of every block in mines), Token Finder, Explosive (3x3x3 in mines), Haste, Unbreaking
-- **Sword:** Sharpness, Fire Aspect, Knockback, Lifesteal, Unbreaking
-- **Armor:** Protection, Thorns, Feather Falling (boots), Unbreaking
-- **Config:** `plugins/PrisonCore/enchants.yml` (max levels, costs, strength); PvP point settings in `tokens.yml`
+- **Pickaxe:** Efficiency, Fortune (more of every block in mines), Token Finder, Explosive (3x3x3 in mines), Haste, Unbreaking, Mending
+- **Sword:** Sharpness, Fire Aspect, Knockback, Lifesteal, Unbreaking, Mending
+- **Armor:** Protection, Fire Protection, Blast Protection, Thorns, Feather Falling (boots), Aqua Affinity (helmet), Unbreaking, Mending
+- **Config:** `plugins/PrisonCore/enchants.yml`: every level's price is listed (`costs:`), and the number of prices is the max level; PvP point settings in `tokens.yml`
 - **PvP points:** `/pvppoints [player]`, staff `/pvppoints give|take|set <player> <amount>`, placeholder `%prisoncore_pvppoints%`
 
 ## Void worlds

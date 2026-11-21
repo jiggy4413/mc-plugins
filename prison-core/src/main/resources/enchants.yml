@@ -8,9 +8,10 @@
 #    name          what players see
 #    vanilla       a normal Minecraft enchant to use (efficiency, sharpness...). Leave it out
 #                  for prison enchants, which PrisonCore handles itself.
-#    max-level     highest level that can be bought
-#    cost          price of level 1
-#    cost-growth   each level costs this many times the last (1.1 = +10% per level)
+#    costs         the price of each level, level 1 first. The number of prices is the max level,
+#                  so add or remove lines to change how high it goes.
+#                  (Instead of costs you can use cost + cost-growth + max-level for a fixed
+#                  % increase per level.)
 #    per-level     strength per level, for prison enchants (see each description)
 #    only-for      limit to some items, e.g. [BOOTS]
 #    icon          item shown in the menu
@@ -49,124 +50,393 @@ enchants:
     efficiency:
       name: Efficiency
       vanilla: efficiency
-      max-level: 25
-      cost: 20
-      cost-growth: 1.15
       icon: SUGAR
       description: ["Mine faster."]
+      costs:
+        - 500        # level 1
+        - 750        # level 2
+        - 1125       # level 3
+        - 1688       # level 4
+        - 2531       # level 5
+        - 3797       # level 6
+        - 5695       # level 7
+        - 8543       # level 8
+        - 12814      # level 9
+        - 19222      # level 10
     fortune:
       name: Fortune
-      max-level: 100
-      cost: 50
-      cost-growth: 1.07
       per-level: 2
       icon: DIAMOND
       description: ["More of every block you mine.", "+2% per level (x3 at level 100)."]
+      costs:
+        - 50         # level 1
+        - 54         # level 2
+        - 57         # level 3
+        - 61         # level 4
+        - 66         # level 5
+        - 70         # level 6
+        - 75         # level 7
+        - 80         # level 8
+        - 86         # level 9
+        - 92         # level 10
+        - 98         # level 11
+        - 105        # level 12
+        - 113        # level 13
+        - 120        # level 14
+        - 129        # level 15
+        - 138        # level 16
+        - 148        # level 17
+        - 158        # level 18
+        - 169        # level 19
+        - 181        # level 20
+        - 193        # level 21
+        - 207        # level 22
+        - 222        # level 23
+        - 237        # level 24
+        - 254        # level 25
+        - 271        # level 26
+        - 290        # level 27
+        - 311        # level 28
+        - 332        # level 29
+        - 356        # level 30
+        - 381        # level 31
+        - 407        # level 32
+        - 436        # level 33
+        - 466        # level 34
+        - 499        # level 35
+        - 534        # level 36
+        - 571        # level 37
+        - 611        # level 38
+        - 654        # level 39
+        - 700        # level 40
+        - 749        # level 41
+        - 801        # level 42
+        - 857        # level 43
+        - 917        # level 44
+        - 981        # level 45
+        - 1050       # level 46
+        - 1124       # level 47
+        - 1202       # level 48
+        - 1286       # level 49
+        - 1376       # level 50
+        - 1473       # level 51
+        - 1576       # level 52
+        - 1686       # level 53
+        - 1804       # level 54
+        - 1931       # level 55
+        - 2066       # level 56
+        - 2210       # level 57
+        - 2365       # level 58
+        - 2531       # level 59
+        - 2708       # level 60
+        - 2897       # level 61
+        - 3100       # level 62
+        - 3317       # level 63
+        - 3549       # level 64
+        - 3798       # level 65
+        - 4064       # level 66
+        - 4348       # level 67
+        - 4652       # level 68
+        - 4978       # level 69
+        - 5327       # level 70
+        - 5699       # level 71
+        - 6098       # level 72
+        - 6525       # level 73
+        - 6982       # level 74
+        - 7471       # level 75
+        - 7994       # level 76
+        - 8553       # level 77
+        - 9152       # level 78
+        - 9793       # level 79
+        - 10478      # level 80
+        - 11212      # level 81
+        - 11997      # level 82
+        - 12836      # level 83
+        - 13735      # level 84
+        - 14696      # level 85
+        - 15725      # level 86
+        - 16826      # level 87
+        - 18004      # level 88
+        - 19264      # level 89
+        - 20612      # level 90
+        - 22055      # level 91
+        - 23599      # level 92
+        - 25251      # level 93
+        - 27019      # level 94
+        - 28910      # level 95
+        - 30933      # level 96
+        - 33099      # level 97
+        - 35416      # level 98
+        - 37895      # level 99
+        - 40547      # level 100
     token-finder:
       name: Token Finder
-      max-level: 50
-      cost: 40
-      cost-growth: 1.09
       per-level: 4
       icon: SUNFLOWER
       description: ["Find tokens more often.", "+4% chance per level (x3 at level 50)."]
+      costs:
+        - 40         # level 1
+        - 44         # level 2
+        - 48         # level 3
+        - 52         # level 4
+        - 56         # level 5
+        - 62         # level 6
+        - 67         # level 7
+        - 73         # level 8
+        - 80         # level 9
+        - 87         # level 10
+        - 95         # level 11
+        - 103        # level 12
+        - 113        # level 13
+        - 123        # level 14
+        - 134        # level 15
+        - 146        # level 16
+        - 159        # level 17
+        - 173        # level 18
+        - 189        # level 19
+        - 206        # level 20
+        - 224        # level 21
+        - 244        # level 22
+        - 266        # level 23
+        - 290        # level 24
+        - 316        # level 25
+        - 345        # level 26
+        - 376        # level 27
+        - 410        # level 28
+        - 447        # level 29
+        - 487        # level 30
+        - 531        # level 31
+        - 578        # level 32
+        - 631        # level 33
+        - 687        # level 34
+        - 749        # level 35
+        - 817        # level 36
+        - 890        # level 37
+        - 970        # level 38
+        - 1057       # level 39
+        - 1153       # level 40
+        - 1256       # level 41
+        - 1369       # level 42
+        - 1493       # level 43
+        - 1627       # level 44
+        - 1773       # level 45
+        - 1933       # level 46
+        - 2107       # level 47
+        - 2297       # level 48
+        - 2503       # level 49
+        - 2729       # level 50
     explosive:
       name: Explosive
-      max-level: 25
-      cost: 150
-      cost-growth: 1.18
       per-level: 0.4
       icon: TNT
       description: ["Chance to blow up the blocks", "around the one you mine.", "0.4% per level (10% at level 25)."]
+      costs:
+        - 150        # level 1
+        - 177        # level 2
+        - 209        # level 3
+        - 246        # level 4
+        - 291        # level 5
+        - 343        # level 6
+        - 405        # level 7
+        - 478        # level 8
+        - 564        # level 9
+        - 665        # level 10
+        - 785        # level 11
+        - 926        # level 12
+        - 1093       # level 13
+        - 1290       # level 14
+        - 1522       # level 15
+        - 1796       # level 16
+        - 2119       # level 17
+        - 2501       # level 18
+        - 2951       # level 19
+        - 3482       # level 20
+        - 4109       # level 21
+        - 4849       # level 22
+        - 5721       # level 23
+        - 6751       # level 24
+        - 7966       # level 25
     haste:
       name: Haste
-      max-level: 3
-      cost: 500
-      cost-growth: 3
       icon: GOLDEN_PICKAXE
       description: ["Haste while holding the pickaxe."]
+      costs:
+        - 500        # level 1
+        - 1500       # level 2
+        - 4500       # level 3
     unbreaking:
       name: Unbreaking
       vanilla: unbreaking
-      max-level: 10
-      cost: 15
-      cost-growth: 1.3
       icon: ANVIL
       description: ["Your pickaxe lasts longer."]
+      costs:
+        - 15         # level 1
+        - 20         # level 2
+        - 25         # level 3
+        - 33         # level 4
+        - 43         # level 5
+        - 56         # level 6
+        - 72         # level 7
+        - 94         # level 8
+        - 122        # level 9
+        - 159        # level 10
+    mending:
+      name: Mending
+      vanilla: mending
+      icon: EXPERIENCE_BOTTLE
+      description: ["XP repairs your pickaxe."]
+      costs:
+        - 2500       # level 1
 
   sword:
     sharpness:
       name: Sharpness
       vanilla: sharpness
-      max-level: 10
-      cost: 2
-      cost-growth: 1.35
       icon: IRON_SWORD
       description: ["More damage."]
+      costs:
+        - 2          # level 1
+        - 3          # level 2
+        - 4          # level 3
+        - 5          # level 4
+        - 7          # level 5
+        - 9          # level 6
+        - 12         # level 7
+        - 16         # level 8
+        - 22         # level 9
+        - 30         # level 10
     fire-aspect:
       name: Fire Aspect
       vanilla: fire_aspect
-      max-level: 2
-      cost: 15
-      cost-growth: 2
       icon: BLAZE_POWDER
       description: ["Sets your target on fire."]
+      costs:
+        - 15         # level 1
+        - 30         # level 2
     knockback:
       name: Knockback
       vanilla: knockback
-      max-level: 2
-      cost: 10
-      cost-growth: 2
       icon: PISTON
       description: ["Knocks your target back."]
+      costs:
+        - 10         # level 1
+        - 20         # level 2
     lifesteal:
       name: Lifesteal
-      max-level: 5
-      cost: 20
-      cost-growth: 1.6
       per-level: 3
       icon: REDSTONE
       description: ["Heal for part of the damage you deal.", "3% per level (15% at level 5)."]
+      costs:
+        - 20         # level 1
+        - 32         # level 2
+        - 51         # level 3
+        - 82         # level 4
+        - 131        # level 5
     unbreaking:
       name: Unbreaking
       vanilla: unbreaking
-      max-level: 10
-      cost: 3
-      cost-growth: 1.3
       icon: ANVIL
       description: ["Your sword lasts longer."]
+      costs:
+        - 3          # level 1
+        - 4          # level 2
+        - 5          # level 3
+        - 7          # level 4
+        - 9          # level 5
+        - 11         # level 6
+        - 14         # level 7
+        - 19         # level 8
+        - 24         # level 9
+        - 32         # level 10
+    mending:
+      name: Mending
+      vanilla: mending
+      icon: EXPERIENCE_BOTTLE
+      description: ["XP repairs your sword."]
+      costs:
+        - 25         # level 1
 
   armor:
     protection:
       name: Protection
       vanilla: protection
-      max-level: 6
-      cost: 3
-      cost-growth: 1.5
       icon: SHIELD
       description: ["Take less damage."]
+      costs:
+        - 3          # level 1
+        - 4          # level 2
+        - 7          # level 3
+        - 10         # level 4
+        - 15         # level 5
+        - 23         # level 6
+    fire-protection:
+      name: Fire Protection
+      vanilla: fire_protection
+      icon: MAGMA_CREAM
+      description: ["Take less fire and lava damage."]
+      costs:
+        - 3          # level 1
+        - 4          # level 2
+        - 7          # level 3
+        - 10         # level 4
+    blast-protection:
+      name: Blast Protection
+      vanilla: blast_protection
+      icon: TNT
+      description: ["Take less explosion damage."]
+      costs:
+        - 3          # level 1
+        - 4          # level 2
+        - 7          # level 3
+        - 10         # level 4
     thorns:
       name: Thorns
       vanilla: thorns
-      max-level: 3
-      cost: 15
-      cost-growth: 2
       icon: CACTUS
       description: ["Hurts players who hit you."]
+      costs:
+        - 15         # level 1
+        - 30         # level 2
+        - 60         # level 3
     feather-falling:
       name: Feather Falling
       vanilla: feather_falling
-      max-level: 4
-      cost: 5
-      cost-growth: 1.5
       only-for: [BOOTS]
       icon: FEATHER
       description: ["Less fall damage."]
+      costs:
+        - 5          # level 1
+        - 8          # level 2
+        - 11         # level 3
+        - 17         # level 4
+    aqua-affinity:
+      name: Aqua Affinity
+      vanilla: aqua_affinity
+      only-for: [HELMET]
+      icon: PRISMARINE_CRYSTALS
+      description: ["Mine at normal speed underwater."]
+      costs:
+        - 10         # level 1
     unbreaking:
       name: Unbreaking
       vanilla: unbreaking
-      max-level: 10
-      cost: 2
-      cost-growth: 1.3
       icon: ANVIL
       description: ["Your armor lasts longer."]
+      costs:
+        - 2          # level 1
+        - 3          # level 2
+        - 3          # level 3
+        - 4          # level 4
+        - 6          # level 5
+        - 7          # level 6
+        - 10         # level 7
+        - 13         # level 8
+        - 16         # level 9
+        - 21         # level 10
+    mending:
+      name: Mending
+      vanilla: mending
+      icon: EXPERIENCE_BOTTLE
+      description: ["XP repairs your armor."]
+      costs:
+        - 25         # level 1

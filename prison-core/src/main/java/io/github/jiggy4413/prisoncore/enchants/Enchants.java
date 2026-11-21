@@ -78,12 +78,17 @@ public final class Enchants implements Listener, CommandExecutor {
         int max;
         double baseCost;
         double growth;
+        /** Exact price of each level (level 1 first). When set, it replaces cost/cost-growth. */
+        List<Long> costs = new ArrayList<Long>();
         double perLevel;
         Material icon;
         List<String> description = new ArrayList<String>();
         List<String> appliesTo = new ArrayList<String>();   // e.g. BOOTS; empty = every item of the category
 
         long cost(int currentLevel) {
+            if (!costs.isEmpty()) {
+                return costs.get(Math.min(currentLevel, costs.size() - 1));
+            }
             return Math.max(1, Math.round(baseCost * Math.pow(growth, currentLevel)));
         }
 
@@ -162,6 +167,18 @@ public final class Enchants implements Listener, CommandExecutor {
                     d.baseCost = s.getDouble("cost", 10);
                     d.growth = Math.max(1, s.getDouble("cost-growth", 1.2));
                     d.perLevel = s.getDouble("per-level", 0);
+                    if (s.contains("costs", true) && s.isList("costs")) {
+                        for (Object o : s.getList("costs")) {
+                            try {
+                                d.costs.add(Math.max(0, Long.parseLong(o.toString().replace(",", "").replace("_", "").trim())));
+                            } catch (NumberFormatException e) {
+                                plugin.getLogger().warning(FILE + ": '" + o + "' in " + c.key() + "." + id + ".costs isn't a number");
+                            }
+                        }
+                        if (!d.costs.isEmpty()) {
+                            d.max = d.costs.size(); // one price per level
+                        }
+                    }
                     Material icon = Material.matchMaterial(s.getString("icon", "ENCHANTED_BOOK"));
                     d.icon = icon != null && icon.isItem() ? icon : Material.ENCHANTED_BOOK;
                     d.description = s.getStringList("description");
