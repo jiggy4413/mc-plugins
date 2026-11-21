@@ -30,7 +30,10 @@ public final class MinePlaceholders extends PlaceholderExpansion {
     private final JavaPlugin plugin;
     private final MineManager manager;
 
-    public MinePlaceholders(JavaPlugin plugin, MineManager manager) {
+    private final io.github.jiggy4413.prisoncore.tokens.Tokens tokens;
+
+    public MinePlaceholders(JavaPlugin plugin, MineManager manager, io.github.jiggy4413.prisoncore.tokens.Tokens tokens) {
+        this.tokens = tokens;
         this.plugin = plugin;
         this.manager = manager;
     }
@@ -92,6 +95,18 @@ public final class MinePlaceholders extends PlaceholderExpansion {
             return null;
         }
         String p = params.toLowerCase(Locale.ROOT);
+        if (p.startsWith("tokens")) {
+            long t = tokens == null || player == null ? 0 : tokens.get(player.getUniqueId());
+            if (p.equals("tokens")) {
+                return String.valueOf(t);
+            }
+            if (p.equals("tokens_formatted")) {
+                return io.github.jiggy4413.prisoncore.tokens.Tokens.format(t);
+            }
+            if (p.equals("tokens_short")) {
+                return io.github.jiggy4413.prisoncore.tokens.Tokens.formatShort(t);
+            }
+        }
         if (p.equals("current_mine")) {
             Mine m = current(player);
             return m == null ? "" : Text.color(m.display());

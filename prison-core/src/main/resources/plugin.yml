@@ -3,7 +3,7 @@ version: ${project.version}
 main: io.github.jiggy4413.prisoncore.PrisonCore
 api-version: 1.16
 author: jiggy4413
-description: Custom features for the prison server - ranks menu, warps menu, help, mines, void worlds.
+description: Custom features for the prison server - ranks menu, warps menu, help, scoreboard, tokens, mines, void worlds.
 # Load after these so we can hook into them. Neither is required.
 softdepend: [Rankup, PlaceholderAPI]
 # Enable before Multiverse so worlds using PrisonCore's void generator can load at startup.
@@ -28,6 +28,16 @@ commands:
     description: Shows the server's help.
     usage: /prisonhelp [page]
     permission: prisoncore.help
+  tokens:
+    description: Check, pay and manage tokens.
+    usage: /tokens [player] | pay <player> <amount> | top | give|take|set <player> <amount>
+    aliases: [token]
+    permission: prisoncore.tokens
+  prisonboard:
+    description: Turns your scoreboard on or off.
+    usage: /board [on|off]
+    aliases: [board, sb]
+    permission: prisoncore.board
   prisonranks:
     description: Opens the ranks menu.
     usage: /prisonranks [prestiges]
@@ -49,6 +59,15 @@ permissions:
   prisoncore.help.all:
     description: Use /help all to see the server's full command list.
     default: op
+  prisoncore.tokens:
+    description: Check and pay tokens.
+    default: true
+  prisoncore.tokens.admin:
+    description: Give, take and set anyone's tokens (/tokens give, for Tebex and votes).
+    default: op
+  prisoncore.board:
+    description: Turn your own scoreboard on or off.
+    default: true
   prisoncore.ranks:
     description: Open the ranks and prestiges menu.
     default: true

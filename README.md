@@ -8,7 +8,7 @@ Every push builds automatically. Get the newest jar from **Releases → Latest b
 ## Modules
 | Module | Jar | Purpose |
 |---|---|---|
-| `prison-core` | `PrisonCore-1.9.0.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
+| `prison-core` | `PrisonCore-1.10.0.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
 | `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
 | `stubs/placeholderapi` | none | Compile-only copy of PlaceholderAPI's expansion API. Never installed on the server. |
 
@@ -55,6 +55,20 @@ of the server's list of every command. Commands with a permission only show to p
 
 - **Config:** `plugins/PrisonCore/help.yml`
 - **Staff:** `/help all` shows the server's full list (permission `prisoncore.help.all`, ops by default)
+
+## Scoreboard
+A flicker-free panel on the right of the screen: server name, player, rank, balance, tokens and a vote reminder.
+
+- **Config:** `plugins/PrisonCore/scoreboard.yml` (placeholders `{player}`, `{rank}`, `{balance}`, `{tokens}`... plus PlaceholderAPI)
+- **Hide/show your own:** `/board` (or `/board on`, `/board off`)
+
+## Tokens
+A second currency found while mining (2% of blocks by default, more in higher mines).
+
+- **Config:** `plugins/PrisonCore/tokens.yml`; balances are saved in `plugins/PrisonCore/data/tokens.yml`
+- **Players:** `/tokens`, `/tokens <player>`, `/tokens pay <player> <amount>`, `/tokens top`
+- **Staff/console:** `/tokens give|take|set <player> <amount>` (permission `prisoncore.tokens.admin`)
+- **Placeholders:** `%prisoncore_tokens%`, `%prisoncore_tokens_formatted%`, `%prisoncore_tokens_short%`
 
 ## Void worlds
 PrisonCore includes an empty-world generator (one bedrock block under spawn at 0, 64, 0):

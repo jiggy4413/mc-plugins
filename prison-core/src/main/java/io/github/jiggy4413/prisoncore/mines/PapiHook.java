@@ -12,8 +12,8 @@ public final class PapiHook {
     }
 
     /** Returns the registered expansion (as Object), or null if registering failed. */
-    public static Object register(JavaPlugin plugin, MineManager manager) {
-        MinePlaceholders expansion = new MinePlaceholders(plugin, manager);
+    public static Object register(JavaPlugin plugin, MineManager manager, io.github.jiggy4413.prisoncore.tokens.Tokens tokens) {
+        MinePlaceholders expansion = new MinePlaceholders(plugin, manager, tokens);
         if (expansion.registerNow()) {
             return expansion;
         }

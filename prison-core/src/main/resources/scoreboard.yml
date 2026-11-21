@@ -1,0 +1,35 @@
+# ==============================================================================
+#  PrisonCore scoreboard (the panel on the right of the screen)
+#  Apply changes with /prisoncore reload. Players can hide theirs with /board.
+#
+#  Up to 15 lines. Each line can be at most 64 characters once colored; long gradients are
+#  turned into the nearest normal colors automatically so they still fit.
+#  Placeholders:
+#    {player}  {rank}  {balance} (1,234.5)  {balance_short} (1.2M)  {tokens}  {tokens_short}
+#    {online}  {max}
+#    and any PlaceholderAPI placeholder, e.g. %vault_eco_balance%
+#  Formatting: & codes, &#RRGGBB, <gradient:#FF0000:#FFD700>text</gradient>, <smallcaps>
+# ==============================================================================
+
+enabled: true
+# How often lines update, in ticks (20 = once a second).
+update-ticks: 20
+# Worlds where nobody sees the scoreboard.
+disabled-worlds: []
+# Shown for {rank} when Rankup has no rank for the player.
+no-rank: "None"
+
+title: "<gradient:#FFAA00:#FFFF55>&lClassic Prison</gradient>"
+lines:
+  - "&8&m                      "
+  - "&6&l{player}"
+  - " &7Rank: &f{rank}"
+  - " &7Balance: &a${balance_short}"
+  - " &7Tokens: &e{tokens_short}"
+  - ""
+  - "&e&lVOTE! &7Rewards at &f/vote"
+  - "&8&m                      "
+
+messages:
+  hidden: "&7Scoreboard hidden. &f/board &7to show it again."
+  shown: "&7Scoreboard shown."

@@ -1,0 +1,41 @@
+# ==============================================================================
+#  PrisonCore tokens
+#  A second currency players earn by mining. Balances are saved in data/tokens.yml.
+#  Apply changes with /prisoncore reload.
+#
+#  Commands:
+#    /tokens                         your balance
+#    /tokens <player>                someone else's balance
+#    /tokens pay <player> <amount>   send tokens
+#    /tokens top                     the 10 players with the most tokens
+#    /tokens give|take|set <player> <amount>   staff and console (prisoncore.tokens.admin)
+#      e.g. for Tebex or VotingPlugin:  tokens give {username} 500
+#
+#  Placeholders: %prisoncore_tokens%, %prisoncore_tokens_formatted% (1,234), %prisoncore_tokens_short% (1.2K)
+# ==============================================================================
+
+earning:
+  enabled: true
+  # Only blocks broken inside a PrisonCore mine can give tokens.
+  only-in-mines: true
+  # Chance per block mined to find tokens, in percent (2.0 = 1 in 50 blocks).
+  chance-percent: 2.0
+  # How many tokens are found each time (a random number between these).
+  min: 1
+  max: 3
+  # Each mine after A gives this much more (10 = B +10%, C +20% ... Z +250%).
+  bonus-percent-per-mine: 10
+  # Where the "+tokens" message shows: actionbar (above the hotbar), chat, or none.
+  notify: actionbar
+  message: "&e+{amount} &6Tokens"
+
+messages:
+  balance: "&7You have &e{amount} &7tokens."
+  balance-other: "&f{player} &7has &e{amount} &7tokens."
+  paid: "&7You sent &e{amount} &7tokens to &f{player}&7."
+  received: "&f{player} &7sent you &e{amount} &7tokens."
+  given: "&7You received &e{amount} &7tokens!"
+  not-enough: "&cYou don't have enough tokens."
+  not-online: "&c{player} isn't online."
+  top-header: "<gradient:#FFAA00:#FFFF55>&lTop Tokens</gradient>"
+  top-line: "&e#{rank} &f{player} &7- &e{amount}"
