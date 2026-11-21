@@ -117,8 +117,20 @@ public final class Store implements Listener, CommandExecutor {
             con.setRequestProperty("User-Agent", "PrisonCore");
             int code = con.getResponseCode();
             if (code != 200) {
-                lastRefreshProblem = "Tebex answered HTTP " + code + (code == 404 || code == 403
-                        ? " (check tebex.public-token in store.yml)" : "");
+                String detail = "";
+                try {
+                    java.io.InputStream err = con.getErrorStream();
+                    if (err != null) {
+                        com.google.gson.JsonObject o = new com.google.gson.JsonParser().parse(
+                                new java.io.InputStreamReader(err, java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();
+                        detail = str(o, "detail").isEmpty() ? str(o, "title") : str(o, "detail");
+                    }
+                } catch (Exception ignored) {
+                    // no readable detail
+                }
+                lastRefreshProblem = "Tebex answered HTTP " + code + (detail.isEmpty() ? "" : " - " + detail)
+                        + (code == 422 || code == 404 || code == 403
+                        ? " (tebex.public-token in store.yml must be the Public Token, not the secret key)" : "");
                 plugin.getLogger().warning("Couldn't load store prices: " + lastRefreshProblem);
                 return;
             }
