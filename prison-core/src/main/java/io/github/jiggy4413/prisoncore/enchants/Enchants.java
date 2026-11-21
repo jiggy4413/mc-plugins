@@ -371,6 +371,9 @@ public final class Enchants implements Listener, CommandExecutor {
             return;
         }
         Def d = def(Category.PICKAXE, "fortune");
+        if (d.vanilla != null) {
+            return; // Minecraft's own Fortune handles the drops
+        }
         double multiplier = 1 + lvl * d.perLevel / 100.0;
         List<ItemStack> items = new ArrayList<ItemStack>();
         for (Item it : event.getItems()) {
@@ -403,7 +406,9 @@ public final class Enchants implements Listener, CommandExecutor {
         ItemStack tool = p.getInventory().getItemInMainHand();
         int fortune = heldLevel(p, Category.PICKAXE, "fortune");
         Def fortuneDef = def(Category.PICKAXE, "fortune");
-        double multiplier = fortune > 0 && fortuneDef != null ? 1 + fortune * fortuneDef.perLevel / 100.0 : 1;
+        // with Minecraft's Fortune, getDrops(tool) below already applies it
+        double multiplier = fortune > 0 && fortuneDef != null && fortuneDef.vanilla == null
+                ? 1 + fortune * fortuneDef.perLevel / 100.0 : 1;
         List<ItemStack> items = new ArrayList<ItemStack>();
         int broken = 0;
         for (int x = -r; x <= r; x++) {

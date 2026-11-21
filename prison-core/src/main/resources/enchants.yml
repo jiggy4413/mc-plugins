@@ -25,7 +25,9 @@ replace-enchanting-table: true
 # above 10 don't show as "enchantment.level.11").
 lore-format: "&7{name} &f{level}"
 
-# Fortune only works on blocks inside PrisonCore mines.
+# Fortune is Minecraft's own Fortune. To use PrisonCore's version instead (more of EVERY block
+# mined in a mine), remove "vanilla: fortune" from it and add e.g. "per-level: 2" (% per level).
+# That version only works inside PrisonCore mines when this is true:
 fortune-only-in-mines: true
 # Explosive breaks a cube this many blocks out from the mined block (1 = 3x3x3).
 explosive-radius: 1
@@ -65,110 +67,13 @@ enchants:
         - 19222      # level 10
     fortune:
       name: Fortune
-      per-level: 2
+      vanilla: fortune
       icon: DIAMOND
-      description: ["More of every block you mine.", "+2% per level (x3 at level 100)."]
+      description: ["Minecraft's Fortune: more drops from", "coal, diamond, emerald, redstone and lapis ore."]
       costs:
-        - 50         # level 1
-        - 54         # level 2
-        - 57         # level 3
-        - 61         # level 4
-        - 66         # level 5
-        - 70         # level 6
-        - 75         # level 7
-        - 80         # level 8
-        - 86         # level 9
-        - 92         # level 10
-        - 98         # level 11
-        - 105        # level 12
-        - 113        # level 13
-        - 120        # level 14
-        - 129        # level 15
-        - 138        # level 16
-        - 148        # level 17
-        - 158        # level 18
-        - 169        # level 19
-        - 181        # level 20
-        - 193        # level 21
-        - 207        # level 22
-        - 222        # level 23
-        - 237        # level 24
-        - 254        # level 25
-        - 271        # level 26
-        - 290        # level 27
-        - 311        # level 28
-        - 332        # level 29
-        - 356        # level 30
-        - 381        # level 31
-        - 407        # level 32
-        - 436        # level 33
-        - 466        # level 34
-        - 499        # level 35
-        - 534        # level 36
-        - 571        # level 37
-        - 611        # level 38
-        - 654        # level 39
-        - 700        # level 40
-        - 749        # level 41
-        - 801        # level 42
-        - 857        # level 43
-        - 917        # level 44
-        - 981        # level 45
-        - 1050       # level 46
-        - 1124       # level 47
-        - 1202       # level 48
-        - 1286       # level 49
-        - 1376       # level 50
-        - 1473       # level 51
-        - 1576       # level 52
-        - 1686       # level 53
-        - 1804       # level 54
-        - 1931       # level 55
-        - 2066       # level 56
-        - 2210       # level 57
-        - 2365       # level 58
-        - 2531       # level 59
-        - 2708       # level 60
-        - 2897       # level 61
-        - 3100       # level 62
-        - 3317       # level 63
-        - 3549       # level 64
-        - 3798       # level 65
-        - 4064       # level 66
-        - 4348       # level 67
-        - 4652       # level 68
-        - 4978       # level 69
-        - 5327       # level 70
-        - 5699       # level 71
-        - 6098       # level 72
-        - 6525       # level 73
-        - 6982       # level 74
-        - 7471       # level 75
-        - 7994       # level 76
-        - 8553       # level 77
-        - 9152       # level 78
-        - 9793       # level 79
-        - 10478      # level 80
-        - 11212      # level 81
-        - 11997      # level 82
-        - 12836      # level 83
-        - 13735      # level 84
-        - 14696      # level 85
-        - 15725      # level 86
-        - 16826      # level 87
-        - 18004      # level 88
-        - 19264      # level 89
-        - 20612      # level 90
-        - 22055      # level 91
-        - 23599      # level 92
-        - 25251      # level 93
-        - 27019      # level 94
-        - 28910      # level 95
-        - 30933      # level 96
-        - 33099      # level 97
-        - 35416      # level 98
-        - 37895      # level 99
-        - 40547      # level 100
+        - 2000       # level 1
+        - 8000       # level 2
+        - 25000      # level 3
     token-finder:
       name: Token Finder
       per-level: 4
