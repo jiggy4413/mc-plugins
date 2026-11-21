@@ -301,8 +301,10 @@ public final class Board implements Listener, CommandExecutor {
                 out = out.replace("{balance}", new DecimalFormat("#,##0.##").format(bal))
                         .replace("{balance_short}", Tokens.formatShort((long) bal));
             }
-            if (out.contains("{rank}")) {
-                out = out.replace("{rank}", rank(player));
+            if (out.contains("{rank}") || out.contains("{prestige")) {
+                CachedRank r = rank(player);
+                out = out.replace("{rank}", r.text).replace("{prestige_name}", r.prestigeName)
+                        .replace("{prestige}", String.valueOf(r.prestige));
             }
             return out;
         }
@@ -312,16 +314,20 @@ public final class Board implements Listener, CommandExecutor {
 
     private static final class CachedRank {
         String text;
+        int prestige;
+        String prestigeName;
         long at;
     }
 
-    /** The player's Rankup rank (display name), refreshed at most every few seconds. */
-    private String rank(Player p) {
+    /** The player's Rankup rank and prestige, refreshed at most every few seconds. */
+    private CachedRank rank(Player p) {
         CachedRank c = ranks.get(p.getUniqueId());
         long now = System.currentTimeMillis();
         if (c != null && now - c.at < 3000) {
-            return c.text;
+            return c;
         }
+        int prestige = 0;
+        String prestigeName = config.getString("no-prestige", "None");
         String text = config.getString("no-rank", "None");
         RankupBridge rankup = plugin.getRankup();
         if (rankup != null && rankup.ranksAvailable()) {
@@ -337,13 +343,26 @@ public final class Board implements Listener, CommandExecutor {
                 // keep "None"
             }
         }
+        if (rankup != null && rankup.prestigesAvailable()) {
+            try {
+                Ladder ladder = rankup.prestiges(p);
+                if (ladder.current != null) {
+                    prestige = ladder.current.position;
+                    prestigeName = ladder.current.id;
+                }
+            } catch (Throwable ignored) {
+                // not prestiged
+            }
+        }
         if (c == null) {
             c = new CachedRank();
             ranks.put(p.getUniqueId(), c);
         }
         c.text = text;
+        c.prestige = prestige;
+        c.prestigeName = prestigeName;
         c.at = now;
-        return text;
+        return c;
     }
 
     private Object economy;
