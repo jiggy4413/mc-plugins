@@ -24,7 +24,9 @@ replace-enchanting-table: true
 
 # How enchants are listed on the item (normal Minecraft enchant names are hidden so levels
 # above 10 don't show as "enchantment.level.11").
-lore-format: "&7{name} &f{level}"
+lore-format: "&7{name} {level}"
+# Show levels as Roman numerals like vanilla (Efficiency X). false = plain numbers (Efficiency 10).
+roman-numerals: true
 
 # Fortune is Minecraft's own Fortune. To use PrisonCore's version instead (more of EVERY block
 # mined in a mine), remove "vanilla: fortune" from it and add e.g. "per-level: 2" (% per level).

@@ -191,7 +191,7 @@ public final class EnchantMenu implements InventoryHolder {
                 lore.add("&7" + line);
             }
             lore.add("");
-            lore.add("&7Level: &f" + lvl + "&7/&f" + d.max);
+            lore.add("&7Level: &f" + (lvl > 0 ? enchants.levelText(lvl) : "0") + "&7/&f" + enchants.levelText(d.max));
             if (lvl >= d.max) {
                 lore.add("&a&lMAXED");
             } else {
@@ -202,7 +202,7 @@ public final class EnchantMenu implements InventoryHolder {
                 lore.add("&eClick &7to buy 1 level");
                 lore.add("&eShift-click &7to buy up to 10");
             }
-            ItemStack icon = icon(d.icon, (lvl >= d.max ? "&a" : "&b") + "&l" + d.name + (lvl > 0 ? " &7" + lvl : ""), lore);
+            ItemStack icon = icon(d.icon, (lvl >= d.max ? "&a" : "&b") + "&l" + d.name + (lvl > 0 ? " &7" + enchants.levelText(lvl) : ""), lore);
             int at = ENCHANT_SLOTS[i++];
             inventory.setItem(at, icon);
             enchantAt.put(at, d);
@@ -283,7 +283,7 @@ public final class EnchantMenu implements InventoryHolder {
         }
         player.getInventory().setItem(slot, item);
         player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2f);
-        enchants.actionBar(player, "&a" + d.name + " is now level " + enchants.level(item, d) + "!");
+        enchants.actionBar(player, "&a" + d.name + " " + enchants.levelText(enchants.level(item, d)) + "!");
         render();
     }
 

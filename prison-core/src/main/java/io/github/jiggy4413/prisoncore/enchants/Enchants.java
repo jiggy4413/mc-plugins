@@ -347,7 +347,8 @@ public final class Enchants implements Listener, CommandExecutor {
         for (Def d : defs(c)) {
             int lvl = d.vanilla != null ? item.getEnchantmentLevel(d.vanilla) : levelFromMeta(meta, d);
             if (lvl > 0) {
-                ours.add(Text.color(format.replace("{name}", d.name).replace("{level}", String.valueOf(lvl))));
+                ours.add(Text.color(format.replace("{name}", d.name).replace("{level}", levelText(lvl))
+                        .replace("{number}", String.valueOf(lvl)).replace("{roman}", roman(lvl))));
             }
         }
         lore.addAll(0, ours);
@@ -355,6 +356,28 @@ public final class Enchants implements Listener, CommandExecutor {
         meta.getPersistentDataContainer().set(loreKey, PersistentDataType.INTEGER, ours.size());
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
+    }
+
+    /** A level as players see it: Roman numerals like vanilla (III), unless roman-numerals is off. */
+    String levelText(int level) {
+        return config.getBoolean("roman-numerals", true) ? roman(level) : String.valueOf(level);
+    }
+
+    /** 1 → I, 4 → IV, 10 → X ... (plain number above 3999). */
+    static String roman(int n) {
+        if (n <= 0 || n >= 4000) {
+            return String.valueOf(n);
+        }
+        int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] symbols = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < values.length; i++) {
+            while (n >= values[i]) {
+                n -= values[i];
+                sb.append(symbols[i]);
+            }
+        }
+        return sb.toString();
     }
 
     private int levelFromMeta(ItemMeta meta, Def d) {
