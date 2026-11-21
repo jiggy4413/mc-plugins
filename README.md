@@ -75,9 +75,9 @@ Right-clicking an enchanting table (or `/enchanter`) opens the Enchanter: pickax
 with the player's token and PvP point balances. Pickaxe enchants cost tokens; sword and armor
 enchants cost PvP points (1 per kill, no points for killing the same player again within 5 minutes).
 
-- **Pickaxe:** Efficiency, Fortune (Minecraft's), Token Finder, Explosive (3x3x3 in mines), Haste, Unbreaking, Mending
-- **Sword:** Sharpness, Fire Aspect, Knockback, Lifesteal, Unbreaking, Mending
-- **Armor:** Protection, Fire Protection, Blast Protection, Thorns, Feather Falling (boots), Aqua Affinity (helmet), Unbreaking, Mending
+- **Pickaxe:** Efficiency (to 6), Fortune, Unbreaking, Mending, plus Token Finder and Explosive (3x3x3 in mines)
+- **Sword:** Sharpness (to 6), Fire Aspect, Knockback, Unbreaking, Mending
+- **Armor:** Protection, Fire Protection, Blast Protection (all to 6), Thorns, Feather Falling (boots), Aqua Affinity (helmet), Unbreaking, Mending
 - **Config:** `plugins/PrisonCore/enchants.yml`: every level's price is listed (`costs:`), and the number of prices is the max level; PvP point settings in `tokens.yml`
 - **PvP points:** `/pvppoints [player]`, staff `/pvppoints give|take|set <player> <amount>`, placeholder `%prisoncore_pvppoints%`
 
