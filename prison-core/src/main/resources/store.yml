@@ -16,7 +16,7 @@
 # ==============================================================================
 
 # Your Tebex store's address.
-store-url: "https://classicprison.tebex.io"
+store-url: "https://classicprisonstore.tebex.io"
 
 # Commands that open this menu instead of Tebex's. /prisonstore always works too.
 open-commands: [buy, store]
