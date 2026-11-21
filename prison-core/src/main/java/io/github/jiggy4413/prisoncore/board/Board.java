@@ -303,7 +303,11 @@ public final class Board implements Listener, CommandExecutor {
             }
             if (out.contains("{rank") || out.contains("{prestige")) {
                 CachedRank r = rank(player);
-                String prefix = out.contains("{rank}") || out.contains("{rank_prefix}") ? prefix(player) : "";
+                String prefix = out.contains("{rank}") || out.contains("{rank_prefix}") ? groupPrefix(player, r.id) : "";
+                if (out.contains("{prestige_prefix}")) {
+                    String pp = r.prestige > 0 ? groupPrefix(player, r.prestigeName) : "";
+                    out = out.replace("{prestige_prefix}", pp.isEmpty() ? String.valueOf(r.prestige) : pp);
+                }
                 boolean usePrefix = config.getString("rank-display", "prefix").equalsIgnoreCase("prefix") && !prefix.isEmpty();
                 out = out.replace("{rank_prefix}", prefix.isEmpty() ? r.text : prefix)
                         .replace("{rank_name}", r.text)
@@ -318,6 +322,7 @@ public final class Board implements Listener, CommandExecutor {
 
     private static final class CachedRank {
         String text;
+        String id = "";
         int prestige;
         String prestigeName;
         long at;
@@ -331,6 +336,7 @@ public final class Board implements Listener, CommandExecutor {
             return c;
         }
         int prestige = 0;
+        String rankId = "";
         String prestigeName = config.getString("no-prestige", "None");
         String text = config.getString("no-rank", "None");
         RankupBridge rankup = plugin.getRankup();
@@ -340,6 +346,7 @@ public final class Board implements Listener, CommandExecutor {
                 for (LadderEntry e : ladder.entries) {
                     if (e.state == LadderEntry.State.CURRENT) {
                         text = e.rankupDisplayName != null && !e.rankupDisplayName.isEmpty() ? e.rankupDisplayName : e.id;
+                        rankId = e.id;
                         break;
                     }
                 }
@@ -363,6 +370,7 @@ public final class Board implements Listener, CommandExecutor {
             ranks.put(p.getUniqueId(), c);
         }
         c.text = text;
+        c.id = rankId;
         c.prestige = prestige;
         c.prestigeName = prestigeName;
         c.at = now;
@@ -373,8 +381,15 @@ public final class Board implements Listener, CommandExecutor {
     private Method getPrefix;
     private boolean chatChecked;
 
-    /** The player's chat prefix from Vault (LuckPerms), trimmed; "" if there isn't one. */
-    private String prefix(Player p) {
+    /**
+     * The prefix of one LuckPerms group (through Vault), e.g. the rank group "ablock".
+     * Using the group's own prefix keeps a prestige prefix like "P1" out of the rank line.
+     * Returns "" when there's no Vault chat or the group has no prefix.
+     */
+    private String groupPrefix(Player p, String group) {
+        if (group == null || group.isEmpty()) {
+            return "";
+        }
         if (!chatChecked || chat == null) {
             chatChecked = true;
             try {
@@ -382,7 +397,7 @@ public final class Board implements Listener, CommandExecutor {
                 RegisteredServiceProvider<?> rsp = Bukkit.getServicesManager().getRegistration(c);
                 if (rsp != null) {
                     chat = rsp.getProvider();
-                    getPrefix = c.getMethod("getPlayerPrefix", Player.class);
+                    getPrefix = c.getMethod("getGroupPrefix", String.class, String.class);
                 }
             } catch (Throwable ignored) {
                 chat = null;
@@ -392,7 +407,7 @@ public final class Board implements Listener, CommandExecutor {
             return "";
         }
         try {
-            Object v = getPrefix.invoke(chat, p);
+            Object v = getPrefix.invoke(chat, p.getWorld().getName(), group);
             return v == null ? "" : v.toString().trim();
         } catch (Throwable t) {
             return "";

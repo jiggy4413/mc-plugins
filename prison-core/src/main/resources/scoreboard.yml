@@ -17,8 +17,9 @@ enabled: true
 update-ticks: 20
 # Worlds where nobody sees the scoreboard.
 disabled-worlds: []
-# What {rank} shows: prefix = the player's chat prefix from LuckPerms (through Vault), like in chat;
-# name = the Rankup rank name (e.g. ablock). {rank_prefix} and {rank_name} always show one or the other.
+# What {rank} shows: prefix = the rank group's prefix from LuckPerms (through Vault), without the
+# prestige prefix; name = the Rankup rank name (e.g. ablock). {rank_prefix} and {rank_name} always
+# show one or the other. {prestige_prefix} shows the prestige group's prefix (e.g. P1).
 rank-display: prefix
 # Shown for {rank} when Rankup has no rank for the player.
 no-rank: "None"
