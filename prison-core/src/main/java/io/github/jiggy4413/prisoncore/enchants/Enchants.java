@@ -81,6 +81,19 @@ public final class Enchants implements Listener, CommandExecutor {
         /** Exact price of each level (level 1 first). When set, it replaces cost/cost-growth. */
         List<Long> costs = new ArrayList<Long>();
         double perLevel;
+        /** Exact strength at each level (level 1 first). When set, it replaces per-level. */
+        List<Double> strengths = new ArrayList<Double>();
+
+        /** How strong the enchant is at a level: from "strength:" if set, else level x per-level. */
+        double effect(int level) {
+            if (level <= 0) {
+                return 0;
+            }
+            if (!strengths.isEmpty()) {
+                return strengths.get(Math.min(level, strengths.size()) - 1);
+            }
+            return level * perLevel;
+        }
         Material icon;
         List<String> description = new ArrayList<String>();
         List<String> appliesTo = new ArrayList<String>();   // e.g. BOOTS; empty = every item of the category
@@ -167,6 +180,15 @@ public final class Enchants implements Listener, CommandExecutor {
                     d.baseCost = s.getDouble("cost", 10);
                     d.growth = Math.max(1, s.getDouble("cost-growth", 1.2));
                     d.perLevel = s.getDouble("per-level", 0);
+                    if (s.contains("strength", true) && s.isList("strength")) {
+                        for (Object o : s.getList("strength")) {
+                            try {
+                                d.strengths.add(Double.parseDouble(o.toString().trim()));
+                            } catch (NumberFormatException e) {
+                                plugin.getLogger().warning(FILE + ": '" + o + "' in " + c.key() + "." + id + ".strength isn't a number");
+                            }
+                        }
+                    }
                     if (s.contains("costs", true) && s.isList("costs")) {
                         for (Object o : s.getList("costs")) {
                             try {
@@ -221,7 +243,7 @@ public final class Enchants implements Listener, CommandExecutor {
                 if (d == null || category(tool) != Category.PICKAXE) {
                     return 1;
                 }
-                return 1 + level(tool, d) * d.perLevel / 100.0;
+                return 1 + d.effect(level(tool, d)) / 100.0;
             }
         });
         hasteTask = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
@@ -374,7 +396,7 @@ public final class Enchants implements Listener, CommandExecutor {
         if (d.vanilla != null) {
             return; // Minecraft's own Fortune handles the drops
         }
-        double multiplier = 1 + lvl * d.perLevel / 100.0;
+        double multiplier = 1 + d.effect(lvl) / 100.0;
         List<ItemStack> items = new ArrayList<ItemStack>();
         for (Item it : event.getItems()) {
             ItemStack stack = it.getItemStack().clone();
@@ -394,7 +416,7 @@ public final class Enchants implements Listener, CommandExecutor {
             return;
         }
         Def d = def(Category.PICKAXE, "explosive");
-        if (ThreadLocalRandom.current().nextDouble() * 100 >= lvl * d.perLevel) {
+        if (ThreadLocalRandom.current().nextDouble() * 100 >= d.effect(lvl)) {
             return;
         }
         Block center = event.getBlock();
@@ -408,7 +430,7 @@ public final class Enchants implements Listener, CommandExecutor {
         Def fortuneDef = def(Category.PICKAXE, "fortune");
         // with Minecraft's Fortune, getDrops(tool) below already applies it
         double multiplier = fortune > 0 && fortuneDef != null && fortuneDef.vanilla == null
-                ? 1 + fortune * fortuneDef.perLevel / 100.0 : 1;
+                ? 1 + fortuneDef.effect(fortune) / 100.0 : 1;
         List<ItemStack> items = new ArrayList<ItemStack>();
         int broken = 0;
         for (int x = -r; x <= r; x++) {
@@ -452,7 +474,7 @@ public final class Enchants implements Listener, CommandExecutor {
             return;
         }
         Def d = def(Category.SWORD, "lifesteal");
-        double heal = event.getFinalDamage() * lvl * d.perLevel / 100.0;
+        double heal = event.getFinalDamage() * d.effect(lvl) / 100.0;
         double max = p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         p.setHealth(Math.min(max, p.getHealth() + heal));
     }
