@@ -32,6 +32,8 @@ lore-format: "&7{name} &f{level}"
 fortune-only-in-mines: true
 # Explosive breaks a cube this many blocks out from the mined block (1 = 3x3x3).
 explosive-radius: 1
+# Ores blown up by Explosive come out smelted (iron ore -> iron ingot, gold ore -> gold ingot).
+explosive-auto-smelt: true
 # Fortune and Explosive put blocks straight into the inventory. When it's full, drop the rest
 # on the ground (true) or lose them (false, which avoids lag from piles of items).
 drop-when-inventory-full: false
@@ -160,6 +162,16 @@ enchants:
       costs:
         - 10         # level 1
         - 20         # level 2
+    looting:
+      name: Looting
+      vanilla: looting
+      icon: GOLD_INGOT
+      description: ["More drops from mobs."]
+      costs:
+        - 10         # level 1
+        - 20         # level 2
+        - 40         # level 3
+
     unbreaking:
       name: Unbreaking
       vanilla: unbreaking
