@@ -54,7 +54,7 @@ enchants:
       name: Efficiency
       vanilla: efficiency
       icon: SUGAR
-      description: ["Mine faster.", "Level 6 is one past normal Minecraft."]
+      description: ["Mine faster.", "Levels 6-10 go past normal Minecraft.", "Efficiency X + Haste III mines every block instantly."]
       costs:
         - 500        # level 1
         - 750        # level 2
@@ -62,6 +62,11 @@ enchants:
         - 1688       # level 4
         - 2531       # level 5
         - 3797       # level 6
+        - 5695       # level 7
+        - 8543       # level 8
+        - 12814      # level 9
+        - 19222      # level 10
+
     fortune:
       name: Fortune
       vanilla: fortune
