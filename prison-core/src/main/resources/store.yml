@@ -1,0 +1,231 @@
+# ==============================================================================
+#  PrisonCore store menu  (/buy)
+#  Replaces Tebex's /buy menu with this one. Players still pay on the Tebex website: clicking a
+#  package closes the menu and sends a link they can click to open it.
+#  Apply changes with /prisoncore reload.
+#
+#  Each item under a page's "items:" can use:
+#    slot          where it goes. 5 rows = slots 0-44, left to right, top to bottom
+#    material, name, lore, glow, texture (player head texture)
+#    price         shown wherever {price} is in the name or lore
+#    link          what clicking opens: a full https:// link, or a path added to store-url
+#                  (e.g. "category/ranks" or "package/1234567"). Leave it "" for the store's front page.
+#    open          open another page of this menu instead (e.g. open: ranks)
+#  Tip: open a package on your store website and copy the link from the address bar.
+#  Formatting: & codes, &#RRGGBB, <gradient:#FF0000:#FFD700>text</gradient>, <smallcaps>
+# ==============================================================================
+
+# Your Tebex store's address.
+store-url: "https://classicprison.tebex.io"
+
+# Commands that open this menu instead of Tebex's. /prisonstore always works too.
+open-commands: [buy, store]
+
+# The chat message sent when a package is clicked. Lines with {url} or {click} can be clicked.
+link-message:
+  - ""
+  - "<gradient:#FFAA00:#FFFF55>&lClassic Prison Store</gradient>"
+  - "&7Click below to get &f{package}&7:"
+  - "&e&n{url}"
+  - ""
+
+# The edge of every page alternates between these, and the middle is filled with "filler".
+decoration:
+  border: [ORANGE_STAINED_GLASS_PANE, YELLOW_STAINED_GLASS_PANE]
+  filler: BLACK_STAINED_GLASS_PANE
+
+buttons:
+  back:
+    slot: 36
+    material: ARROW
+    name: "&7Back"
+  close:
+    slot: 40
+    material: BARRIER
+    name: "&cClose"
+
+sounds:
+  open: BLOCK_CHEST_OPEN
+  click: UI_BUTTON_CLICK
+
+menus:
+  main:
+    title: "<gradient:#FFAA00:#FFFF55>&lStore</gradient>"
+    rows: 5
+    items:
+      store:
+        slot: 13
+        material: BOOK
+        glow: true
+        name: "<gradient:#FFAA00:#FFFF55>&lClassic Prison Store</gradient>"
+        lore:
+          - "&7Every purchase helps keep"
+          - "&7the server running. Thank you!"
+          - ""
+          - "&eClick to open the full store"
+        link: ""
+      ranks:
+        slot: 20
+        material: NETHER_STAR
+        glow: true
+        name: "&b&lRanks"
+        lore:
+          - "&7VIP, Ultra, Elite and Kingpin."
+          - ""
+          - "&eClick to view"
+        open: ranks
+      keys:
+        slot: 22
+        material: TRIPWIRE_HOOK
+        glow: true
+        name: "&d&lCrate Keys"
+        lore:
+          - "&7Classic, Mega and Legendary keys."
+          - ""
+          - "&eClick to view"
+        open: keys
+      perks:
+        slot: 24
+        material: NAME_TAG
+        glow: true
+        name: "&a&lPerks"
+        lore:
+          - "&7/nick and /hat."
+          - ""
+          - "&eClick to view"
+        open: perks
+
+  ranks:
+    title: "<gradient:#FFAA00:#FFFF55>&lRanks</gradient>"
+    rows: 5
+    back: main
+    items:
+      vip:
+        slot: 19
+        material: GOLD_INGOT
+        glow: true
+        name: "&e&lVIP"
+        price: "See store"
+        lore:
+          - "&7The VIP rank."
+          - ""
+          - "&7Price: &a{price}"
+          - ""
+          - "&eClick to buy"
+        link: ""
+      ultra:
+        slot: 21
+        material: DIAMOND
+        glow: true
+        name: "&b&lULTRA"
+        price: "See store"
+        lore:
+          - "&7The Ultra rank."
+          - ""
+          - "&7Price: &a{price}"
+          - ""
+          - "&eClick to buy"
+        link: ""
+      elite:
+        slot: 23
+        material: EMERALD
+        glow: true
+        name: "&a&lELITE"
+        price: "See store"
+        lore:
+          - "&7The Elite rank."
+          - ""
+          - "&7Price: &a{price}"
+          - ""
+          - "&eClick to buy"
+        link: ""
+      kingpin:
+        slot: 25
+        material: NETHERITE_INGOT
+        glow: true
+        name: "<gradient:#FFAA00:#FFFF55>&lKINGPIN</gradient>"
+        price: "See store"
+        lore:
+          - "&7The Kingpin rank."
+          - ""
+          - "&7Price: &a{price}"
+          - ""
+          - "&eClick to buy"
+        link: ""
+
+  keys:
+    title: "<gradient:#FFAA00:#FFFF55>&lCrate Keys</gradient>"
+    rows: 5
+    back: main
+    items:
+      classic:
+        slot: 20
+        material: TRIPWIRE_HOOK
+        glow: true
+        name: "&7&lClassic Key"
+        price: "See store"
+        lore:
+          - "&7Opens the Classic Crate."
+          - ""
+          - "&7Price: &a{price}"
+          - ""
+          - "&eClick to buy"
+        link: ""
+      mega:
+        slot: 22
+        material: TRIPWIRE_HOOK
+        glow: true
+        name: "&d&lMega Key"
+        price: "See store"
+        lore:
+          - "&7Opens the Mega Crate."
+          - ""
+          - "&7Price: &a{price}"
+          - ""
+          - "&eClick to buy"
+        link: ""
+      legendary:
+        slot: 24
+        material: TRIPWIRE_HOOK
+        glow: true
+        name: "&6&lLegendary Key"
+        price: "See store"
+        lore:
+          - "&7Opens the Legendary Crate."
+          - ""
+          - "&7Price: &a{price}"
+          - ""
+          - "&eClick to buy"
+        link: ""
+
+  perks:
+    title: "<gradient:#FFAA00:#FFFF55>&lPerks</gradient>"
+    rows: 5
+    back: main
+    items:
+      nick:
+        slot: 21
+        material: NAME_TAG
+        glow: true
+        name: "&a&l/nick"
+        price: "See store"
+        lore:
+          - "&7Change your name in chat."
+          - ""
+          - "&7Price: &a{price}"
+          - ""
+          - "&eClick to buy"
+        link: ""
+      hat:
+        slot: 23
+        material: GOLDEN_HELMET
+        glow: true
+        name: "&e&l/hat"
+        price: "See store"
+        lore:
+          - "&7Wear any block on your head."
+          - ""
+          - "&7Price: &a{price}"
+          - ""
+          - "&eClick to buy"
+        link: ""

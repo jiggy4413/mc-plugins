@@ -12,6 +12,7 @@ import io.github.jiggy4413.prisoncore.util.Text;
 import io.github.jiggy4413.prisoncore.board.Board;
 import io.github.jiggy4413.prisoncore.enchants.Enchants;
 import io.github.jiggy4413.prisoncore.help.Help;
+import io.github.jiggy4413.prisoncore.store.Store;
 import io.github.jiggy4413.prisoncore.tokens.PvpPoints;
 import io.github.jiggy4413.prisoncore.tokens.Tokens;
 import io.github.jiggy4413.prisoncore.warps.Warps;
@@ -55,6 +56,7 @@ public final class PrisonCore extends JavaPlugin {
     private Board board;
     private PvpPoints pvp;
     private Enchants enchants;
+    private Store store;
     /** The PlaceholderAPI expansion, kept as Object so this class never needs PlaceholderAPI. */
     private Object placeholders;
 
@@ -77,7 +79,9 @@ public final class PrisonCore extends JavaPlugin {
                 "io.github.jiggy4413.prisoncore.board.Board",
                 "io.github.jiggy4413.prisoncore.tokens.PvpPoints",
                 "io.github.jiggy4413.prisoncore.enchants.Enchants",
-                "io.github.jiggy4413.prisoncore.enchants.EnchantMenu");
+                "io.github.jiggy4413.prisoncore.enchants.EnchantMenu",
+                "io.github.jiggy4413.prisoncore.store.Store",
+                "io.github.jiggy4413.prisoncore.store.Store$Menu");
         hotSwap = new HotSwap(this, getFile());
 
         loadMenuConfig();
@@ -122,6 +126,11 @@ public final class PrisonCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(enchants, this);
         getCommand("prisonenchants").setExecutor(enchants);
         enchants.start();
+
+        store = new Store(this);
+        store.load();
+        getServer().getPluginManager().registerEvents(store, this);
+        getCommand("prisonstore").setExecutor(store);
 
         board = new Board(this, tokens);
         board.load();
@@ -193,6 +202,9 @@ public final class PrisonCore extends JavaPlugin {
         }
         if (board != null) {
             board.shutdown();
+        }
+        if (store != null) {
+            store.closeAll();
         }
         if (enchants != null) {
             enchants.stop();
@@ -382,6 +394,10 @@ public final class PrisonCore extends JavaPlugin {
                 if (tokensProblem != null) {
                     sender.sendMessage(ChatColor.RED + tokensProblem);
                 }
+                String storeProblem = store.load();
+                if (storeProblem != null) {
+                    sender.sendMessage(ChatColor.RED + storeProblem);
+                }
                 String enchantsProblem = enchants.load();
                 if (enchantsProblem != null) {
                     sender.sendMessage(ChatColor.RED + enchantsProblem);
@@ -396,7 +412,7 @@ public final class PrisonCore extends JavaPlugin {
                     sender.sendMessage(Text.color("&cranks-menu.yml has a mistake, so nothing changed:"));
                     sender.sendMessage(ChatColor.GRAY + problem);
                 } else {
-                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml, warps-menu.yml, help.yml, tokens.yml, scoreboard.yml, enchants.yml). No new jar found."));
+                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml, warps-menu.yml, help.yml, tokens.yml, scoreboard.yml, enchants.yml, store.yml). No new jar found."));
                 }
             } catch (Exception e) {
                 sender.sendMessage(Text.color("&cReload failed: " + e.getMessage() + " &7(check ranks-menu.yml for a YAML mistake)"));

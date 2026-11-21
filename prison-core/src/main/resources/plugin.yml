@@ -43,6 +43,10 @@ commands:
     usage: /enchanter
     aliases: [enchanter, upgrades]
     permission: prisoncore.enchants
+  prisonstore:
+    description: Opens the store menu.
+    usage: /prisonstore [page]
+    permission: prisoncore.store
   prisonboard:
     description: Turns your scoreboard on or off.
     usage: /board [on|off]
@@ -77,6 +81,9 @@ permissions:
     default: op
   prisoncore.enchants:
     description: Use the enchant menu.
+    default: true
+  prisoncore.store:
+    description: Open the store menu.
     default: true
   prisoncore.board:
     description: Turn your own scoreboard on or off.
