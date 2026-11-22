@@ -15,6 +15,9 @@
 #    strength      for prison enchants: how strong each level is, level 1 first (see each
 #                  description). Use "per-level: 2" instead for the same increase every level.
 #    only-for      limit to some items, e.g. [BOOTS]
+#    slot          where it sits on its Enchanter page (5 rows = slots 0-44, left to right, top to
+#                  bottom). Enchants without a slot fill the free spots in rows 3 and 4 in the order
+#                  they're listed. Slots 3, 5, 13, 36 and 40 are the balances, item, back and close.
 #    in-menu       false = crate-only: not sold in the Enchanter, only added by staff with
 #                  /enchanter apply <enchant> <level> (for crate rewards). Its levels come from
 #                  "strength:", and it has no costs.

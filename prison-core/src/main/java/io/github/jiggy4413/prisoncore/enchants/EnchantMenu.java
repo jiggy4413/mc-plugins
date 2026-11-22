@@ -178,12 +178,28 @@ public final class EnchantMenu implements InventoryHolder {
         inventory.setItem(13, item.clone());
         int i = 0;
         String unit = enchants.currency(category);
-        for (final Enchants.Def d : enchants.defs(category)) {
-            if (i >= ENCHANT_SLOTS.length) {
-                break;
+        // enchants with their own "slot:" go there; the rest fill the free enchant slots in order
+        java.util.Set<Integer> taken = new java.util.HashSet<Integer>();
+        for (Enchants.Def d : enchants.defs(category)) {
+            if (d.inMenu && d.fits(item) && d.slot >= 0 && d.slot < inventory.getSize()) {
+                taken.add(d.slot);
             }
+        }
+        for (final Enchants.Def d : enchants.defs(category)) {
             if (!d.fits(item) || !d.inMenu) {
                 continue;
+            }
+            int at;
+            if (d.slot >= 0 && d.slot < inventory.getSize()) {
+                at = d.slot;
+            } else {
+                while (i < ENCHANT_SLOTS.length && taken.contains(ENCHANT_SLOTS[i])) {
+                    i++;
+                }
+                if (i >= ENCHANT_SLOTS.length) {
+                    continue;
+                }
+                at = ENCHANT_SLOTS[i++];
             }
             int lvl = enchants.level(item, d);
             List<String> lore = new ArrayList<String>();
@@ -203,7 +219,6 @@ public final class EnchantMenu implements InventoryHolder {
                 lore.add("&eShift-click &7to buy up to 10");
             }
             ItemStack icon = icon(d.icon, (lvl >= d.max ? "&a" : "&b") + "&l" + d.name + (lvl > 0 ? " &7" + enchants.levelText(lvl) : ""), lore);
-            int at = ENCHANT_SLOTS[i++];
             inventory.setItem(at, icon);
             enchantAt.put(at, d);
         }

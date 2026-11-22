@@ -98,7 +98,9 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
         List<String> description = new ArrayList<String>();
         List<String> appliesTo = new ArrayList<String>();
         /** False for crate-only enchants: not sold in the Enchanter, only added with /enchanter apply. */
-        boolean inMenu = true;   // e.g. BOOTS; empty = every item of the category
+        boolean inMenu = true;
+        /** Where it sits on its Enchanter page, or -1 to fill the next free spot. */
+        int slot = -1;   // e.g. BOOTS; empty = every item of the category
 
         long cost(int currentLevel) {
             if (!costs.isEmpty()) {
@@ -204,6 +206,7 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
                         }
                     }
                     d.inMenu = s.getBoolean("in-menu", true);
+                    d.slot = s.getInt("slot", -1);
                     if (d.costs.isEmpty() && !d.strengths.isEmpty() && !s.contains("max-level", true)) {
                         d.max = d.strengths.size(); // crate-only enchants: one strength per level
                     }
