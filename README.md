@@ -8,7 +8,7 @@ Every push builds automatically. Get the newest jar from **Releases → Latest b
 ## Modules
 | Module | Jar | Purpose |
 |---|---|---|
-| `prison-core` | `PrisonCore-1.16.0.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
+| `prison-core` | `PrisonCore-1.16.1.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
 | `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
 | `stubs/placeholderapi` | none | Compile-only copy of PlaceholderAPI's expansion API. Never installed on the server. |
 
@@ -75,9 +75,10 @@ Right-clicking an enchanting table (or `/enchanter`) opens the Enchanter: pickax
 with the player's token and PvP point balances. Pickaxe enchants cost tokens; sword and armor
 enchants cost PvP points (1 per kill, no points for killing the same player again within 5 minutes).
 
-- **Pickaxe:** Efficiency (to 10), Fortune, Unbreaking, Mending, plus Token Finder, Explosive (3x3x3 in mines), Haste, Key Finder (crate keys, with a cooldown and daily limit), Money Finder and XP Boost
-- **Sword:** Sharpness (to 6), Fire Aspect, Knockback, Looting, Unbreaking, Mending, plus Lifesteal, Bleed, Freeze, Executioner, Thunder, Bounty Hunter and Head Hunter
-- **Armor:** Protection, Fire Protection, Blast Protection (all to 6), Thorns, Feather Falling (boots), Aqua Affinity (helmet), Unbreaking, Mending, plus Dodge (chestplate), Last Stand (leggings) and Speed (boots)
+- **Pickaxe:** Efficiency (to 10), Fortune, Unbreaking, Mending, plus Token Finder, Explosive (3x3x3 in mines), Haste and Key Finder (crate keys, with a cooldown and daily limit)
+- **Sword:** Sharpness (to 6), Fire Aspect, Knockback, Looting, Unbreaking, Mending
+- **Armor:** Protection, Fire Protection, Blast Protection (all to 6), Thorns, Feather Falling (boots), Aqua Affinity (helmet), Unbreaking, Mending
+- **Crate-only** (`in-menu: false`, added by staff with `/enchanter apply`): Money Finder, XP Boost, Lifesteal, Bleed, Freeze, Executioner, Thunder, Bounty Hunter, Head Hunter, Dodge (chestplate), Last Stand (leggings), Speed (boots)
 - **Config:** `plugins/PrisonCore/enchants.yml`: every level's price is listed (`costs:`), and the number of prices is the max level; PvP point settings in `tokens.yml`
 - **Staff:** `/enchanter apply <enchant> <level> [player]` puts any enchant (Token Finder, Explosive, Haste too) on the held item for free, for kits and crate rewards; `/enchanter remove <enchant> [player]` takes one off (permission `prisoncore.enchants.admin`)
 - **PvP points:** `/pvppoints [player]`, staff `/pvppoints give|take|set <player> <amount>`, placeholder `%prisoncore_pvppoints%`

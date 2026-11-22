@@ -182,7 +182,7 @@ public final class EnchantMenu implements InventoryHolder {
             if (i >= ENCHANT_SLOTS.length) {
                 break;
             }
-            if (!d.fits(item)) {
+            if (!d.fits(item) || !d.inMenu) {
                 continue;
             }
             int lvl = enchants.level(item, d);

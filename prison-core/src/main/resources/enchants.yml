@@ -15,6 +15,9 @@
 #    strength      for prison enchants: how strong each level is, level 1 first (see each
 #                  description). Use "per-level: 2" instead for the same increase every level.
 #    only-for      limit to some items, e.g. [BOOTS]
+#    in-menu       false = crate-only: not sold in the Enchanter, only added by staff with
+#                  /enchanter apply <enchant> <level> (for crate rewards). Its levels come from
+#                  "strength:", and it has no costs.
 #    icon          item shown in the menu
 #  Set enabled: false on an enchant to hide it.
 # ==============================================================================
@@ -192,10 +195,7 @@ enchants:
         - 5000       # level 3
       icon: GOLD_NUGGET
       description: ["Small chance to find bonus money while mining.", "$1,000 / $2,500 / $5,000 per find."]
-      costs:
-        - 2000       # level 1
-        - 8000       # level 2
-        - 25000      # level 3
+      in-menu: false
 
     xp-boost:
       name: XP Boost
@@ -206,10 +206,7 @@ enchants:
         - 30         # level 3
       icon: EXPERIENCE_BOTTLE
       description: ["Chance to get XP from every block mined.", "Works with Mending."]
-      costs:
-        - 500        # level 1
-        - 1500       # level 2
-        - 4500       # level 3
+      in-menu: false
 
   sword:
     sharpness:
@@ -276,10 +273,7 @@ enchants:
         - 9          # level 3
       icon: REDSTONE
       description: ["Heal for part of the damage you deal.", "3% / 6% / 9%."]
-      costs:
-        - 20         # level 1
-        - 40         # level 2
-        - 80         # level 3
+      in-menu: false
 
     bleed:
       name: Bleed
@@ -290,10 +284,7 @@ enchants:
         - 12         # level 3
       icon: RED_DYE
       description: ["Chance to make your target bleed", "for half a heart a second, 3 seconds."]
-      costs:
-        - 15         # level 1
-        - 30         # level 2
-        - 60         # level 3
+      in-menu: false
 
     freeze:
       name: Freeze
@@ -304,10 +295,7 @@ enchants:
         - 12         # level 3
       icon: PACKED_ICE
       description: ["Chance to slow your target for 2 seconds."]
-      costs:
-        - 15         # level 1
-        - 30         # level 2
-        - 60         # level 3
+      in-menu: false
 
     executioner:
       name: Executioner
@@ -318,10 +306,7 @@ enchants:
         - 30         # level 3
       icon: IRON_AXE
       description: ["More damage to targets below 30% health.", "+10% / +20% / +30%."]
-      costs:
-        - 20         # level 1
-        - 40         # level 2
-        - 80         # level 3
+      in-menu: false
 
     thunder:
       name: Thunder
@@ -332,10 +317,7 @@ enchants:
         - 6          # level 3
       icon: TRIDENT
       description: ["Rare chance to strike lightning", "for 1.5 hearts of bonus damage."]
-      costs:
-        - 30         # level 1
-        - 60         # level 2
-        - 120        # level 3
+      in-menu: false
 
     bounty-hunter:
       name: Bounty Hunter
@@ -346,10 +328,7 @@ enchants:
         - 50         # level 3
       icon: SUNFLOWER
       description: ["Earn tokens for every player kill.", "10 / 25 / 50 tokens."]
-      costs:
-        - 20         # level 1
-        - 40         # level 2
-        - 80         # level 3
+      in-menu: false
 
     head-hunter:
       name: Head Hunter
@@ -360,10 +339,7 @@ enchants:
         - 30         # level 3
       icon: PLAYER_HEAD
       description: ["Chance to drop your victim's head."]
-      costs:
-        - 10         # level 1
-        - 20         # level 2
-        - 40         # level 3
+      in-menu: false
 
   armor:
     protection:
@@ -457,10 +433,7 @@ enchants:
         - 9          # level 3
       icon: PHANTOM_MEMBRANE
       description: ["Chance to take no damage from a player's hit.", "3% / 6% / 9%."]
-      costs:
-        - 20         # level 1
-        - 40         # level 2
-        - 80         # level 3
+      in-menu: false
 
     last-stand:
       name: Last Stand
@@ -472,16 +445,15 @@ enchants:
         - 7          # level 3
       icon: TOTEM_OF_UNDYING
       description: ["Strength and Resistance when you drop", "below 25% health (once a minute)."]
-      costs:
-        - 20         # level 1
-        - 40         # level 2
-        - 80         # level 3
+      in-menu: false
 
     speed:
       name: Speed
       only-for: [BOOTS]
+      # Speed level while worn
+      strength:
+        - 1          # level 1
+        - 2          # level 2
       icon: RABBIT_FOOT
       description: ["Speed while wearing these boots."]
-      costs:
-        - 30         # level 1
-        - 90         # level 2
+      in-menu: false

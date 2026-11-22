@@ -96,7 +96,9 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
         }
         Material icon;
         List<String> description = new ArrayList<String>();
-        List<String> appliesTo = new ArrayList<String>();   // e.g. BOOTS; empty = every item of the category
+        List<String> appliesTo = new ArrayList<String>();
+        /** False for crate-only enchants: not sold in the Enchanter, only added with /enchanter apply. */
+        boolean inMenu = true;   // e.g. BOOTS; empty = every item of the category
 
         long cost(int currentLevel) {
             if (!costs.isEmpty()) {
@@ -200,6 +202,10 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
                         if (!d.costs.isEmpty()) {
                             d.max = d.costs.size(); // one price per level
                         }
+                    }
+                    d.inMenu = s.getBoolean("in-menu", true);
+                    if (d.costs.isEmpty() && !d.strengths.isEmpty() && !s.contains("max-level", true)) {
+                        d.max = d.strengths.size(); // crate-only enchants: one strength per level
                     }
                     Material icon = Material.matchMaterial(s.getString("icon", "ENCHANTED_BOOK"));
                     d.icon = icon != null && icon.isItem() ? icon : Material.ENCHANTED_BOOK;
