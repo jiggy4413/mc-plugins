@@ -315,12 +315,111 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
         if (d.vanilla != null) {
             return item.getEnchantmentLevel(d.vanilla);
         }
-        Integer v = item.getItemMeta().getPersistentDataContainer().get(key(d), PersistentDataType.INTEGER);
-        return v == null ? 0 : v;
+        ItemMeta meta = item.getItemMeta();
+        Integer v = meta.getPersistentDataContainer().get(key(d), PersistentDataType.INTEGER);
+        if (v != null) {
+            return v;
+        }
+        // Items saved by other plugins (e.g. crate rewards) can lose the hidden data but keep their
+        // lore, so read the level from the enchant's lore line instead.
+        return loreLevel(meta, d);
+    }
+
+    /** The level shown in a lore line like "Explosive II" or "Explosive 2", or 0. */
+    private int loreLevel(ItemMeta meta, Def d) {
+        if (!meta.hasLore() || meta.getPersistentDataContainer().has(loreKey, PersistentDataType.INTEGER)) {
+            return 0; // items we drew ourselves keep their levels in the hidden data
+        }
+        String prefix = d.name.toLowerCase(Locale.ROOT) + " ";
+        for (String line : meta.getLore()) {
+            String plain = org.bukkit.ChatColor.stripColor(line).trim();
+            if (plain.toLowerCase(Locale.ROOT).startsWith(prefix)) {
+                int lvl = parseLevel(plain.substring(prefix.length()).trim());
+                if (lvl > 0) {
+                    return lvl;
+                }
+            }
+        }
+        return 0;
+    }
+
+    /** "IV" or "4" → 4; anything else → 0. */
+    static int parseLevel(String text) {
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException ignored) {
+            // try Roman numerals
+        }
+        String r = text.toUpperCase(Locale.ROOT);
+        if (r.isEmpty() || !r.matches("[IVXLCDM]+")) {
+            return 0;
+        }
+        int total = 0;
+        int prev = 0;
+        for (int i = r.length() - 1; i >= 0; i--) {
+            char ch = r.charAt(i);
+            int v = ch == 'I' ? 1 : ch == 'V' ? 5 : ch == 'X' ? 10 : ch == 'L' ? 50 : ch == 'C' ? 100 : ch == 'D' ? 500 : 1000;
+            total += v < prev ? -v : v;
+            prev = Math.max(prev, v);
+        }
+        return roman(total).equals(r) ? total : 0;
+    }
+
+    /**
+     * Turns lore-only enchants (from a crate reward that lost its hidden data) back into real ones,
+     * so upgrading or redrawing the item keeps them. Returns true if anything changed.
+     */
+    boolean adoptLore(ItemStack item) {
+        Category c = category(item);
+        if (c == null || !item.hasItemMeta()) {
+            return false;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (!meta.hasLore() || meta.getPersistentDataContainer().has(loreKey, PersistentDataType.INTEGER)) {
+            return false;
+        }
+        boolean changed = false;
+        List<String> lore = new ArrayList<String>(meta.getLore());
+        for (Def d : defs(c)) {
+            if (d.vanilla != null) {
+                continue;
+            }
+            int lvl = loreLevel(meta, d);
+            if (lvl > 0) {
+                meta.getPersistentDataContainer().set(key(d), PersistentDataType.INTEGER, lvl);
+                String prefix = d.name.toLowerCase(Locale.ROOT) + " ";
+                for (java.util.Iterator<String> it = lore.iterator(); it.hasNext(); ) {
+                    if (org.bukkit.ChatColor.stripColor(it.next()).trim().toLowerCase(Locale.ROOT).startsWith(prefix)) {
+                        it.remove();
+                    }
+                }
+                changed = true;
+            }
+        }
+        if (changed) {
+            // also drop lines for normal enchants; redrawLore writes the full list again
+            for (Def d : defs(c)) {
+                if (d.vanilla == null) {
+                    continue;
+                }
+                String prefix = d.name.toLowerCase(Locale.ROOT) + " ";
+                for (java.util.Iterator<String> it = lore.iterator(); it.hasNext(); ) {
+                    if (org.bukkit.ChatColor.stripColor(it.next()).trim().toLowerCase(Locale.ROOT).startsWith(prefix)) {
+                        it.remove();
+                    }
+                }
+            }
+            meta.setLore(lore.isEmpty() ? null : lore);
+            meta.getPersistentDataContainer().set(loreKey, PersistentDataType.INTEGER, 0);
+            item.setItemMeta(meta);
+            redrawLore(item);
+        }
+        return changed;
     }
 
     /** Sets an enchant's level on the item and redraws the enchant lines in its lore. */
     void setLevel(ItemStack item, Def d, int level) {
+        adoptLore(item);
         if (d.vanilla != null) {
             if (level <= 0) {
                 item.removeEnchantment(d.vanilla);
