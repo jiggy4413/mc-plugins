@@ -57,7 +57,7 @@ import org.bukkit.scheduler.BukkitTask;
  * normal max. Prison enchants (Fortune, Token Finder, Explosive, Haste, Lifesteal) are stored on
  * the item and handled here. All enchants are listed in the item's lore; settings are in enchants.yml.
  */
-public final class Enchants implements Listener, CommandExecutor {
+public final class Enchants implements Listener, CommandExecutor, org.bukkit.command.TabCompleter {
 
     public static final String FILE = "enchants.yml";
 
@@ -576,12 +576,117 @@ public final class Enchants implements Listener, CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length > 0 && (args[0].equalsIgnoreCase("apply") || args[0].equalsIgnoreCase("remove"))) {
+            applyCommand(sender, args);
+            return true;
+        }
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can open the enchant menu.");
+            sender.sendMessage("Only players can open the enchant menu. Staff: /enchanter apply <enchant> <level> <player>");
             return true;
         }
         EnchantMenu.openMain(this, (Player) sender);
         return true;
+    }
+
+    /**
+     * /enchanter apply <enchant> <level> [player]  and  /enchanter remove <enchant> [player]
+     * Puts any Enchanter enchant (including Token Finder, Explosive, Haste) on the item in the
+     * player's hand, for free. For staff making kit and crate reward items.
+     */
+    private void applyCommand(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("prisoncore.enchants.admin")) {
+            sender.sendMessage(Text.color("&cYou don't have permission to do that."));
+            return;
+        }
+        boolean remove = args[0].equalsIgnoreCase("remove");
+        int need = remove ? 2 : 3;
+        if (args.length < need) {
+            sender.sendMessage(Text.color(remove ? "&cUsage: /enchanter remove <enchant> [player]"
+                    : "&cUsage: /enchanter apply <enchant> <level> [player]"));
+            return;
+        }
+        Player target;
+        if (args.length > need) {
+            target = Bukkit.getPlayerExact(args[need]);
+            if (target == null) {
+                sender.sendMessage(Text.color("&c" + args[need] + " isn't online."));
+                return;
+            }
+        } else if (sender instanceof Player) {
+            target = (Player) sender;
+        } else {
+            sender.sendMessage("Name a player: /enchanter " + args[0] + " ... <player>");
+            return;
+        }
+        ItemStack item = target.getInventory().getItemInMainHand();
+        Category c = category(item);
+        if (c == null) {
+            sender.sendMessage(Text.color("&cHold a pickaxe, sword or armor piece."));
+            return;
+        }
+        Def d = def(c, args[1].toLowerCase(Locale.ROOT));
+        if (d == null) {
+            StringBuilder names = new StringBuilder();
+            for (Def x : defs(c)) {
+                names.append(names.length() == 0 ? "" : ", ").append(x.id);
+            }
+            sender.sendMessage(Text.color("&c" + args[1] + " isn't a " + c.key() + " enchant. Choose from: &f" + names));
+            return;
+        }
+        if (!d.fits(item)) {
+            sender.sendMessage(Text.color("&c" + d.name + " can't go on " + item.getType().name().toLowerCase(Locale.ROOT) + "."));
+            return;
+        }
+        int level = 0;
+        if (!remove) {
+            try {
+                level = Integer.parseInt(args[2]);
+            } catch (NumberFormatException e) {
+                level = -1;
+            }
+            if (level < 1 || level > 1000) {
+                sender.sendMessage(Text.color("&c" + args[2] + " isn't a valid level."));
+                return;
+            }
+        }
+        setLevel(item, d, level);
+        target.getInventory().setItemInMainHand(item);
+        sender.sendMessage(Text.color(remove ? "&7Removed &f" + d.name + "&7."
+                : "&7Applied &f" + d.name + " " + levelText(level) + "&7" + (level > d.max ? " &8(above the Enchanter's max of " + d.max + ")" : "") + "."));
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        List<String> out = new ArrayList<String>();
+        if (!sender.hasPermission("prisoncore.enchants.admin")) {
+            return out;
+        }
+        if (args.length == 1) {
+            for (String o : new String[] {"apply", "remove"}) {
+                if (o.startsWith(args[0].toLowerCase(Locale.ROOT))) {
+                    out.add(o);
+                }
+            }
+        } else if (args.length == 2 && (args[0].equalsIgnoreCase("apply") || args[0].equalsIgnoreCase("remove"))) {
+            Category c = sender instanceof Player ? category(((Player) sender).getInventory().getItemInMainHand()) : null;
+            for (Category cat : Category.values()) {
+                if (c != null && cat != c) {
+                    continue;
+                }
+                for (Def d : defs(cat)) {
+                    if (d.id.startsWith(args[1].toLowerCase(Locale.ROOT)) && !out.contains(d.id)) {
+                        out.add(d.id);
+                    }
+                }
+            }
+        } else if ((args.length == 3 && args[0].equalsIgnoreCase("remove")) || (args.length == 4 && args[0].equalsIgnoreCase("apply"))) {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (p.getName().toLowerCase(Locale.ROOT).startsWith(args[args.length - 1].toLowerCase(Locale.ROOT))) {
+                    out.add(p.getName());
+                }
+            }
+        }
+        return out;
     }
 
     @EventHandler(priority = EventPriority.HIGH)

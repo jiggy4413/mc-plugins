@@ -125,6 +125,7 @@ public final class PrisonCore extends JavaPlugin {
         enchants.load();
         getServer().getPluginManager().registerEvents(enchants, this);
         getCommand("prisonenchants").setExecutor(enchants);
+        getCommand("prisonenchants").setTabCompleter(enchants);
         enchants.start();
 
         store = new Store(this);

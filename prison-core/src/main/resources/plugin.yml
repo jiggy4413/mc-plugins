@@ -39,8 +39,8 @@ commands:
     aliases: [pvppoint]
     permission: prisoncore.tokens
   prisonenchants:
-    description: Opens the enchant menu.
-    usage: /enchanter
+    description: Opens the enchant menu. Staff can apply enchants to the held item.
+    usage: /enchanter | apply <enchant> <level> [player] | remove <enchant> [player]
     aliases: [enchanter, upgrades]
     permission: prisoncore.enchants
   prisonstore:
@@ -85,6 +85,9 @@ permissions:
   prisoncore.store:
     description: Open the store menu.
     default: true
+  prisoncore.enchants.admin:
+    description: Use /enchanter apply and remove to put any enchant on the held item for free.
+    default: op
   prisoncore.board:
     description: Turn your own scoreboard on or off.
     default: true
