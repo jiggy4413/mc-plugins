@@ -1,0 +1,53 @@
+# ==============================================================================
+#  PrisonCore special items (crate prizes, event rewards...)
+#  Give one with:  /prisoncore give <player> <item> [amount]     (permission prisoncore.admin)
+#
+#  For SpecializedCrates: make the reward a COMMAND reward that runs
+#    prisoncore give {player} <item>
+#  (use whatever player placeholder SpecializedCrates uses), and use any item as its display icon.
+#  The item is built fresh every time with real enchants, so nothing gets lost.
+#
+#  Each item:
+#    material, name, lore, glow, amount, model-data, texture (player heads)
+#    enchants:   any enchant from enchants.yml, by its name there, with a level.
+#                Crate-only enchants (lifesteal, explosive...) work here too.
+#  Apply changes with /prisoncore reload.
+#  Formatting: & codes, &#RRGGBB, <gradient:#FF0000:#FFD700>text</gradient>, <smallcaps>
+# ==============================================================================
+
+items:
+  # Examples - rename, change or delete them.
+  blaster:
+    material: DIAMOND_PICKAXE
+    name: "<gradient:#FFAA00:#FFFF55>&lThe Blaster</gradient>"
+    lore:
+      - ""
+      - "&7A Legendary Crate exclusive."
+    enchants:
+      efficiency: 8
+      unbreaking: 3
+      explosive: 2
+      key-finder: 1
+
+  reaper:
+    material: NETHERITE_SWORD
+    name: "&c&lThe Reaper"
+    lore:
+      - ""
+      - "&7A Legendary Crate exclusive."
+    enchants:
+      sharpness: 5
+      lifesteal: 2
+      bleed: 1
+      head-hunter: 1
+
+  swift-boots:
+    material: DIAMOND_BOOTS
+    name: "&b&lSwift Boots"
+    lore:
+      - ""
+      - "&7A Mega Crate exclusive."
+    enchants:
+      protection: 4
+      feather-falling: 4
+      speed: 1

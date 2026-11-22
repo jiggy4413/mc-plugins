@@ -320,9 +320,7 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
         if (v != null) {
             return v;
         }
-        // Items saved by other plugins (e.g. crate rewards) can lose the hidden data but keep their
-        // lore, so read the level from the enchant's lore line instead.
-        return loreLevel(meta, d);
+        return 0;
     }
 
     /** The level shown in a lore line like "Explosive II" or "Explosive 2", or 0. */
@@ -505,34 +503,8 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
         return d == null || category(tool) != c ? 0 : level(tool, d);
     }
 
-    /** Converts lore-only enchants on the held item and worn armor into real ones. */
-    void adoptEquipment(Player p) {
-        org.bukkit.inventory.PlayerInventory inv = p.getInventory();
-        for (EquipmentSlot slot : new EquipmentSlot[] {EquipmentSlot.HAND, EquipmentSlot.OFF_HAND, EquipmentSlot.HEAD,
-                EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
-            ItemStack it = inv.getItem(slot);
-            if (it != null && category(it) != null && adoptLore(it)) {
-                inv.setItem(slot, it);
-            }
-        }
-    }
-
-    /** Right away when a player switches to an item, so Efficiency etc. work without a delay. */
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onHold(final org.bukkit.event.player.PlayerItemHeldEvent event) {
-        Bukkit.getScheduler().runTask(plugin, new Runnable() {
-            @Override
-            public void run() {
-                if (event.getPlayer().isOnline()) {
-                    adoptEquipment(event.getPlayer());
-                }
-            }
-        });
-    }
-
     private void applyHaste() {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            adoptEquipment(p);
             int lvl = heldLevel(p, Category.PICKAXE, "haste");
             if (lvl > 0) {
                 p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 80, lvl - 1, true, false, false), true);
