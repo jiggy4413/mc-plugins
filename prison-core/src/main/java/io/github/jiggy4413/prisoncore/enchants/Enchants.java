@@ -381,12 +381,16 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
         boolean changed = false;
         List<String> lore = new ArrayList<String>(meta.getLore());
         for (Def d : defs(c)) {
-            if (d.vanilla != null) {
-                continue;
-            }
             int lvl = loreLevel(meta, d);
             if (lvl > 0) {
-                meta.getPersistentDataContainer().set(key(d), PersistentDataType.INTEGER, lvl);
+                if (d.vanilla != null) {
+                    // normal enchants (Efficiency, Fortune...): put the real enchant back on
+                    if (meta.getEnchantLevel(d.vanilla) < lvl) {
+                        meta.addEnchant(d.vanilla, lvl, true);
+                    }
+                } else {
+                    meta.getPersistentDataContainer().set(key(d), PersistentDataType.INTEGER, lvl);
+                }
                 String prefix = d.name.toLowerCase(Locale.ROOT) + " ";
                 for (java.util.Iterator<String> it = lore.iterator(); it.hasNext(); ) {
                     if (org.bukkit.ChatColor.stripColor(it.next()).trim().toLowerCase(Locale.ROOT).startsWith(prefix)) {
@@ -501,8 +505,34 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
         return d == null || category(tool) != c ? 0 : level(tool, d);
     }
 
+    /** Converts lore-only enchants on the held item and worn armor into real ones. */
+    void adoptEquipment(Player p) {
+        org.bukkit.inventory.PlayerInventory inv = p.getInventory();
+        for (EquipmentSlot slot : new EquipmentSlot[] {EquipmentSlot.HAND, EquipmentSlot.OFF_HAND, EquipmentSlot.HEAD,
+                EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+            ItemStack it = inv.getItem(slot);
+            if (it != null && category(it) != null && adoptLore(it)) {
+                inv.setItem(slot, it);
+            }
+        }
+    }
+
+    /** Right away when a player switches to an item, so Efficiency etc. work without a delay. */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onHold(final org.bukkit.event.player.PlayerItemHeldEvent event) {
+        Bukkit.getScheduler().runTask(plugin, new Runnable() {
+            @Override
+            public void run() {
+                if (event.getPlayer().isOnline()) {
+                    adoptEquipment(event.getPlayer());
+                }
+            }
+        });
+    }
+
     private void applyHaste() {
         for (Player p : Bukkit.getOnlinePlayers()) {
+            adoptEquipment(p);
             int lvl = heldLevel(p, Category.PICKAXE, "haste");
             if (lvl > 0) {
                 p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 80, lvl - 1, true, false, false), true);
