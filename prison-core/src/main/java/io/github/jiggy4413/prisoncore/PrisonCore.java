@@ -56,6 +56,7 @@ public final class PrisonCore extends JavaPlugin {
     private Board board;
     private PvpPoints pvp;
     private Enchants enchants;
+    private io.github.jiggy4413.prisoncore.enchants.EnchantEffects enchantEffects;
     private Store store;
     /** The PlaceholderAPI expansion, kept as Object so this class never needs PlaceholderAPI. */
     private Object placeholders;
@@ -81,6 +82,7 @@ public final class PrisonCore extends JavaPlugin {
                 "io.github.jiggy4413.prisoncore.enchants.Enchants",
                 "io.github.jiggy4413.prisoncore.enchants.EnchantMenu",
                 "io.github.jiggy4413.prisoncore.store.Store",
+                "io.github.jiggy4413.prisoncore.enchants.EnchantEffects",
                 "io.github.jiggy4413.prisoncore.store.Store$Menu");
         hotSwap = new HotSwap(this, getFile());
 
@@ -127,6 +129,9 @@ public final class PrisonCore extends JavaPlugin {
         getCommand("prisonenchants").setExecutor(enchants);
         getCommand("prisonenchants").setTabCompleter(enchants);
         enchants.start();
+        enchantEffects = new io.github.jiggy4413.prisoncore.enchants.EnchantEffects(enchants, mines, tokens);
+        getServer().getPluginManager().registerEvents(enchantEffects, this);
+        enchantEffects.start();
 
         store = new Store(this);
         store.load();
@@ -207,6 +212,9 @@ public final class PrisonCore extends JavaPlugin {
         if (store != null) {
             store.stop();
             store.closeAll();
+        }
+        if (enchantEffects != null) {
+            enchantEffects.stop();
         }
         if (enchants != null) {
             enchants.stop();

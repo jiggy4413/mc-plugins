@@ -387,7 +387,7 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
 
     // ================================================================== effects
 
-    private int heldLevel(Player p, Category c, String id) {
+    int heldLevel(Player p, Category c, String id) {
         Def d = def(c, id);
         ItemStack tool = p.getInventory().getItemInMainHand();
         return d == null || category(tool) != c ? 0 : level(tool, d);

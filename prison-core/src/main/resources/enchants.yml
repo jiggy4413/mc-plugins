@@ -52,6 +52,40 @@ menu:
 messages:
   inventory-full: "&cYour inventory is full!"
 
+# Extra settings for some prison enchants.
+enchant-settings:
+  key-finder:
+    # After finding a key, no more keys for this long, and never more than max-per-day keys a day,
+    # so fast pickaxes can't farm keys. (Explosive blocks never find keys.)
+    cooldown-minutes: 15
+    max-per-day: 6
+    # The console command that gives each level's key. Test them in the console first and
+    # use your crate names from SpecializedCrates.
+    commands:
+      - "scrates givekey {player} ClassicCrate 1"
+      - "scrates givekey {player} MegaCrate 1"
+      - "scrates givekey {player} LegendaryCrate 1"
+    key-names: ["&7a Classic Key", "&da Mega Key", "&6a Legendary Key"]
+    message: "&6&lKEY FINDER! &7You found {key}&7!"
+  money-finder:
+    # % chance per block mined (in a mine) to find money.
+    chance-percent: 0.5
+  bleed:
+    damage-per-second: 1
+    seconds: 3
+  freeze:
+    seconds: 2
+  executioner:
+    below-health-percent: 30
+  thunder:
+    bonus-damage: 3
+  bounty-hunter:
+    # No tokens for killing the same player again within this many seconds.
+    same-player-cooldown-seconds: 300
+  last-stand:
+    below-health-percent: 25
+    cooldown-seconds: 60
+
 enchants:
   pickaxe:
     efficiency:
@@ -135,6 +169,48 @@ enchants:
         - 1500       # level 2
         - 4500       # level 3
 
+    key-finder:
+      name: Key Finder
+      # % chance per block (0.025 = about 1 in 4,000 blocks)
+      strength:
+        - 0.025      # level 1
+        - 0.025      # level 2
+        - 0.025      # level 3
+      icon: TRIPWIRE_HOOK
+      description: ["Rare chance to find a crate key while mining.", "Level 1: Classic key. Level 2: Mega key.", "Level 3: Legendary key.", "At most one key every 15 minutes, 6 a day."]
+      costs:
+        - 10000      # level 1
+        - 50000      # level 2
+        - 150000     # level 3
+
+    money-finder:
+      name: Money Finder
+      # money per find (the chance is enchant-settings.money-finder.chance-percent)
+      strength:
+        - 1000       # level 1
+        - 2500       # level 2
+        - 5000       # level 3
+      icon: GOLD_NUGGET
+      description: ["Small chance to find bonus money while mining.", "$1,000 / $2,500 / $5,000 per find."]
+      costs:
+        - 2000       # level 1
+        - 8000       # level 2
+        - 25000      # level 3
+
+    xp-boost:
+      name: XP Boost
+      # % chance per block for 1 XP
+      strength:
+        - 10         # level 1
+        - 20         # level 2
+        - 30         # level 3
+      icon: EXPERIENCE_BOTTLE
+      description: ["Chance to get XP from every block mined.", "Works with Mending."]
+      costs:
+        - 500        # level 1
+        - 1500       # level 2
+        - 4500       # level 3
+
   sword:
     sharpness:
       name: Sharpness
@@ -190,6 +266,104 @@ enchants:
       description: ["XP repairs your sword."]
       costs:
         - 25         # level 1
+
+    lifesteal:
+      name: Lifesteal
+      # % of damage dealt that heals you
+      strength:
+        - 3          # level 1
+        - 6          # level 2
+        - 9          # level 3
+      icon: REDSTONE
+      description: ["Heal for part of the damage you deal.", "3% / 6% / 9%."]
+      costs:
+        - 20         # level 1
+        - 40         # level 2
+        - 80         # level 3
+
+    bleed:
+      name: Bleed
+      # % chance per hit
+      strength:
+        - 5          # level 1
+        - 8          # level 2
+        - 12         # level 3
+      icon: RED_DYE
+      description: ["Chance to make your target bleed", "for half a heart a second, 3 seconds."]
+      costs:
+        - 15         # level 1
+        - 30         # level 2
+        - 60         # level 3
+
+    freeze:
+      name: Freeze
+      # % chance per hit
+      strength:
+        - 5          # level 1
+        - 8          # level 2
+        - 12         # level 3
+      icon: PACKED_ICE
+      description: ["Chance to slow your target for 2 seconds."]
+      costs:
+        - 15         # level 1
+        - 30         # level 2
+        - 60         # level 3
+
+    executioner:
+      name: Executioner
+      # % more damage to low-health targets
+      strength:
+        - 10         # level 1
+        - 20         # level 2
+        - 30         # level 3
+      icon: IRON_AXE
+      description: ["More damage to targets below 30% health.", "+10% / +20% / +30%."]
+      costs:
+        - 20         # level 1
+        - 40         # level 2
+        - 80         # level 3
+
+    thunder:
+      name: Thunder
+      # % chance per hit
+      strength:
+        - 2          # level 1
+        - 4          # level 2
+        - 6          # level 3
+      icon: TRIDENT
+      description: ["Rare chance to strike lightning", "for 1.5 hearts of bonus damage."]
+      costs:
+        - 30         # level 1
+        - 60         # level 2
+        - 120        # level 3
+
+    bounty-hunter:
+      name: Bounty Hunter
+      # tokens per kill
+      strength:
+        - 10         # level 1
+        - 25         # level 2
+        - 50         # level 3
+      icon: SUNFLOWER
+      description: ["Earn tokens for every player kill.", "10 / 25 / 50 tokens."]
+      costs:
+        - 20         # level 1
+        - 40         # level 2
+        - 80         # level 3
+
+    head-hunter:
+      name: Head Hunter
+      # % chance per kill
+      strength:
+        - 10         # level 1
+        - 20         # level 2
+        - 30         # level 3
+      icon: PLAYER_HEAD
+      description: ["Chance to drop your victim's head."]
+      costs:
+        - 10         # level 1
+        - 20         # level 2
+        - 40         # level 3
 
   armor:
     protection:
@@ -272,3 +446,42 @@ enchants:
       description: ["XP repairs your armor."]
       costs:
         - 25         # level 1
+
+    dodge:
+      name: Dodge
+      only-for: [CHESTPLATE]
+      # % chance per hit
+      strength:
+        - 3          # level 1
+        - 6          # level 2
+        - 9          # level 3
+      icon: PHANTOM_MEMBRANE
+      description: ["Chance to take no damage from a player's hit.", "3% / 6% / 9%."]
+      costs:
+        - 20         # level 1
+        - 40         # level 2
+        - 80         # level 3
+
+    last-stand:
+      name: Last Stand
+      only-for: [LEGGINGS]
+      # seconds the boost lasts
+      strength:
+        - 3          # level 1
+        - 5          # level 2
+        - 7          # level 3
+      icon: TOTEM_OF_UNDYING
+      description: ["Strength and Resistance when you drop", "below 25% health (once a minute)."]
+      costs:
+        - 20         # level 1
+        - 40         # level 2
+        - 80         # level 3
+
+    speed:
+      name: Speed
+      only-for: [BOOTS]
+      icon: RABBIT_FOOT
+      description: ["Speed while wearing these boots."]
+      costs:
+        - 30         # level 1
+        - 90         # level 2

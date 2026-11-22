@@ -1,0 +1,383 @@
+package io.github.jiggy4413.prisoncore.enchants;
+
+import io.github.jiggy4413.prisoncore.mines.MineManager;
+import io.github.jiggy4413.prisoncore.tokens.Tokens;
+import io.github.jiggy4413.prisoncore.util.Text;
+import java.lang.reflect.Method;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+
+/**
+ * What the prison enchants do (everything that isn't a normal Minecraft enchant):
+ * sword: Bleed, Freeze, Executioner, Thunder, Bounty Hunter, Head Hunter (Lifesteal is in Enchants);
+ * armor: Dodge, Last Stand, Speed; pickaxe: Key Finder, Money Finder, XP Boost.
+ * Each enchant's strength per level comes from its "strength:" list in enchants.yml.
+ */
+public final class EnchantEffects implements Listener {
+
+    private final Enchants enchants;
+    private final MineManager mines;
+    private final Tokens tokens;
+    private BukkitTask effectTask;
+
+    /** Key Finder limits, per player: when the last key was found, and how many today. */
+    private final Map<UUID, Long> lastKey = new HashMap<UUID, Long>();
+    private final Map<UUID, Integer> keysToday = new HashMap<UUID, Integer>();
+    private LocalDate keyDay = LocalDate.now();
+    /** Last Stand cooldown and Bounty Hunter "same victim" cooldown. */
+    private final Map<UUID, Long> lastStandAt = new HashMap<UUID, Long>();
+    private final Map<String, Long> bountyAt = new HashMap<String, Long>();
+
+    public EnchantEffects(Enchants enchants, MineManager mines, Tokens tokens) {
+        this.enchants = enchants;
+        this.mines = mines;
+        this.tokens = tokens;
+    }
+
+    public void start() {
+        stop();
+        effectTask = Bukkit.getScheduler().runTaskTimer(enchants.plugin(), new Runnable() {
+            @Override
+            public void run() {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    int speed = worn(p, "speed");
+                    if (speed > 0) {
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 80, speed - 1, true, false, false), true);
+                    }
+                }
+            }
+        }, 40L, 40L);
+    }
+
+    public void stop() {
+        if (effectTask != null) {
+            effectTask.cancel();
+            effectTask = null;
+        }
+    }
+
+    private ConfigurationSection settings(String name) {
+        ConfigurationSection s = enchants.config().getConfigurationSection("enchant-settings." + name);
+        return s != null ? s : new org.bukkit.configuration.MemoryConfiguration();
+    }
+
+    private Enchants.Def def(Enchants.Category c, String id) {
+        return enchants.def(c, id);
+    }
+
+    private double strength(Enchants.Category c, String id, int level) {
+        Enchants.Def d = def(c, id);
+        return d == null ? 0 : d.effect(level);
+    }
+
+    private static boolean roll(double percent) {
+        return percent > 0 && ThreadLocalRandom.current().nextDouble() * 100 < percent;
+    }
+
+    /** Highest level of an armor enchant across the four pieces the player wears. */
+    private int worn(Player p, String id) {
+        Enchants.Def d = def(Enchants.Category.ARMOR, id);
+        if (d == null) {
+            return 0;
+        }
+        int best = 0;
+        for (EquipmentSlot slot : new EquipmentSlot[] {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+            ItemStack it = p.getInventory().getItem(slot);
+            if (Enchants.category(it) == Enchants.Category.ARMOR) {
+                best = Math.max(best, enchants.level(it, d));
+            }
+        }
+        return best;
+    }
+
+    /** The player who caused the damage (directly, or by shooting). */
+    private static Player attacker(Entity damager) {
+        if (damager instanceof Player) {
+            return (Player) damager;
+        }
+        if (damager instanceof Projectile && ((Projectile) damager).getShooter() instanceof Player) {
+            return (Player) ((Projectile) damager).getShooter();
+        }
+        return null;
+    }
+
+    // ================================================================== sword: damage changes
+
+    /** Executioner and Thunder change how much damage a hit does, so they run before armor math. */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onHitDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof LivingEntity)) {
+            return;
+        }
+        Player p = (Player) event.getDamager();
+        LivingEntity target = (LivingEntity) event.getEntity();
+
+        int exec = enchants.heldLevel(p, Enchants.Category.SWORD, "executioner");
+        if (exec > 0) {
+            double max = target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+            double below = settings("executioner").getDouble("below-health-percent", 30);
+            if (target.getHealth() <= max * below / 100.0) {
+                event.setDamage(event.getDamage() * (1 + strength(Enchants.Category.SWORD, "executioner", exec) / 100.0));
+            }
+        }
+
+        int thunder = enchants.heldLevel(p, Enchants.Category.SWORD, "thunder");
+        if (thunder > 0 && roll(strength(Enchants.Category.SWORD, "thunder", thunder))) {
+            target.getWorld().strikeLightningEffect(target.getLocation()); // looks only, no fire
+            event.setDamage(event.getDamage() + settings("thunder").getDouble("bonus-damage", 3));
+        }
+    }
+
+    // ================================================================== sword + armor: after the hit
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onHitEffects(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof LivingEntity)) {
+            return;
+        }
+        Player p = (Player) event.getDamager();
+        final LivingEntity target = (LivingEntity) event.getEntity();
+
+        int bleed = enchants.heldLevel(p, Enchants.Category.SWORD, "bleed");
+        if (bleed > 0 && roll(strength(Enchants.Category.SWORD, "bleed", bleed))) {
+            final double perTick = settings("bleed").getDouble("damage-per-second", 1);
+            final int seconds = Math.max(1, settings("bleed").getInt("seconds", 3));
+            new BukkitRunnable() {
+                int left = seconds;
+
+                @Override
+                public void run() {
+                    if (left-- <= 0 || target.isDead() || !target.isValid()) {
+                        cancel();
+                        return;
+                    }
+                    target.damage(perTick); // no attacker, so it can't set off other enchants
+                    target.getWorld().spawnParticle(org.bukkit.Particle.BLOCK_CRACK, target.getLocation().add(0, 1, 0),
+                            8, 0.2, 0.4, 0.2, Material.REDSTONE_BLOCK.createBlockData());
+                }
+            }.runTaskTimer(enchants.plugin(), 20L, 20L);
+            if (target instanceof Player) {
+                enchants.actionBar((Player) target, "&cYou're bleeding!");
+            }
+        }
+
+        int freeze = enchants.heldLevel(p, Enchants.Category.SWORD, "freeze");
+        if (freeze > 0 && roll(strength(Enchants.Category.SWORD, "freeze", freeze))) {
+            int ticks = Math.max(1, settings("freeze").getInt("seconds", 2)) * 20;
+            target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, ticks, 1, false, true, true), true);
+            target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.6f, 1.6f);
+        }
+    }
+
+    /** Dodge: a chance to take no damage from another player's hit (or arrow). */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onDodge(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player) || attacker(event.getDamager()) == null) {
+            return;
+        }
+        Player victim = (Player) event.getEntity();
+        int dodge = worn(victim, "dodge");
+        if (dodge > 0 && roll(strength(Enchants.Category.ARMOR, "dodge", dodge))) {
+            event.setCancelled(true);
+            victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_ATTACK_NODAMAGE, 1f, 1.4f);
+            enchants.actionBar(victim, "&bDodged!");
+        }
+    }
+
+    /** Last Stand: Strength and Resistance for a few seconds when health drops low. */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onLowHealth(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        Player p = (Player) event.getEntity();
+        int lvl = worn(p, "last-stand");
+        if (lvl <= 0) {
+            return;
+        }
+        double max = p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        double after = p.getHealth() - event.getFinalDamage();
+        ConfigurationSection s = settings("last-stand");
+        if (after <= 0 || after > max * s.getDouble("below-health-percent", 25) / 100.0) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        Long last = lastStandAt.get(p.getUniqueId());
+        if (last != null && now - last < s.getLong("cooldown-seconds", 60) * 1000L) {
+            return;
+        }
+        lastStandAt.put(p.getUniqueId(), now);
+        int ticks = (int) Math.round(strength(Enchants.Category.ARMOR, "last-stand", lvl) * 20);
+        p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, ticks, 0, false, true, true), true);
+        p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, ticks, 0, false, true, true), true);
+        p.getWorld().playSound(p.getLocation(), Sound.ENTITY_RAVAGER_ROAR, 0.6f, 1.2f);
+        enchants.actionBar(p, "&6&lLAST STAND!");
+    }
+
+    // ================================================================== sword: kills
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onKill(PlayerDeathEvent event) {
+        Player victim = event.getEntity();
+        Player killer = victim.getKiller();
+        if (killer == null || killer.equals(victim)) {
+            return;
+        }
+        int bounty = enchants.heldLevel(killer, Enchants.Category.SWORD, "bounty-hunter");
+        if (bounty > 0) {
+            String key = killer.getUniqueId() + ":" + victim.getUniqueId();
+            long now = System.currentTimeMillis();
+            Long last = bountyAt.get(key);
+            long cooldown = settings("bounty-hunter").getLong("same-player-cooldown-seconds", 300) * 1000L;
+            if (last == null || now - last >= cooldown) {
+                bountyAt.put(key, now);
+                long amount = Math.round(strength(Enchants.Category.SWORD, "bounty-hunter", bounty));
+                if (amount > 0) {
+                    tokens.add(killer, amount);
+                    killer.sendMessage(Text.color(killer, "&6Bounty Hunter: &e+" + Tokens.format(amount) + " tokens"));
+                }
+            }
+        }
+        int heads = enchants.heldLevel(killer, Enchants.Category.SWORD, "head-hunter");
+        if (heads > 0 && roll(strength(Enchants.Category.SWORD, "head-hunter", heads))) {
+            ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+            SkullMeta meta = (SkullMeta) head.getItemMeta();
+            meta.setOwningPlayer(victim);
+            meta.setDisplayName(Text.color("&e" + victim.getName() + "'s Head"));
+            head.setItemMeta(meta);
+            event.getDrops().add(head);
+        }
+    }
+
+    // ================================================================== pickaxe: mining
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onMine(BlockBreakEvent event) {
+        Player p = event.getPlayer();
+        if (p.getGameMode() == GameMode.CREATIVE || mines.mineAt(event.getBlock()) == null) {
+            return; // these only work in mines
+        }
+        keyFinder(p);
+        moneyFinder(p);
+        int xp = enchants.heldLevel(p, Enchants.Category.PICKAXE, "xp-boost");
+        if (xp > 0 && roll(strength(Enchants.Category.PICKAXE, "xp-boost", xp))) {
+            p.giveExp(1); // goes through Mending like any other XP
+        }
+    }
+
+    /**
+     * Key Finder: a rare chance per block for a crate key. To stop fast pickaxes from farming keys,
+     * there's a cooldown after every key and a daily limit per player.
+     */
+    private void keyFinder(Player p) {
+        int lvl = enchants.heldLevel(p, Enchants.Category.PICKAXE, "key-finder");
+        if (lvl <= 0) {
+            return;
+        }
+        ConfigurationSection s = settings("key-finder");
+        LocalDate today = LocalDate.now();
+        if (!today.equals(keyDay)) {
+            keyDay = today;
+            keysToday.clear();
+        }
+        UUID id = p.getUniqueId();
+        long now = System.currentTimeMillis();
+        Long last = lastKey.get(id);
+        if (last != null && now - last < s.getLong("cooldown-minutes", 15) * 60000L) {
+            return;
+        }
+        Integer count = keysToday.get(id);
+        if (count != null && count >= s.getInt("max-per-day", 6)) {
+            return;
+        }
+        if (!roll(strength(Enchants.Category.PICKAXE, "key-finder", lvl))) {
+            return;
+        }
+        List<String> commands = s.getStringList("commands");
+        List<String> names = s.getStringList("key-names");
+        if (commands.isEmpty()) {
+            return;
+        }
+        String cmd = commands.get(Math.min(lvl, commands.size()) - 1).replace("{player}", p.getName());
+        if (cmd.startsWith("/")) {
+            cmd = cmd.substring(1);
+        }
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+        lastKey.put(id, now);
+        keysToday.put(id, count == null ? 1 : count + 1);
+        String keyName = names.isEmpty() ? "a crate key" : names.get(Math.min(lvl, names.size()) - 1);
+        p.sendMessage(Text.color(p, s.getString("message", "&6&lKEY FINDER! &7You found {key}&7!").replace("{key}", keyName)));
+        p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8f, 1.6f);
+    }
+
+    private Object economy;
+    private Method deposit;
+    private boolean economyChecked;
+
+    /** Money Finder: a small chance per block to find a money bonus (paid through Vault). */
+    private void moneyFinder(Player p) {
+        int lvl = enchants.heldLevel(p, Enchants.Category.PICKAXE, "money-finder");
+        if (lvl <= 0 || !roll(settings("money-finder").getDouble("chance-percent", 0.5))) {
+            return;
+        }
+        double amount = strength(Enchants.Category.PICKAXE, "money-finder", lvl);
+        if (amount <= 0 || !pay(p, amount)) {
+            return;
+        }
+        enchants.actionBar(p, "&aMoney Finder: +$" + new java.text.DecimalFormat("#,##0").format(amount));
+    }
+
+    private boolean pay(Player p, double amount) {
+        if (!economyChecked || economy == null) {
+            economyChecked = true;
+            try {
+                Class<?> eco = Class.forName("net.milkbowl.vault.economy.Economy");
+                RegisteredServiceProvider<?> rsp = Bukkit.getServicesManager().getRegistration(eco);
+                if (rsp != null) {
+                    economy = rsp.getProvider();
+                    deposit = eco.getMethod("depositPlayer", org.bukkit.OfflinePlayer.class, double.class);
+                }
+            } catch (Throwable ignored) {
+                economy = null;
+            }
+        }
+        if (economy == null) {
+            return false;
+        }
+        try {
+            deposit.invoke(economy, p, amount);
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+}
