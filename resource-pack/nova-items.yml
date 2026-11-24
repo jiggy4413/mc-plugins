@@ -3,7 +3,7 @@
 
   winter-nova-helmet:
     material: LEATHER_HELMET
-    color: "#9ADCFF"
+    color: "#EEF6FF"
     model-data: 1001
     unbreakable: true
     name: "&b&lWinter Nova Helmet"
@@ -12,7 +12,7 @@
 
   winter-nova-chestplate:
     material: LEATHER_CHESTPLATE
-    color: "#9ADCFF"
+    color: "#EEF6FF"
     model-data: 1001
     unbreakable: true
     name: "&b&lWinter Nova Chestplate"
@@ -21,7 +21,7 @@
 
   winter-nova-leggings:
     material: LEATHER_LEGGINGS
-    color: "#9ADCFF"
+    color: "#EEF6FF"
     model-data: 1001
     unbreakable: true
     name: "&b&lWinter Nova Leggings"
@@ -30,7 +30,7 @@
 
   winter-nova-boots:
     material: LEATHER_BOOTS
-    color: "#9ADCFF"
+    color: "#EEF6FF"
     model-data: 1001
     unbreakable: true
     name: "&b&lWinter Nova Boots"
@@ -39,7 +39,7 @@
 
   valentines-nova-helmet:
     material: LEATHER_HELMET
-    color: "#FF4F8B"
+    color: "#FF8FBD"
     model-data: 1002
     unbreakable: true
     name: "&d&lValentines Nova Helmet"
@@ -48,7 +48,7 @@
 
   valentines-nova-chestplate:
     material: LEATHER_CHESTPLATE
-    color: "#FF4F8B"
+    color: "#FF8FBD"
     model-data: 1002
     unbreakable: true
     name: "&d&lValentines Nova Chestplate"
@@ -57,7 +57,7 @@
 
   valentines-nova-leggings:
     material: LEATHER_LEGGINGS
-    color: "#FF4F8B"
+    color: "#FF8FBD"
     model-data: 1002
     unbreakable: true
     name: "&d&lValentines Nova Leggings"
@@ -66,7 +66,7 @@
 
   valentines-nova-boots:
     material: LEATHER_BOOTS
-    color: "#FF4F8B"
+    color: "#FF8FBD"
     model-data: 1002
     unbreakable: true
     name: "&d&lValentines Nova Boots"
@@ -75,7 +75,7 @@
 
   summer-nova-helmet:
     material: LEATHER_HELMET
-    color: "#FFC12E"
+    color: "#6FD15A"
     model-data: 1003
     unbreakable: true
     name: "&e&lSummer Nova Helmet"
@@ -84,7 +84,7 @@
 
   summer-nova-chestplate:
     material: LEATHER_CHESTPLATE
-    color: "#FFC12E"
+    color: "#6FD15A"
     model-data: 1003
     unbreakable: true
     name: "&e&lSummer Nova Chestplate"
@@ -93,7 +93,7 @@
 
   summer-nova-leggings:
     material: LEATHER_LEGGINGS
-    color: "#FFC12E"
+    color: "#6FD15A"
     model-data: 1003
     unbreakable: true
     name: "&e&lSummer Nova Leggings"
@@ -102,7 +102,7 @@
 
   summer-nova-boots:
     material: LEATHER_BOOTS
-    color: "#FFC12E"
+    color: "#6FD15A"
     model-data: 1003
     unbreakable: true
     name: "&e&lSummer Nova Boots"
