@@ -8,7 +8,10 @@
 #  The item is built fresh every time with real enchants, so nothing gets lost.
 #
 #  Each item:
-#    material, name, lore, glow, amount, model-data, texture (player heads)
+#    material, name, lore, glow, amount, texture (player heads)
+#    model-data    custom model data: picks the item's icon from the server resource pack
+#    color         dye color for leather armor, e.g. "#9ADCFF"
+#    unbreakable   true = never loses durability
 #    enchants:   any enchant from enchants.yml, by its name there, with a level.
 #                Crate-only enchants (lifesteal, explosive...) work here too.
 #  Apply changes with /prisoncore reload.

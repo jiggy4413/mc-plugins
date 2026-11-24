@@ -18,7 +18,8 @@ import org.bukkit.inventory.meta.SkullMeta;
  * other: the first section that sets a field wins. That's how a single rank can override just
  * its material while keeping the shared name and lore.
  *
- * Fields: material, name, lore, glow, model-data, amount, skull ("viewer" = the player's head),
+ * Fields: material, name, lore, glow, model-data, amount, color (#RRGGBB, leather), unbreakable,
+ * skull ("viewer" = the player's head),
  * texture (a head texture: Minecraft-Heads "Value", a textures.minecraft.net URL, or its id).
  */
 public final class ItemTemplate {
@@ -31,6 +32,9 @@ public final class ItemTemplate {
     private Integer amount;
     private String skull;
     private String texture;
+    /** Dye color for leather items, as #RRGGBB. */
+    private String color;
+    private Boolean unbreakable;
 
     private ItemTemplate() {
     }
@@ -65,6 +69,12 @@ public final class ItemTemplate {
             }
             if (t.texture == null && s.isString("texture")) {
                 t.texture = s.getString("texture");
+            }
+            if (t.color == null && s.isString("color")) {
+                t.color = s.getString("color");
+            }
+            if (t.unbreakable == null && s.isBoolean("unbreakable")) {
+                t.unbreakable = s.getBoolean("unbreakable");
             }
         }
         return t;
@@ -115,6 +125,18 @@ public final class ItemTemplate {
         }
         if (modelData != null) {
             meta.setCustomModelData(modelData);
+        }
+        if (color != null && meta instanceof org.bukkit.inventory.meta.LeatherArmorMeta) {
+            String hex = apply(color, placeholders).trim().replace("#", "");
+            try {
+                ((org.bukkit.inventory.meta.LeatherArmorMeta) meta).setColor(
+                        org.bukkit.Color.fromRGB(Integer.parseInt(hex, 16) & 0xFFFFFF));
+            } catch (NumberFormatException ignored) {
+                // not a color; keep the default leather color
+            }
+        }
+        if (unbreakable != null && unbreakable) {
+            meta.setUnbreakable(true);
         }
         if (meta instanceof SkullMeta && "viewer".equalsIgnoreCase(skull) && viewer != null) {
             ((SkullMeta) meta).setOwningPlayer(viewer);
