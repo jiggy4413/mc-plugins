@@ -150,6 +150,20 @@ public final class EnchantEffects implements Listener {
             }
         }
 
+        int pierce = enchants.heldLevel(p, Enchants.Category.SWORD, "armor-pierce");
+        if (pierce > 0 && roll(strength(Enchants.Category.SWORD, "armor-pierce", pierce))) {
+            // this hit ignores armor points and protection enchants
+            if (event.isApplicable(EntityDamageEvent.DamageModifier.ARMOR)) {
+                event.setDamage(EntityDamageEvent.DamageModifier.ARMOR, 0);
+            }
+            if (event.isApplicable(EntityDamageEvent.DamageModifier.MAGIC)) {
+                event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, 0);
+            }
+            target.getWorld().playSound(target.getLocation(), Sound.ITEM_TRIDENT_HIT, 1f, 0.6f);
+            target.getWorld().spawnParticle(org.bukkit.Particle.SWEEP_ATTACK, target.getLocation().add(0, 1, 0), 1);
+            enchants.actionBar(p, settings("armor-pierce").getString("message", "&b&lARMOR PIERCED!"));
+        }
+
         int thunder = enchants.heldLevel(p, Enchants.Category.SWORD, "thunder");
         if (thunder > 0 && roll(strength(Enchants.Category.SWORD, "thunder", thunder))) {
             target.getWorld().strikeLightningEffect(target.getLocation()); // looks only, no fire
@@ -166,6 +180,14 @@ public final class EnchantEffects implements Listener {
         }
         Player p = (Player) event.getDamager();
         final LivingEntity target = (LivingEntity) event.getEntity();
+
+        int swift = enchants.heldLevel(p, Enchants.Category.SWORD, "swiftness");
+        if (swift > 0 && roll(strength(Enchants.Category.SWORD, "swiftness", swift))) {
+            int ticks = Math.max(1, settings("swiftness").getInt("seconds", 3)) * 20;
+            int amp = Math.max(1, settings("swiftness").getInt("speed-level", 2)) - 1;
+            p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, ticks, amp, false, true, true), true);
+            p.getWorld().playSound(p.getLocation(), Sound.ENTITY_PHANTOM_FLAP, 0.6f, 1.6f);
+        }
 
         int bleed = enchants.heldLevel(p, Enchants.Category.SWORD, "bleed");
         if (bleed > 0 && roll(strength(Enchants.Category.SWORD, "bleed", bleed))) {
@@ -241,6 +263,94 @@ public final class EnchantEffects implements Listener {
         p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, ticks, 0, false, true, true), true);
         p.getWorld().playSound(p.getLocation(), Sound.ENTITY_RAVAGER_ROAR, 0.6f, 1.2f);
         enchants.actionBar(p, "&6&lLAST STAND!");
+    }
+
+    // ================================================================== bows: Freeze and Ender Shot
+
+    private final Map<UUID, Long> enderShotAt = new HashMap<UUID, Long>();
+
+    private org.bukkit.NamespacedKey arrowKey(String name) {
+        return new org.bukkit.NamespacedKey(enchants.plugin(), "arrow_" + name);
+    }
+
+    /** Remembers the bow's enchants on the arrow, since the arrow outlives the bow being held. */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onShoot(org.bukkit.event.entity.EntityShootBowEvent event) {
+        if (!(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Projectile)) {
+            return;
+        }
+        Player p = (Player) event.getEntity();
+        ItemStack bow = event.getBow();
+        if (Enchants.category(bow) != Enchants.Category.SWORD) {
+            return;
+        }
+        org.bukkit.persistence.PersistentDataContainer data = event.getProjectile().getPersistentDataContainer();
+        Enchants.Def freeze = def(Enchants.Category.SWORD, "freeze");
+        int fl = freeze == null ? 0 : enchants.level(bow, freeze);
+        if (fl > 0) {
+            data.set(arrowKey("freeze"), org.bukkit.persistence.PersistentDataType.INTEGER, fl);
+        }
+        Enchants.Def ender = def(Enchants.Category.SWORD, "ender-shot");
+        if (ender != null && enchants.level(bow, ender) > 0) {
+            ConfigurationSection s = settings("ender-shot");
+            if (s.getBoolean("only-while-sneaking", true) && !p.isSneaking()) {
+                return;
+            }
+            long now = System.currentTimeMillis();
+            Long last = enderShotAt.get(p.getUniqueId());
+            long cooldown = s.getLong("cooldown-seconds", 10) * 1000L;
+            if (last != null && now - last < cooldown) {
+                enchants.actionBar(p, "&7Ender Shot ready in &f" + ((cooldown - (now - last)) / 1000 + 1) + "s");
+                return;
+            }
+            enderShotAt.put(p.getUniqueId(), now);
+            data.set(arrowKey("ender"), org.bukkit.persistence.PersistentDataType.BYTE, (byte) 1);
+            p.getWorld().playSound(p.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, 0.8f, 1f);
+        }
+    }
+
+    /** Freeze from a bow: arrows that hit can slow the target. */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onArrowHit(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Projectile) || !(event.getEntity() instanceof LivingEntity)) {
+            return;
+        }
+        Integer fl = event.getDamager().getPersistentDataContainer().get(arrowKey("freeze"), org.bukkit.persistence.PersistentDataType.INTEGER);
+        if (fl != null && roll(strength(Enchants.Category.SWORD, "freeze", fl))) {
+            LivingEntity target = (LivingEntity) event.getEntity();
+            int ticks = Math.max(1, settings("freeze").getInt("seconds", 2)) * 20;
+            target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, ticks, 1, false, true, true), true);
+            target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.6f, 1.6f);
+        }
+    }
+
+    /** Ender Shot: the shooter is teleported where the arrow lands, like an ender pearl. */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onArrowLand(org.bukkit.event.entity.ProjectileHitEvent event) {
+        Projectile arrow = event.getEntity();
+        if (!arrow.getPersistentDataContainer().has(arrowKey("ender"), org.bukkit.persistence.PersistentDataType.BYTE)
+                || !(arrow.getShooter() instanceof Player)) {
+            return;
+        }
+        Player p = (Player) arrow.getShooter();
+        if (!p.isOnline() || !p.getWorld().equals(arrow.getWorld())) {
+            return;
+        }
+        org.bukkit.Location to;
+        if (event.getHitBlock() != null && event.getHitBlockFace() != null) {
+            to = event.getHitBlock().getRelative(event.getHitBlockFace()).getLocation().add(0.5, 0, 0.5);
+        } else if (event.getHitEntity() != null) {
+            to = event.getHitEntity().getLocation();
+        } else {
+            to = arrow.getLocation();
+        }
+        to.setYaw(p.getLocation().getYaw());
+        to.setPitch(p.getLocation().getPitch());
+        // ENDER_PEARL cause, so region plugins (WorldGuard's enderpearl flag) can block it like a pearl
+        p.teleport(to, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
+        p.getWorld().playSound(to, Sound.ENTITY_ENDERMAN_TELEPORT, 0.8f, 1.2f);
+        p.getWorld().spawnParticle(org.bukkit.Particle.PORTAL, to.clone().add(0, 1, 0), 30, 0.3, 0.5, 0.3, 0.1);
+        arrow.remove();
     }
 
     // ================================================================== sword: kills

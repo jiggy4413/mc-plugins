@@ -12,6 +12,8 @@
 #    model-data    custom model data: picks the item's icon from the server resource pack
 #    color         dye color for leather armor, e.g. "#9ADCFF"
 #    unbreakable   true = never loses durability
+#    attack-damage, attack-speed   exact main-hand stats, as shown in game (netherite sword: 8 and 1.6).
+#                  Put them in the lore too; the item's own stat lines are hidden.
 #    enchants:   any enchant from enchants.yml, by its name there, with a level.
 #                Crate-only enchants (lifesteal, explosive...) work here too, and so does any
 #                normal Minecraft enchant (power, punch, flame, infinity...) for bows and other items.

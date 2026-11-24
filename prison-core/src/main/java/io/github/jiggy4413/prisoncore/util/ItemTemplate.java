@@ -35,6 +35,9 @@ public final class ItemTemplate {
     /** Dye color for leather items, as #RRGGBB. */
     private String color;
     private Boolean unbreakable;
+    /** Exact stats in the main hand, as shown in-game (e.g. 9 damage, 1.2 attacks per second). */
+    private Double attackDamage;
+    private Double attackSpeed;
 
     private ItemTemplate() {
     }
@@ -75,6 +78,12 @@ public final class ItemTemplate {
             }
             if (t.unbreakable == null && s.isBoolean("unbreakable")) {
                 t.unbreakable = s.getBoolean("unbreakable");
+            }
+            if (t.attackDamage == null && (s.isDouble("attack-damage") || s.isInt("attack-damage"))) {
+                t.attackDamage = s.getDouble("attack-damage");
+            }
+            if (t.attackSpeed == null && (s.isDouble("attack-speed") || s.isInt("attack-speed"))) {
+                t.attackSpeed = s.getDouble("attack-speed");
             }
         }
         return t;
@@ -137,6 +146,21 @@ public final class ItemTemplate {
         }
         if (unbreakable != null && unbreakable) {
             meta.setUnbreakable(true);
+        }
+        // players have 1 base damage and 4 base attack speed; the modifiers add the rest
+        if (attackDamage != null) {
+            meta.removeAttributeModifier(org.bukkit.attribute.Attribute.GENERIC_ATTACK_DAMAGE);
+            meta.addAttributeModifier(org.bukkit.attribute.Attribute.GENERIC_ATTACK_DAMAGE,
+                    new org.bukkit.attribute.AttributeModifier(java.util.UUID.nameUUIDFromBytes("pc_damage".getBytes()),
+                            "prisoncore.damage", attackDamage - 1, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER,
+                            org.bukkit.inventory.EquipmentSlot.HAND));
+        }
+        if (attackSpeed != null) {
+            meta.removeAttributeModifier(org.bukkit.attribute.Attribute.GENERIC_ATTACK_SPEED);
+            meta.addAttributeModifier(org.bukkit.attribute.Attribute.GENERIC_ATTACK_SPEED,
+                    new org.bukkit.attribute.AttributeModifier(java.util.UUID.nameUUIDFromBytes("pc_speed".getBytes()),
+                            "prisoncore.speed", attackSpeed - 4, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER,
+                            org.bukkit.inventory.EquipmentSlot.HAND));
         }
         if (meta instanceof SkullMeta && "viewer".equalsIgnoreCase(skull) && viewer != null) {
             ((SkullMeta) meta).setOwningPlayer(viewer);

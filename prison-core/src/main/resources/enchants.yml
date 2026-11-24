@@ -80,6 +80,7 @@ enchant-settings:
     damage-per-second: 1
     seconds: 3
   freeze:
+    # also works on bows: arrows that hit can slow the target
     seconds: 2
   executioner:
     below-health-percent: 30
@@ -88,6 +89,15 @@ enchant-settings:
   bounty-hunter:
     # No tokens for killing the same player again within this many seconds.
     same-player-cooldown-seconds: 300
+  swiftness:
+    speed-level: 2
+    seconds: 3
+  armor-pierce:
+    message: "&b&lARMOR PIERCED!"
+  ender-shot:
+    # Only arrows shot while sneaking teleport you, so normal shots stay normal.
+    only-while-sneaking: true
+    cooldown-seconds: 10
   last-stand:
     below-health-percent: 25
     cooldown-seconds: 60
@@ -214,6 +224,7 @@ enchants:
   sword:
     sharpness:
       name: Sharpness
+      only-for: [SWORD, AXE]
       vanilla: sharpness
       icon: IRON_SWORD
       description: ["More damage.", "Level 6 is one past normal Minecraft."]
@@ -226,6 +237,7 @@ enchants:
         - 9          # level 6
     fire-aspect:
       name: Fire Aspect
+      only-for: [SWORD, AXE]
       vanilla: fire_aspect
       icon: BLAZE_POWDER
       description: ["Sets your target on fire."]
@@ -234,6 +246,7 @@ enchants:
         - 30         # level 2
     knockback:
       name: Knockback
+      only-for: [SWORD, AXE]
       vanilla: knockback
       icon: PISTON
       description: ["Knocks your target back."]
@@ -242,6 +255,7 @@ enchants:
         - 20         # level 2
     looting:
       name: Looting
+      only-for: [SWORD, AXE]
       vanilla: looting
       icon: GOLD_INGOT
       description: ["More drops from mobs."]
@@ -342,6 +356,35 @@ enchants:
         - 30         # level 3
       icon: PLAYER_HEAD
       description: ["Chance to drop your victim's head."]
+      in-menu: false
+
+    swiftness:
+      name: Swiftness
+      only-for: [SWORD]
+      # % chance per hit to get Speed (see enchant-settings.swiftness)
+      strength:
+        - 15         # level 1
+      icon: SUGAR
+      description: ["Chance to gain Speed II for 3 seconds", "when you hit something."]
+      in-menu: false
+
+    armor-pierce:
+      name: Armor Pierce
+      only-for: [HOE]
+      # % chance per hit that the hit ignores armor (1 = about every 100 hits)
+      strength:
+        - 1          # level 1
+      icon: TRIDENT
+      description: ["Rare chance for a hit to", "ignore armor completely."]
+      in-menu: false
+
+    ender-shot:
+      name: Ender Shot
+      only-for: [BOW]
+      strength:
+        - 1          # level 1
+      icon: ENDER_PEARL
+      description: ["Sneak while shooting: you teleport", "where the arrow lands."]
       in-menu: false
 
   armor:
