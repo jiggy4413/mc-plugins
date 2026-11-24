@@ -1,0 +1,25 @@
+# Paste under "items:" in plugins/PrisonCore/items.yml (two-space indent), then /prisoncore reload.
+# Give with: /prisoncore give <player> frost-sword   (frost-axe, frost-bow)
+  frost-sword:
+    material: NETHERITE_SWORD
+    model-data: 2001
+    unbreakable: true
+    name: "&b&lFrost Sword"
+    lore: ["", "&7A Winter Crate exclusive."]
+    enchants: {sharpness: 6, freeze: 3, looting: 3}
+
+  frost-axe:
+    material: NETHERITE_AXE
+    model-data: 2002
+    unbreakable: true
+    name: "&b&lFrost Axe"
+    lore: ["", "&7A Winter Crate exclusive."]
+    enchants: {sharpness: 6, freeze: 3, executioner: 2}
+
+  frost-bow:
+    material: BOW
+    model-data: 2003
+    unbreakable: true
+    name: "&b&lFrost Bow"
+    lore: ["", "&7A Winter Crate exclusive."]
+    enchants: {power: 5, punch: 2, infinity: 1}
