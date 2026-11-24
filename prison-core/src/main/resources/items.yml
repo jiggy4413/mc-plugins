@@ -13,7 +13,9 @@
 #    color         dye color for leather armor, e.g. "#9ADCFF"
 #    unbreakable   true = never loses durability
 #    enchants:   any enchant from enchants.yml, by its name there, with a level.
-#                Crate-only enchants (lifesteal, explosive...) work here too.
+#                Crate-only enchants (lifesteal, explosive...) work here too, and so does any
+#                normal Minecraft enchant (power, punch, flame, infinity...) for bows and other items.
+#                Axes use the sword enchants.
 #  Apply changes with /prisoncore reload.
 #  Formatting: & codes, &#RRGGBB, <gradient:#FF0000:#FFD700>text</gradient>, <smallcaps>
 # ==============================================================================

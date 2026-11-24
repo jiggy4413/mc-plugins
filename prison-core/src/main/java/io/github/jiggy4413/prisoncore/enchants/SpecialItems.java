@@ -71,26 +71,34 @@ public final class SpecialItems {
         ConfigurationSection ench = s.getConfigurationSection("enchants");
         Enchants.Category c = Enchants.category(item);
         if (ench != null) {
-            if (c == null) {
-                problems.add(item.getType() + " can't have Enchanter enchants (only pickaxes, swords and armor)");
-            } else {
-                for (Map.Entry<String, Object> e : ench.getValues(false).entrySet()) {
-                    Enchants.Def d = enchants.def(c, e.getKey().toLowerCase(Locale.ROOT));
-                    int level;
-                    try {
-                        level = Integer.parseInt(String.valueOf(e.getValue()).trim());
-                    } catch (NumberFormatException ex) {
-                        level = 0;
-                    }
-                    if (d == null) {
-                        problems.add("'" + e.getKey() + "' isn't a " + c.name().toLowerCase(Locale.ROOT) + " enchant in enchants.yml");
-                    } else if (level <= 0) {
-                        problems.add("'" + e.getValue() + "' isn't a valid level for " + e.getKey());
-                    } else if (!d.fits(item)) {
-                        problems.add(d.name + " can't go on " + item.getType().name().toLowerCase(Locale.ROOT));
-                    } else {
+            for (Map.Entry<String, Object> e : ench.getValues(false).entrySet()) {
+                String key = e.getKey().toLowerCase(Locale.ROOT);
+                int level;
+                try {
+                    level = Integer.parseInt(String.valueOf(e.getValue()).trim());
+                } catch (NumberFormatException ex) {
+                    level = 0;
+                }
+                if (level <= 0) {
+                    problems.add("'" + e.getValue() + "' isn't a valid level for " + e.getKey());
+                    continue;
+                }
+                Enchants.Def d = c == null ? null : enchants.def(c, key);
+                if (d != null) {
+                    if (d.fits(item)) {
                         enchants.setLevel(item, d, level);
+                    } else {
+                        problems.add(d.name + " can't go on " + item.getType().name().toLowerCase(Locale.ROOT));
                     }
+                    continue;
+                }
+                // not an Enchanter enchant: any normal Minecraft enchant works too (power, punch, infinity...)
+                org.bukkit.enchantments.Enchantment vanilla = org.bukkit.enchantments.Enchantment.getByKey(
+                        org.bukkit.NamespacedKey.minecraft(key.replace('-', '_')));
+                if (vanilla != null) {
+                    item.addUnsafeEnchantment(vanilla, level);
+                } else {
+                    problems.add("'" + e.getKey() + "' isn't an enchant in enchants.yml or a Minecraft enchant");
                 }
             }
         }

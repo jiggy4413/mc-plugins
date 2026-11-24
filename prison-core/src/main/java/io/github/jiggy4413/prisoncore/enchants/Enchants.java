@@ -295,7 +295,7 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
         if (t.endsWith("_PICKAXE")) {
             return Category.PICKAXE;
         }
-        if (t.endsWith("_SWORD")) {
+        if (t.endsWith("_SWORD") || t.endsWith("_AXE")) {   // axes use the sword page and enchants
             return Category.SWORD;
         }
         if (t.endsWith("_HELMET") || t.endsWith("_CHESTPLATE") || t.endsWith("_LEGGINGS") || t.endsWith("_BOOTS")) {
