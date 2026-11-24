@@ -1,0 +1,27 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "item/leather_boots",
+    "layer1": "item/leather_boots_overlay"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1001
+      },
+      "model": "item/nova/winter_nova_boots"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1002
+      },
+      "model": "item/nova/valentines_nova_boots"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 1003
+      },
+      "model": "item/nova/summer_nova_boots"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "item/nova/blank",
+    "layer1": "item/nova/valentines_nova_boots"
+  }
+}
