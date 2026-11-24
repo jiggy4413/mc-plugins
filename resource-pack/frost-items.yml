@@ -1,12 +1,13 @@
-# Paste under "items:" in plugins/PrisonCore/items.yml (two-space indent), then /prisoncore reload.
-# Give with: /prisoncore give <player> frost-sword   (frost-axe, frost-bow)
+# Paste under "items:" in plugins/PrisonCore/items.yml (two-space indent), replacing the old frost entries.
+# Then /prisoncore reload. Give with: /prisoncore give <player> frost-sword (frost-axe, frost-bow, frost-scythe)
+# Only their special enchants are included; players add Sharpness, Power etc. themselves.
   frost-sword:
     material: NETHERITE_SWORD
     model-data: 2001
     unbreakable: true
     name: "&b&lFrost Sword"
     lore: ["", "&7A Winter Crate exclusive."]
-    enchants: {sharpness: 6, freeze: 3, looting: 3}
+    enchants: {freeze: 3, swiftness: 1}
 
   frost-axe:
     material: NETHERITE_AXE
@@ -14,12 +15,22 @@
     unbreakable: true
     name: "&b&lFrost Axe"
     lore: ["", "&7A Winter Crate exclusive."]
-    enchants: {sharpness: 6, freeze: 3, executioner: 2}
+    enchants: {executioner: 3}
 
   frost-bow:
     material: BOW
     model-data: 2003
     unbreakable: true
     name: "&b&lFrost Bow"
-    lore: ["", "&7A Winter Crate exclusive."]
-    enchants: {power: 5, punch: 2, infinity: 1}
+    lore: ["", "&7Sneak while shooting to teleport", "&7where the arrow lands.", "", "&7A Winter Crate exclusive."]
+    enchants: {freeze: 3, ender-shot: 1}
+
+  frost-scythe:
+    material: NETHERITE_HOE
+    model-data: 2004
+    unbreakable: true
+    attack-damage: 9
+    attack-speed: 1.2
+    name: "&b&lFrost Scythe"
+    lore: ["", "&9 9 Attack Damage", "&9 1.2 Attack Speed", "", "&7A Winter Crate exclusive."]
+    enchants: {armor-pierce: 1}

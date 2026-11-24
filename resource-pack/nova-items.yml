@@ -8,8 +8,7 @@
     unbreakable: true
     name: "&b&lWinter Nova Helmet"
     lore: ["", "&7A Winter Crate exclusive."]
-    enchants: {protection: 6, fire-protection: 6, blast-protection: 6}
-
+    
   winter-nova-chestplate:
     material: LEATHER_CHESTPLATE
     color: "#EEF6FF"
@@ -17,7 +16,7 @@
     unbreakable: true
     name: "&b&lWinter Nova Chestplate"
     lore: ["", "&7A Winter Crate exclusive."]
-    enchants: {protection: 6, fire-protection: 6, blast-protection: 6, dodge: 3}
+    enchants: {dodge: 3}
 
   winter-nova-leggings:
     material: LEATHER_LEGGINGS
@@ -26,7 +25,7 @@
     unbreakable: true
     name: "&b&lWinter Nova Leggings"
     lore: ["", "&7A Winter Crate exclusive."]
-    enchants: {protection: 6, fire-protection: 6, blast-protection: 6, last-stand: 3}
+    enchants: {last-stand: 3}
 
   winter-nova-boots:
     material: LEATHER_BOOTS
@@ -35,7 +34,7 @@
     unbreakable: true
     name: "&b&lWinter Nova Boots"
     lore: ["", "&7A Winter Crate exclusive."]
-    enchants: {protection: 6, fire-protection: 6, blast-protection: 6, feather-falling: 4, speed: 1}
+    enchants: {speed: 1}
 
   valentines-nova-helmet:
     material: LEATHER_HELMET
@@ -44,8 +43,7 @@
     unbreakable: true
     name: "&d&lValentines Nova Helmet"
     lore: ["", "&7A Valentines Crate exclusive."]
-    enchants: {protection: 6, fire-protection: 6, blast-protection: 6}
-
+    
   valentines-nova-chestplate:
     material: LEATHER_CHESTPLATE
     color: "#FF8FBD"
@@ -53,7 +51,7 @@
     unbreakable: true
     name: "&d&lValentines Nova Chestplate"
     lore: ["", "&7A Valentines Crate exclusive."]
-    enchants: {protection: 6, fire-protection: 6, blast-protection: 6, dodge: 3}
+    enchants: {dodge: 3}
 
   valentines-nova-leggings:
     material: LEATHER_LEGGINGS
@@ -62,7 +60,7 @@
     unbreakable: true
     name: "&d&lValentines Nova Leggings"
     lore: ["", "&7A Valentines Crate exclusive."]
-    enchants: {protection: 6, fire-protection: 6, blast-protection: 6, last-stand: 3}
+    enchants: {last-stand: 3}
 
   valentines-nova-boots:
     material: LEATHER_BOOTS
@@ -71,7 +69,7 @@
     unbreakable: true
     name: "&d&lValentines Nova Boots"
     lore: ["", "&7A Valentines Crate exclusive."]
-    enchants: {protection: 6, fire-protection: 6, blast-protection: 6, feather-falling: 4, speed: 1}
+    enchants: {speed: 1}
 
   summer-nova-helmet:
     material: LEATHER_HELMET
@@ -80,8 +78,7 @@
     unbreakable: true
     name: "&e&lSummer Nova Helmet"
     lore: ["", "&7A Summer Crate exclusive."]
-    enchants: {protection: 6, fire-protection: 6, blast-protection: 6}
-
+    
   summer-nova-chestplate:
     material: LEATHER_CHESTPLATE
     color: "#6FD15A"
@@ -89,7 +86,7 @@
     unbreakable: true
     name: "&e&lSummer Nova Chestplate"
     lore: ["", "&7A Summer Crate exclusive."]
-    enchants: {protection: 6, fire-protection: 6, blast-protection: 6, dodge: 3}
+    enchants: {dodge: 3}
 
   summer-nova-leggings:
     material: LEATHER_LEGGINGS
@@ -98,7 +95,7 @@
     unbreakable: true
     name: "&e&lSummer Nova Leggings"
     lore: ["", "&7A Summer Crate exclusive."]
-    enchants: {protection: 6, fire-protection: 6, blast-protection: 6, last-stand: 3}
+    enchants: {last-stand: 3}
 
   summer-nova-boots:
     material: LEATHER_BOOTS
@@ -107,4 +104,4 @@
     unbreakable: true
     name: "&e&lSummer Nova Boots"
     lore: ["", "&7A Summer Crate exclusive."]
-    enchants: {protection: 6, fire-protection: 6, blast-protection: 6, feather-falling: 4, speed: 1}
+    enchants: {speed: 1}

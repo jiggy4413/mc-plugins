@@ -1,0 +1,14 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "item/netherite_hoe"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 2004
+      },
+      "model": "item/frost/frost_scythe"
+    }
+  ]
+}
