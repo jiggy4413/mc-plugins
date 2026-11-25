@@ -224,7 +224,7 @@ enchants:
   sword:
     sharpness:
       name: Sharpness
-      only-for: [SWORD, AXE]
+      only-for: [SWORD, AXE, HOE]
       vanilla: sharpness
       icon: IRON_SWORD
       description: ["More damage.", "Level 6 is one past normal Minecraft."]
@@ -237,7 +237,7 @@ enchants:
         - 9          # level 6
     fire-aspect:
       name: Fire Aspect
-      only-for: [SWORD, AXE]
+      only-for: [SWORD, AXE, HOE]
       vanilla: fire_aspect
       icon: BLAZE_POWDER
       description: ["Sets your target on fire."]
@@ -246,7 +246,7 @@ enchants:
         - 30         # level 2
     knockback:
       name: Knockback
-      only-for: [SWORD, AXE]
+      only-for: [SWORD, AXE, HOE]
       vanilla: knockback
       icon: PISTON
       description: ["Knocks your target back."]
@@ -255,7 +255,7 @@ enchants:
         - 20         # level 2
     looting:
       name: Looting
-      only-for: [SWORD, AXE]
+      only-for: [SWORD, AXE, HOE]
       vanilla: looting
       icon: GOLD_INGOT
       description: ["More drops from mobs."]
