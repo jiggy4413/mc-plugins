@@ -1,0 +1,359 @@
+# Paste under rewards: in your Winter Crate's rewards (same indent as Winter_Nova_Boots).
+# Each one runs /prisoncore give, so enchant levels are rolled fresh every win.
+# If your other command rewards use a different player placeholder than {name}, change it here too.
+
+Frost_Sword:
+  commands:
+  - prisoncore give {name} frostsword
+  chance: 2.0
+  rarity: default
+  linked-rewards: []
+  give-display-item:
+    value: false
+    with-lore: true
+    with-name: true
+  fallback-reward:
+    reward-name: ''
+    permission: ''
+  display-item:
+    material: NETHERITE_SWORD
+    glow: false
+    amount: 1
+    damage: 0
+    name: '&b&lFrost Sword'
+    lore:
+    - '&7Freeze I-II'
+    - '&7Swiftness I-II'
+    - ''
+    - '&eFreeze: 5-8% chance to slow your'
+    - '&etarget for 2 seconds.'
+    - '&eSwiftness: 8-12% chance to gain'
+    - '&eSpeed II for 3 seconds on hit.'
+    - ''
+    - '&7When in Main Hand:'
+    - '&9 9 Attack Damage'
+    - ''
+    - '&7Enchant levels are rolled when won.'
+    - '&7A Winter Crate exclusive.'
+    - '&7-'
+    - '&eChance: &6%writtenchance%%'
+    nbt-tags:
+    - Unbreakable 1
+    - CustomModelData 2001
+    item-flags:
+    - HIDE_ENCHANTS
+    - HIDE_ATTRIBUTES
+    - HIDE_UNBREAKABLE
+    - HIDE_DESTROYS
+    - HIDE_PLACED_ON
+    - HIDE_POTION_EFFECTS
+
+Frost_Axe:
+  commands:
+  - prisoncore give {name} frostaxe
+  chance: 2.0
+  rarity: default
+  linked-rewards: []
+  give-display-item:
+    value: false
+    with-lore: true
+    with-name: true
+  fallback-reward:
+    reward-name: ''
+    permission: ''
+  display-item:
+    material: NETHERITE_AXE
+    glow: false
+    amount: 1
+    damage: 0
+    name: '&b&lFrost Axe'
+    lore:
+    - '&7Executioner I-II'
+    - ''
+    - '&eExecutioner: +10-20% damage to'
+    - '&etargets below 30% health.'
+    - ''
+    - '&7When in Main Hand:'
+    - '&9 8 Attack Damage'
+    - ''
+    - '&7Enchant levels are rolled when won.'
+    - '&7A Winter Crate exclusive.'
+    - '&7-'
+    - '&eChance: &6%writtenchance%%'
+    nbt-tags:
+    - Unbreakable 1
+    - CustomModelData 2002
+    item-flags:
+    - HIDE_ENCHANTS
+    - HIDE_ATTRIBUTES
+    - HIDE_UNBREAKABLE
+    - HIDE_DESTROYS
+    - HIDE_PLACED_ON
+    - HIDE_POTION_EFFECTS
+
+Frost_Bow:
+  commands:
+  - prisoncore give {name} frostbow
+  chance: 2.0
+  rarity: default
+  linked-rewards: []
+  give-display-item:
+    value: false
+    with-lore: true
+    with-name: true
+  fallback-reward:
+    reward-name: ''
+    permission: ''
+  display-item:
+    material: BOW
+    glow: false
+    amount: 1
+    damage: 0
+    name: '&b&lFrost Bow'
+    lore:
+    - '&7Freeze I-II'
+    - '&7Ender Shot I-II'
+    - ''
+    - '&eFreeze: 5-8% chance your arrows'
+    - '&eslow the target for 2 seconds.'
+    - '&eEnder Shot: sneak while shooting to teleport'
+    - '&ewhere the arrow lands (20-15s cooldown).'
+    - ''
+    - '&7When Fully Drawn:'
+    - '&9 6-10 Arrow Damage'
+    - ''
+    - '&7Enchant levels are rolled when won.'
+    - '&7A Winter Crate exclusive.'
+    - '&7-'
+    - '&eChance: &6%writtenchance%%'
+    nbt-tags:
+    - Unbreakable 1
+    - CustomModelData 2003
+    item-flags:
+    - HIDE_ENCHANTS
+    - HIDE_ATTRIBUTES
+    - HIDE_UNBREAKABLE
+    - HIDE_DESTROYS
+    - HIDE_PLACED_ON
+    - HIDE_POTION_EFFECTS
+
+Frost_Scythe:
+  commands:
+  - prisoncore give {name} frostscythe
+  chance: 2.0
+  rarity: default
+  linked-rewards: []
+  give-display-item:
+    value: false
+    with-lore: true
+    with-name: true
+  fallback-reward:
+    reward-name: ''
+    permission: ''
+  display-item:
+    material: NETHERITE_HOE
+    glow: false
+    amount: 1
+    damage: 0
+    name: '&b&lFrost Scythe'
+    lore:
+    - '&7Armor Pierce I-II'
+    - ''
+    - '&eArmor Pierce: 0.5-0.75% chance a hit'
+    - '&eignores all armor and protection.'
+    - ''
+    - '&7When in Main Hand:'
+    - '&9 9 Attack Damage'
+    - ''
+    - '&7Enchant levels are rolled when won.'
+    - '&7A Winter Crate exclusive.'
+    - '&7-'
+    - '&eChance: &6%writtenchance%%'
+    nbt-tags:
+    - Unbreakable 1
+    - CustomModelData 2004
+    item-flags:
+    - HIDE_ENCHANTS
+    - HIDE_ATTRIBUTES
+    - HIDE_UNBREAKABLE
+    - HIDE_DESTROYS
+    - HIDE_PLACED_ON
+    - HIDE_POTION_EFFECTS
+
+Golden_Frost_Sword:
+  commands:
+  - prisoncore give {name} goldfrostsword
+  chance: 0.3
+  rarity: default
+  linked-rewards: []
+  give-display-item:
+    value: false
+    with-lore: true
+    with-name: true
+  fallback-reward:
+    reward-name: ''
+    permission: ''
+  display-item:
+    material: NETHERITE_SWORD
+    glow: false
+    amount: 1
+    damage: 0
+    name: '&6&lGolden Frost Sword'
+    lore:
+    - '&7Freeze III'
+    - '&7Swiftness III'
+    - ''
+    - '&eFreeze: 12% chance to slow your'
+    - '&etarget for 2 seconds.'
+    - '&eSwiftness: 15% chance to gain'
+    - '&eSpeed II for 3 seconds on hit.'
+    - ''
+    - '&7When in Main Hand:'
+    - '&9 9 Attack Damage'
+    - ''
+    - '&6All enchants at max level.'
+    - '&7A Winter Crate exclusive.'
+    - '&7-'
+    - '&eChance: &6%writtenchance%%'
+    nbt-tags:
+    - Unbreakable 1
+    - CustomModelData 2011
+    item-flags:
+    - HIDE_ENCHANTS
+    - HIDE_ATTRIBUTES
+    - HIDE_UNBREAKABLE
+    - HIDE_DESTROYS
+    - HIDE_PLACED_ON
+    - HIDE_POTION_EFFECTS
+
+Golden_Frost_Axe:
+  commands:
+  - prisoncore give {name} goldfrostaxe
+  chance: 0.3
+  rarity: default
+  linked-rewards: []
+  give-display-item:
+    value: false
+    with-lore: true
+    with-name: true
+  fallback-reward:
+    reward-name: ''
+    permission: ''
+  display-item:
+    material: NETHERITE_AXE
+    glow: false
+    amount: 1
+    damage: 0
+    name: '&6&lGolden Frost Axe'
+    lore:
+    - '&7Executioner III'
+    - ''
+    - '&eExecutioner: +30% damage to'
+    - '&etargets below 30% health.'
+    - ''
+    - '&7When in Main Hand:'
+    - '&9 8 Attack Damage'
+    - ''
+    - '&6All enchants at max level.'
+    - '&7A Winter Crate exclusive.'
+    - '&7-'
+    - '&eChance: &6%writtenchance%%'
+    nbt-tags:
+    - Unbreakable 1
+    - CustomModelData 2012
+    item-flags:
+    - HIDE_ENCHANTS
+    - HIDE_ATTRIBUTES
+    - HIDE_UNBREAKABLE
+    - HIDE_DESTROYS
+    - HIDE_PLACED_ON
+    - HIDE_POTION_EFFECTS
+
+Golden_Frost_Bow:
+  commands:
+  - prisoncore give {name} goldfrostbow
+  chance: 0.3
+  rarity: default
+  linked-rewards: []
+  give-display-item:
+    value: false
+    with-lore: true
+    with-name: true
+  fallback-reward:
+    reward-name: ''
+    permission: ''
+  display-item:
+    material: BOW
+    glow: false
+    amount: 1
+    damage: 0
+    name: '&6&lGolden Frost Bow'
+    lore:
+    - '&7Freeze III'
+    - '&7Ender Shot III'
+    - ''
+    - '&eFreeze: 12% chance your arrows'
+    - '&eslow the target for 2 seconds.'
+    - '&eEnder Shot: sneak while shooting to teleport'
+    - '&ewhere the arrow lands (10s cooldown).'
+    - ''
+    - '&7When Fully Drawn:'
+    - '&9 6-10 Arrow Damage'
+    - ''
+    - '&6All enchants at max level.'
+    - '&7A Winter Crate exclusive.'
+    - '&7-'
+    - '&eChance: &6%writtenchance%%'
+    nbt-tags:
+    - Unbreakable 1
+    - CustomModelData 2013
+    item-flags:
+    - HIDE_ENCHANTS
+    - HIDE_ATTRIBUTES
+    - HIDE_UNBREAKABLE
+    - HIDE_DESTROYS
+    - HIDE_PLACED_ON
+    - HIDE_POTION_EFFECTS
+
+Golden_Frost_Scythe:
+  commands:
+  - prisoncore give {name} goldfrostscythe
+  chance: 0.3
+  rarity: default
+  linked-rewards: []
+  give-display-item:
+    value: false
+    with-lore: true
+    with-name: true
+  fallback-reward:
+    reward-name: ''
+    permission: ''
+  display-item:
+    material: NETHERITE_HOE
+    glow: false
+    amount: 1
+    damage: 0
+    name: '&6&lGolden Frost Scythe'
+    lore:
+    - '&7Armor Pierce III'
+    - ''
+    - '&eArmor Pierce: 1% chance a hit'
+    - '&eignores all armor and protection.'
+    - ''
+    - '&7When in Main Hand:'
+    - '&9 9 Attack Damage'
+    - ''
+    - '&6All enchants at max level.'
+    - '&7A Winter Crate exclusive.'
+    - '&7-'
+    - '&eChance: &6%writtenchance%%'
+    nbt-tags:
+    - Unbreakable 1
+    - CustomModelData 2014
+    item-flags:
+    - HIDE_ENCHANTS
+    - HIDE_ATTRIBUTES
+    - HIDE_UNBREAKABLE
+    - HIDE_DESTROYS
+    - HIDE_PLACED_ON
+    - HIDE_POTION_EFFECTS
