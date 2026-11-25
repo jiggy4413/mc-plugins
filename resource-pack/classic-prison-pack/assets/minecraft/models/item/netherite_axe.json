@@ -9,6 +9,12 @@
         "custom_model_data": 2002
       },
       "model": "item/frost/frost_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2012
+      },
+      "model": "item/frost/gold_frost_axe"
     }
   ]
 }

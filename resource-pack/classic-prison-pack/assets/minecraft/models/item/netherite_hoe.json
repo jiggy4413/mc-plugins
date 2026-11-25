@@ -9,6 +9,12 @@
         "custom_model_data": 2004
       },
       "model": "item/frost/frost_scythe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2014
+      },
+      "model": "item/frost/gold_frost_scythe"
     }
   ]
 }
