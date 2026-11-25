@@ -8,6 +8,9 @@ the "Latest build" release. See README.md for commands and setup.
 ## Things to keep in mind when changing these plugins
 - Mine names on the server: A-K are `amine`, `bmine` ... `kmine`; L-Z are just the letter: `l`, `m` ... `z`.
   Plus `woodmine` and `pvpmine`. Never rename them or assume `lmine`-`zmine`.
+- Special item names in the server's items.yml have no dashes (easier to type in game): armor is
+  `winterhelmet`, `winterchestplate`, `winterleggings`, `winterboots` (same for valentines/summer), weapons are
+  `frostsword`, `frostaxe`, `frostbow`, `frostscythe`.
 - `prison-core/src/main/resources/warps-menu.yml` is the server's own warps config, copied exactly
   (CRLF line endings). Keep it as is in future builds unless asked for a change.
 - The `title:` and `lines:` in `prison-core/src/main/resources/scoreboard.yml` are the server's own

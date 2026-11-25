@@ -1,7 +1,7 @@
 # Paste under "items:" in plugins/PrisonCore/items.yml (two-space indent), replacing the old frost entries.
-# Then /prisoncore reload. Give with: /prisoncore give <player> frost-sword (frost-axe, frost-bow, frost-scythe)
+# Then /prisoncore reload. Give with: /prisoncore give <player> frostsword (frostaxe, frostbow, frostscythe)
 # Only their special enchants are included; players add Sharpness, Power etc. themselves.
-  frost-sword:
+  frostsword:
     material: NETHERITE_SWORD
     model-data: 2001
     unbreakable: true
@@ -9,7 +9,7 @@
     lore: ["", "&7A Winter Crate exclusive."]
     enchants: {freeze: 3, swiftness: 1}
 
-  frost-axe:
+  frostaxe:
     material: NETHERITE_AXE
     model-data: 2002
     unbreakable: true
@@ -17,7 +17,7 @@
     lore: ["", "&7A Winter Crate exclusive."]
     enchants: {executioner: 3}
 
-  frost-bow:
+  frostbow:
     material: BOW
     model-data: 2003
     unbreakable: true
@@ -25,7 +25,7 @@
     lore: ["", "&7Sneak while shooting to teleport", "&7where the arrow lands.", "", "&7A Winter Crate exclusive."]
     enchants: {freeze: 3, ender-shot: 1}
 
-  frost-scythe:
+  frostscythe:
     material: NETHERITE_HOE
     model-data: 2004
     unbreakable: true

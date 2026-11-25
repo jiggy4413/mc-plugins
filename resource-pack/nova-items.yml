@@ -1,8 +1,8 @@
 # Paste these under "items:" in plugins/PrisonCore/items.yml (two-space indent), then /prisoncore reload.
 # armor/armor-toughness give the leather a full diamond-level armor bar (needs PrisonCore 1.18.2+).
-# Give with: /prisoncore give <player> winter-nova-helmet  (etc.)
+# Give with: /prisoncore give <player> winterhelmet  (etc.)
 
-  winter-nova-helmet:
+  winterhelmet:
     material: LEATHER_HELMET
     color: "#EEF6FF"
     model-data: 1001
@@ -13,7 +13,7 @@
     knockback-resistance: 0.1
     lore: ["", "&7When on Head:", "&9+3 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Winter Crate exclusive."]
 
-  winter-nova-chestplate:
+  winterchestplate:
     material: LEATHER_CHESTPLATE
     color: "#EEF6FF"
     model-data: 1001
@@ -25,7 +25,7 @@
     lore: ["&eDodge: 9% chance to take no", "&edamage from a player's hit.", "", "&7When on Body:", "&9+8 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Winter Crate exclusive."]
     enchants: {dodge: 3}
 
-  winter-nova-leggings:
+  winterleggings:
     material: LEATHER_LEGGINGS
     color: "#EEF6FF"
     model-data: 1001
@@ -37,7 +37,7 @@
     lore: ["&eLast Stand: Strength and Resistance", "&efor 7s when you drop below 25% health.", "", "&7When on Legs:", "&9+6 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Winter Crate exclusive."]
     enchants: {last-stand: 3}
 
-  winter-nova-boots:
+  winterboots:
     material: LEATHER_BOOTS
     color: "#EEF6FF"
     model-data: 1001
@@ -49,7 +49,7 @@
     lore: ["&eSpeed: permanent Speed I", "&ewhile you wear these boots.", "", "&7When on Feet:", "&9+3 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Winter Crate exclusive."]
     enchants: {speed: 1}
 
-  valentines-nova-helmet:
+  valentineshelmet:
     material: LEATHER_HELMET
     color: "#FF8FBD"
     model-data: 1002
@@ -59,7 +59,7 @@
     armor-toughness: 2
     lore: ["", "&7When on Head:", "&9+3 Armor", "&9+2 Armor Toughness", "", "&7A Valentines Crate exclusive."]
 
-  valentines-nova-chestplate:
+  valentineschestplate:
     material: LEATHER_CHESTPLATE
     color: "#FF8FBD"
     model-data: 1002
@@ -70,7 +70,7 @@
     lore: ["", "&7When on Body:", "&9+8 Armor", "&9+2 Armor Toughness", "", "&7A Valentines Crate exclusive."]
     enchants: {dodge: 3}
 
-  valentines-nova-leggings:
+  valentinesleggings:
     material: LEATHER_LEGGINGS
     color: "#FF8FBD"
     model-data: 1002
@@ -81,7 +81,7 @@
     lore: ["", "&7When on Legs:", "&9+6 Armor", "&9+2 Armor Toughness", "", "&7A Valentines Crate exclusive."]
     enchants: {last-stand: 3}
 
-  valentines-nova-boots:
+  valentinesboots:
     material: LEATHER_BOOTS
     color: "#FF8FBD"
     model-data: 1002
@@ -92,7 +92,7 @@
     lore: ["", "&7When on Feet:", "&9+3 Armor", "&9+2 Armor Toughness", "", "&7A Valentines Crate exclusive."]
     enchants: {speed: 1}
 
-  summer-nova-helmet:
+  summerhelmet:
     material: LEATHER_HELMET
     color: "#6FD15A"
     model-data: 1003
@@ -102,7 +102,7 @@
     armor-toughness: 2
     lore: ["", "&7When on Head:", "&9+3 Armor", "&9+2 Armor Toughness", "", "&7A Summer Crate exclusive."]
 
-  summer-nova-chestplate:
+  summerchestplate:
     material: LEATHER_CHESTPLATE
     color: "#6FD15A"
     model-data: 1003
@@ -113,7 +113,7 @@
     lore: ["", "&7When on Body:", "&9+8 Armor", "&9+2 Armor Toughness", "", "&7A Summer Crate exclusive."]
     enchants: {dodge: 3}
 
-  summer-nova-leggings:
+  summerleggings:
     material: LEATHER_LEGGINGS
     color: "#6FD15A"
     model-data: 1003
@@ -124,7 +124,7 @@
     lore: ["", "&7When on Legs:", "&9+6 Armor", "&9+2 Armor Toughness", "", "&7A Summer Crate exclusive."]
     enchants: {last-stand: 3}
 
-  summer-nova-boots:
+  summerboots:
     material: LEATHER_BOOTS
     color: "#6FD15A"
     model-data: 1003
