@@ -6,7 +6,7 @@
     model-data: 2001
     unbreakable: true
     name: "&b&lFrost Sword"
-    lore: ["", "&7A Winter Crate exclusive."]
+    lore: ["&eFreeze: 12% chance to slow your", "&etarget for 2 seconds.", "&eSwiftness: 15% chance to gain", "&eSpeed II for 3 seconds on hit.", "", "&7When in Main Hand:", "&9 9 Attack Damage", "", "&7A Winter Crate exclusive."]
     enchants: {freeze: 3, swiftness: 1}
 
   frostaxe:
@@ -14,7 +14,7 @@
     model-data: 2002
     unbreakable: true
     name: "&b&lFrost Axe"
-    lore: ["", "&7A Winter Crate exclusive."]
+    lore: ["&eExecutioner: +30% damage to", "&etargets below 30% health.", "", "&7When in Main Hand:", "&9 8 Attack Damage", "", "&7A Winter Crate exclusive."]
     enchants: {executioner: 3}
 
   frostbow:
@@ -22,7 +22,7 @@
     model-data: 2003
     unbreakable: true
     name: "&b&lFrost Bow"
-    lore: ["", "&7Sneak while shooting to teleport", "&7where the arrow lands.", "", "&7A Winter Crate exclusive."]
+    lore: ["&eFreeze: 12% chance your arrows", "&eslow the target for 2 seconds.", "&eEnder Shot: sneak while shooting to", "&eteleport where the arrow lands (10s cooldown).", "", "&7When Fully Drawn:", "&9 6-10 Arrow Damage", "", "&7A Winter Crate exclusive."]
     enchants: {freeze: 3, ender-shot: 1}
 
   frostscythe:
@@ -32,5 +32,5 @@
     attack-damage: 9
     attack-speed: 1.2
     name: "&b&lFrost Scythe"
-    lore: ["", "&9 9 Attack Damage", "&9 1.2 Attack Speed", "", "&7A Winter Crate exclusive."]
+    lore: ["&eArmor Pierce: 1% chance a hit", "&eignores all armor and protection.", "", "&7When in Main Hand:", "&9 9 Attack Damage", "", "&7A Winter Crate exclusive."]
     enchants: {armor-pierce: 1}
