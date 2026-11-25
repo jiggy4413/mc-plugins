@@ -38,6 +38,10 @@ public final class ItemTemplate {
     /** Exact stats in the main hand, as shown in-game (e.g. 9 damage, 1.2 attacks per second). */
     private Double attackDamage;
     private Double attackSpeed;
+    /** Armor stats when worn (e.g. 8 armor on a chestplate fills 4 icons of the armor bar). */
+    private Double armor;
+    private Double armorToughness;
+    private Double knockbackResistance;
 
     private ItemTemplate() {
     }
@@ -84,6 +88,15 @@ public final class ItemTemplate {
             }
             if (t.attackSpeed == null && (s.isDouble("attack-speed") || s.isInt("attack-speed"))) {
                 t.attackSpeed = s.getDouble("attack-speed");
+            }
+            if (t.armor == null && (s.isDouble("armor") || s.isInt("armor"))) {
+                t.armor = s.getDouble("armor");
+            }
+            if (t.armorToughness == null && (s.isDouble("armor-toughness") || s.isInt("armor-toughness"))) {
+                t.armorToughness = s.getDouble("armor-toughness");
+            }
+            if (t.knockbackResistance == null && (s.isDouble("knockback-resistance") || s.isInt("knockback-resistance"))) {
+                t.knockbackResistance = s.getDouble("knockback-resistance");
             }
         }
         return t;
@@ -162,6 +175,14 @@ public final class ItemTemplate {
                             "prisoncore.speed", attackSpeed - 4, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER,
                             org.bukkit.inventory.EquipmentSlot.HAND));
         }
+        // armor stats replace the item's normal ones (Minecraft drops an item's default armor once it has
+        // its own), so leather can show a full armor bar
+        if (armor != null || armorToughness != null || knockbackResistance != null) {
+            org.bukkit.inventory.EquipmentSlot slot = wornSlot(mat);
+            armorStat(meta, org.bukkit.attribute.Attribute.GENERIC_ARMOR, "armor", armor, slot);
+            armorStat(meta, org.bukkit.attribute.Attribute.GENERIC_ARMOR_TOUGHNESS, "toughness", armorToughness, slot);
+            armorStat(meta, org.bukkit.attribute.Attribute.GENERIC_KNOCKBACK_RESISTANCE, "knockback", knockbackResistance, slot);
+        }
         if (meta instanceof SkullMeta && "viewer".equalsIgnoreCase(skull) && viewer != null) {
             ((SkullMeta) meta).setOwningPlayer(viewer);
         }
@@ -218,5 +239,30 @@ public final class ItemTemplate {
             }
         }
         return out;
+    }
+
+    private static org.bukkit.inventory.EquipmentSlot wornSlot(Material mat) {
+        String n = mat.name();
+        if (n.endsWith("_CHESTPLATE") || n.equals("ELYTRA")) {
+            return org.bukkit.inventory.EquipmentSlot.CHEST;
+        }
+        if (n.endsWith("_LEGGINGS")) {
+            return org.bukkit.inventory.EquipmentSlot.LEGS;
+        }
+        if (n.endsWith("_BOOTS")) {
+            return org.bukkit.inventory.EquipmentSlot.FEET;
+        }
+        return org.bukkit.inventory.EquipmentSlot.HEAD; // helmets, heads, pumpkins...
+    }
+
+    private static void armorStat(ItemMeta meta, org.bukkit.attribute.Attribute attribute, String id, Double value,
+                                  org.bukkit.inventory.EquipmentSlot slot) {
+        if (value == null) {
+            return;
+        }
+        meta.removeAttributeModifier(attribute);
+        meta.addAttributeModifier(attribute, new org.bukkit.attribute.AttributeModifier(
+                java.util.UUID.nameUUIDFromBytes(("pc_" + id + "_" + slot.name()).getBytes()),
+                "prisoncore." + id, value, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, slot));
     }
 }

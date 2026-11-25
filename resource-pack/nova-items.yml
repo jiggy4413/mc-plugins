@@ -1,4 +1,5 @@
 # Paste these under "items:" in plugins/PrisonCore/items.yml (two-space indent), then /prisoncore reload.
+# armor/armor-toughness give the leather a full diamond-level armor bar (needs PrisonCore 1.18.2+).
 # Give with: /prisoncore give <player> winter-nova-helmet  (etc.)
 
   winter-nova-helmet:
@@ -7,15 +8,19 @@
     model-data: 1001
     unbreakable: true
     name: "&b&lWinter Nova Helmet"
-    lore: ["", "&7A Winter Crate exclusive."]
-    
+    armor: 3
+    armor-toughness: 2
+    lore: ["", "&7When on Head:", "&9+3 Armor", "&9+2 Armor Toughness", "", "&7A Winter Crate exclusive."]
+
   winter-nova-chestplate:
     material: LEATHER_CHESTPLATE
     color: "#EEF6FF"
     model-data: 1001
     unbreakable: true
     name: "&b&lWinter Nova Chestplate"
-    lore: ["", "&7A Winter Crate exclusive."]
+    armor: 8
+    armor-toughness: 2
+    lore: ["", "&7When on Body:", "&9+8 Armor", "&9+2 Armor Toughness", "", "&7A Winter Crate exclusive."]
     enchants: {dodge: 3}
 
   winter-nova-leggings:
@@ -24,7 +29,9 @@
     model-data: 1001
     unbreakable: true
     name: "&b&lWinter Nova Leggings"
-    lore: ["", "&7A Winter Crate exclusive."]
+    armor: 6
+    armor-toughness: 2
+    lore: ["", "&7When on Legs:", "&9+6 Armor", "&9+2 Armor Toughness", "", "&7A Winter Crate exclusive."]
     enchants: {last-stand: 3}
 
   winter-nova-boots:
@@ -33,7 +40,9 @@
     model-data: 1001
     unbreakable: true
     name: "&b&lWinter Nova Boots"
-    lore: ["", "&7A Winter Crate exclusive."]
+    armor: 3
+    armor-toughness: 2
+    lore: ["", "&7When on Feet:", "&9+3 Armor", "&9+2 Armor Toughness", "", "&7A Winter Crate exclusive."]
     enchants: {speed: 1}
 
   valentines-nova-helmet:
@@ -42,15 +51,19 @@
     model-data: 1002
     unbreakable: true
     name: "&d&lValentines Nova Helmet"
-    lore: ["", "&7A Valentines Crate exclusive."]
-    
+    armor: 3
+    armor-toughness: 2
+    lore: ["", "&7When on Head:", "&9+3 Armor", "&9+2 Armor Toughness", "", "&7A Valentines Crate exclusive."]
+
   valentines-nova-chestplate:
     material: LEATHER_CHESTPLATE
     color: "#FF8FBD"
     model-data: 1002
     unbreakable: true
     name: "&d&lValentines Nova Chestplate"
-    lore: ["", "&7A Valentines Crate exclusive."]
+    armor: 8
+    armor-toughness: 2
+    lore: ["", "&7When on Body:", "&9+8 Armor", "&9+2 Armor Toughness", "", "&7A Valentines Crate exclusive."]
     enchants: {dodge: 3}
 
   valentines-nova-leggings:
@@ -59,7 +72,9 @@
     model-data: 1002
     unbreakable: true
     name: "&d&lValentines Nova Leggings"
-    lore: ["", "&7A Valentines Crate exclusive."]
+    armor: 6
+    armor-toughness: 2
+    lore: ["", "&7When on Legs:", "&9+6 Armor", "&9+2 Armor Toughness", "", "&7A Valentines Crate exclusive."]
     enchants: {last-stand: 3}
 
   valentines-nova-boots:
@@ -68,7 +83,9 @@
     model-data: 1002
     unbreakable: true
     name: "&d&lValentines Nova Boots"
-    lore: ["", "&7A Valentines Crate exclusive."]
+    armor: 3
+    armor-toughness: 2
+    lore: ["", "&7When on Feet:", "&9+3 Armor", "&9+2 Armor Toughness", "", "&7A Valentines Crate exclusive."]
     enchants: {speed: 1}
 
   summer-nova-helmet:
@@ -77,15 +94,19 @@
     model-data: 1003
     unbreakable: true
     name: "&e&lSummer Nova Helmet"
-    lore: ["", "&7A Summer Crate exclusive."]
-    
+    armor: 3
+    armor-toughness: 2
+    lore: ["", "&7When on Head:", "&9+3 Armor", "&9+2 Armor Toughness", "", "&7A Summer Crate exclusive."]
+
   summer-nova-chestplate:
     material: LEATHER_CHESTPLATE
     color: "#6FD15A"
     model-data: 1003
     unbreakable: true
     name: "&e&lSummer Nova Chestplate"
-    lore: ["", "&7A Summer Crate exclusive."]
+    armor: 8
+    armor-toughness: 2
+    lore: ["", "&7When on Body:", "&9+8 Armor", "&9+2 Armor Toughness", "", "&7A Summer Crate exclusive."]
     enchants: {dodge: 3}
 
   summer-nova-leggings:
@@ -94,7 +115,9 @@
     model-data: 1003
     unbreakable: true
     name: "&e&lSummer Nova Leggings"
-    lore: ["", "&7A Summer Crate exclusive."]
+    armor: 6
+    armor-toughness: 2
+    lore: ["", "&7When on Legs:", "&9+6 Armor", "&9+2 Armor Toughness", "", "&7A Summer Crate exclusive."]
     enchants: {last-stand: 3}
 
   summer-nova-boots:
@@ -103,5 +126,7 @@
     model-data: 1003
     unbreakable: true
     name: "&e&lSummer Nova Boots"
-    lore: ["", "&7A Summer Crate exclusive."]
+    armor: 3
+    armor-toughness: 2
+    lore: ["", "&7When on Feet:", "&9+3 Armor", "&9+2 Armor Toughness", "", "&7A Summer Crate exclusive."]
     enchants: {speed: 1}
