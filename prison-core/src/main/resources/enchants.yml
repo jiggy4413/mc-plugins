@@ -361,9 +361,11 @@ enchants:
     swiftness:
       name: Swiftness
       only-for: [SWORD]
-      # % chance per hit to get Speed (see enchant-settings.swiftness)
+      # % chance per hit to get Speed (level and seconds in enchant-settings)
       strength:
-        - 15         # level 1
+        - 8          # level 1
+        - 12         # level 2
+        - 15         # level 3
       icon: SUGAR
       description: ["Chance to gain Speed II for 3 seconds", "when you hit something."]
       in-menu: false
@@ -371,9 +373,11 @@ enchants:
     armor-pierce:
       name: Armor Pierce
       only-for: [HOE]
-      # % chance per hit that the hit ignores armor (1 = about every 100 hits)
+      # % chance per hit to ignore armor
       strength:
-        - 1          # level 1
+        - 0.5        # level 1
+        - 0.75       # level 2
+        - 1          # level 3 (about 1 in 100 hits)
       icon: TRIDENT
       description: ["Rare chance for a hit to", "ignore armor completely."]
       in-menu: false
@@ -381,8 +385,11 @@ enchants:
     ender-shot:
       name: Ender Shot
       only-for: [BOW]
+      # cooldown in seconds at each level
       strength:
-        - 1          # level 1
+        - 20         # level 1
+        - 15         # level 2
+        - 10         # level 3
       icon: ENDER_PEARL
       description: ["Sneak while shooting: you teleport", "where the arrow lands."]
       in-menu: false

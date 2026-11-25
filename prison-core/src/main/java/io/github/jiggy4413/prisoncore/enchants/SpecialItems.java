@@ -70,23 +70,22 @@ public final class SpecialItems {
         }
         ConfigurationSection ench = s.getConfigurationSection("enchants");
         Enchants.Category c = Enchants.category(item);
+        Map<String, String> filled = new java.util.HashMap<String, String>();
         if (ench != null) {
             for (Map.Entry<String, Object> e : ench.getValues(false).entrySet()) {
                 String key = e.getKey().toLowerCase(Locale.ROOT);
-                int level;
-                try {
-                    level = Integer.parseInt(String.valueOf(e.getValue()).trim());
-                } catch (NumberFormatException ex) {
-                    level = 0;
-                }
+                int level = rollLevel(e.getValue());
                 if (level <= 0) {
-                    problems.add("'" + e.getValue() + "' isn't a valid level for " + e.getKey());
+                    problems.add("'" + e.getValue() + "' isn't a valid level for " + e.getKey()
+                            + " (use a number like 3, a range like \"1-2\", or chances like {1: 70, 2: 30})");
                     continue;
                 }
                 Enchants.Def d = c == null ? null : enchants.def(c, key);
                 if (d != null) {
                     if (d.fits(item)) {
                         enchants.setLevel(item, d, level);
+                        filled.put("{" + key + "}", number(d.effect(level)));
+                        filled.put("{" + key + "-level}", enchants.levelText(level));
                     } else {
                         problems.add(d.name + " can't go on " + item.getType().name().toLowerCase(Locale.ROOT));
                     }
@@ -97,15 +96,96 @@ public final class SpecialItems {
                         org.bukkit.NamespacedKey.minecraft(key.replace('-', '_')));
                 if (vanilla != null) {
                     item.addUnsafeEnchantment(vanilla, level);
+                    filled.put("{" + key + "-level}", enchants.levelText(level));
                 } else {
                     problems.add("'" + e.getKey() + "' isn't an enchant in enchants.yml or a Minecraft enchant");
                 }
             }
         }
+        fillLore(item, filled);
         if (c != null) {
             enchants.redrawLore(item);
         }
         return item;
+    }
+
+    /**
+     * A level from items.yml: a number (3), a range ("1-2", every level equally likely) or chances
+     * per level ({1: 70, 2: 30}). Returns 0 when it can't be read.
+     */
+    static int rollLevel(Object value) {
+        java.util.concurrent.ThreadLocalRandom rnd = java.util.concurrent.ThreadLocalRandom.current();
+        if (value instanceof ConfigurationSection || value instanceof Map) {
+            Map<?, ?> map = value instanceof ConfigurationSection
+                    ? ((ConfigurationSection) value).getValues(false) : (Map<?, ?>) value;
+            List<int[]> options = new ArrayList<int[]>();
+            int total = 0;
+            for (Map.Entry<?, ?> e : map.entrySet()) {
+                try {
+                    int level = Integer.parseInt(String.valueOf(e.getKey()).trim());
+                    int weight = (int) Math.round(Double.parseDouble(String.valueOf(e.getValue()).trim()));
+                    if (level > 0 && weight > 0) {
+                        options.add(new int[] {level, weight});
+                        total += weight;
+                    }
+                } catch (NumberFormatException ignored) {
+                    // skip a bad line
+                }
+            }
+            if (total <= 0) {
+                return 0;
+            }
+            int pick = rnd.nextInt(total);
+            for (int[] o : options) {
+                pick -= o[1];
+                if (pick < 0) {
+                    return o[0];
+                }
+            }
+            return 0;
+        }
+        String text = String.valueOf(value).trim();
+        try {
+            int dash = text.indexOf('-');
+            if (dash > 0) {
+                int lo = Integer.parseInt(text.substring(0, dash).trim());
+                int hi = Integer.parseInt(text.substring(dash + 1).trim());
+                if (hi < lo) {
+                    int t = lo;
+                    lo = hi;
+                    hi = t;
+                }
+                return lo + rnd.nextInt(hi - lo + 1);
+            }
+            return Integer.parseInt(text);
+        } catch (NumberFormatException ex) {
+            return 0;
+        }
+    }
+
+    /** 12.0 -> "12", 0.75 -> "0.75" */
+    private static String number(double v) {
+        if (v == Math.rint(v)) {
+            return String.valueOf((long) v);
+        }
+        return new java.math.BigDecimal(v).setScale(2, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toPlainString();
+    }
+
+    /** Puts the rolled numbers into the lore: {freeze} is Freeze's strength, {freeze-level} its level (III). */
+    private static void fillLore(ItemStack item, Map<String, String> filled) {
+        org.bukkit.inventory.meta.ItemMeta meta = item.getItemMeta();
+        if (meta == null || !meta.hasLore() || filled.isEmpty()) {
+            return;
+        }
+        List<String> lore = new ArrayList<String>();
+        for (String line : meta.getLore()) {
+            for (Map.Entry<String, String> f : filled.entrySet()) {
+                line = line.replace(f.getKey(), f.getValue());
+            }
+            lore.add(line);
+        }
+        meta.setLore(lore);
+        item.setItemMeta(meta);
     }
 
     /** /prisoncore give <player> <item> [amount] */

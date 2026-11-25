@@ -18,6 +18,10 @@
 #                Crate-only enchants (lifesteal, explosive...) work here too, and so does any
 #                normal Minecraft enchant (power, punch, flame, infinity...) for bows and other items.
 #                Axes use the sword enchants.
+#                A level can be a number (3), a range ("1-2") or chances per level
+#                ({1: 70, 2: 30} = 70% level I, 30% level II), rolled each time it's given.
+#                In the lore, {freeze} becomes the enchant's strength at that level and
+#                {freeze-level} its level (II).
 #  Apply changes with /prisoncore reload.
 #  Formatting: & codes, &#RRGGBB, <gradient:#FF0000:#FFD700>text</gradient>, <smallcaps>
 # ==============================================================================

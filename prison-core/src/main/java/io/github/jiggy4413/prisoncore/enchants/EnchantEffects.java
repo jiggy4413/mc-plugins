@@ -291,14 +291,17 @@ public final class EnchantEffects implements Listener {
             data.set(arrowKey("freeze"), org.bukkit.persistence.PersistentDataType.INTEGER, fl);
         }
         Enchants.Def ender = def(Enchants.Category.SWORD, "ender-shot");
-        if (ender != null && enchants.level(bow, ender) > 0) {
+        int enderLevel = ender == null ? 0 : enchants.level(bow, ender);
+        if (enderLevel > 0) {
             ConfigurationSection s = settings("ender-shot");
             if (s.getBoolean("only-while-sneaking", true) && !p.isSneaking()) {
                 return;
             }
             long now = System.currentTimeMillis();
             Long last = enderShotAt.get(p.getUniqueId());
-            long cooldown = s.getLong("cooldown-seconds", 10) * 1000L;
+            // the enchant's strength is its cooldown in seconds (20/15/10); an old 1-level setup falls back to cooldown-seconds
+            double perLevel = ender.effect(enderLevel);
+            long cooldown = (long) ((perLevel > 1 ? perLevel : s.getDouble("cooldown-seconds", 10)) * 1000L);
             if (last != null && now - last < cooldown) {
                 enchants.actionBar(p, "&7Ender Shot ready in &f" + ((cooldown - (now - last)) / 1000 + 1) + "s");
                 return;

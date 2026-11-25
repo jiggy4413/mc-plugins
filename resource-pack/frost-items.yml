@@ -1,29 +1,37 @@
 # Paste under "items:" in plugins/PrisonCore/items.yml (two-space indent), replacing the old frost entries.
-# Then /prisoncore reload. Give with: /prisoncore give <player> frostsword (frostaxe, frostbow, frostscythe)
-# Only their special enchants are included; players add Sharpness, Power etc. themselves.
+# Then /prisoncore reload. Needs PrisonCore 1.19.0+.
+# Give with: /prisoncore give <player> frostsword (frostaxe, frostbow, frostscythe)
+#        or: /prisoncore give <player> goldfrostsword (goldfrostaxe, goldfrostbow, goldfrostscythe)
+# Normal versions roll each enchant at level I (70%) or II (30%). Gold versions are always level III.
+# In the lore, {freeze} becomes the rolled strength (e.g. 8) and {freeze-level} the level (II).
   frostsword:
     material: NETHERITE_SWORD
     model-data: 2001
     unbreakable: true
     name: "&b&lFrost Sword"
-    lore: ["&eFreeze: 12% chance to slow your", "&etarget for 2 seconds.", "&eSwiftness: 15% chance to gain", "&eSpeed II for 3 seconds on hit.", "", "&7When in Main Hand:", "&9 9 Attack Damage", "", "&7A Winter Crate exclusive."]
-    enchants: {freeze: 3, swiftness: 1}
+    lore: ["&eFreeze: {freeze}% chance to slow your", "&etarget for 2 seconds.", "&eSwiftness: {swiftness}% chance to gain", "&eSpeed II for 3 seconds on hit.", "", "&7When in Main Hand:", "&9 9 Attack Damage", "", "&7A Winter Crate exclusive."]
+    enchants:
+      freeze: {1: 70, 2: 30}
+      swiftness: {1: 70, 2: 30}
 
   frostaxe:
     material: NETHERITE_AXE
     model-data: 2002
     unbreakable: true
     name: "&b&lFrost Axe"
-    lore: ["&eExecutioner: +30% damage to", "&etargets below 30% health.", "", "&7When in Main Hand:", "&9 8 Attack Damage", "", "&7A Winter Crate exclusive."]
-    enchants: {executioner: 3}
+    lore: ["&eExecutioner: +{executioner}% damage to", "&etargets below 30% health.", "", "&7When in Main Hand:", "&9 8 Attack Damage", "", "&7A Winter Crate exclusive."]
+    enchants:
+      executioner: {1: 70, 2: 30}
 
   frostbow:
     material: BOW
     model-data: 2003
     unbreakable: true
     name: "&b&lFrost Bow"
-    lore: ["&eFreeze: 12% chance your arrows", "&eslow the target for 2 seconds.", "&eEnder Shot: sneak while shooting to", "&eteleport where the arrow lands (10s cooldown).", "", "&7When Fully Drawn:", "&9 6-10 Arrow Damage", "", "&7A Winter Crate exclusive."]
-    enchants: {freeze: 3, ender-shot: 1}
+    lore: ["&eFreeze: {freeze}% chance your arrows", "&eslow the target for 2 seconds.", "&eEnder Shot: sneak while shooting to teleport", "&ewhere the arrow lands ({ender-shot}s cooldown).", "", "&7When Fully Drawn:", "&9 6-10 Arrow Damage", "", "&7A Winter Crate exclusive."]
+    enchants:
+      freeze: {1: 70, 2: 30}
+      ender-shot: {1: 70, 2: 30}
 
   frostscythe:
     material: NETHERITE_HOE
@@ -32,5 +40,40 @@
     attack-damage: 9
     attack-speed: 1.2
     name: "&b&lFrost Scythe"
-    lore: ["&eArmor Pierce: 1% chance a hit", "&eignores all armor and protection.", "", "&7When in Main Hand:", "&9 9 Attack Damage", "", "&7A Winter Crate exclusive."]
-    enchants: {armor-pierce: 1}
+    lore: ["&eArmor Pierce: {armor-pierce}% chance a hit", "&eignores all armor and protection.", "", "&7When in Main Hand:", "&9 9 Attack Damage", "", "&7A Winter Crate exclusive."]
+    enchants:
+      armor-pierce: {1: 70, 2: 30}
+
+  goldfrostsword:
+    material: NETHERITE_SWORD
+    model-data: 2001
+    unbreakable: true
+    name: "&6&lGolden Frost Sword"
+    lore: ["&eFreeze: {freeze}% chance to slow your", "&etarget for 2 seconds.", "&eSwiftness: {swiftness}% chance to gain", "&eSpeed II for 3 seconds on hit.", "", "&7When in Main Hand:", "&9 9 Attack Damage", "", "&7A Winter Crate exclusive."]
+    enchants: {freeze: 3, swiftness: 3}
+
+  goldfrostaxe:
+    material: NETHERITE_AXE
+    model-data: 2002
+    unbreakable: true
+    name: "&6&lGolden Frost Axe"
+    lore: ["&eExecutioner: +{executioner}% damage to", "&etargets below 30% health.", "", "&7When in Main Hand:", "&9 8 Attack Damage", "", "&7A Winter Crate exclusive."]
+    enchants: {executioner: 3}
+
+  goldfrostbow:
+    material: BOW
+    model-data: 2003
+    unbreakable: true
+    name: "&6&lGolden Frost Bow"
+    lore: ["&eFreeze: {freeze}% chance your arrows", "&eslow the target for 2 seconds.", "&eEnder Shot: sneak while shooting to teleport", "&ewhere the arrow lands ({ender-shot}s cooldown).", "", "&7When Fully Drawn:", "&9 6-10 Arrow Damage", "", "&7A Winter Crate exclusive."]
+    enchants: {freeze: 3, ender-shot: 3}
+
+  goldfrostscythe:
+    material: NETHERITE_HOE
+    model-data: 2004
+    unbreakable: true
+    attack-damage: 9
+    attack-speed: 1.2
+    name: "&6&lGolden Frost Scythe"
+    lore: ["&eArmor Pierce: {armor-pierce}% chance a hit", "&eignores all armor and protection.", "", "&7When in Main Hand:", "&9 9 Attack Damage", "", "&7A Winter Crate exclusive."]
+    enchants: {armor-pierce: 3}
