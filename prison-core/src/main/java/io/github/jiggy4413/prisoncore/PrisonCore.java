@@ -59,6 +59,7 @@ public final class PrisonCore extends JavaPlugin {
     private io.github.jiggy4413.prisoncore.enchants.EnchantEffects enchantEffects;
     private io.github.jiggy4413.prisoncore.enchants.SpecialItems specialItems;
     private Store store;
+    private io.github.jiggy4413.prisoncore.debug.TotemDebug totemDebug;
     /** The PlaceholderAPI expansion, kept as Object so this class never needs PlaceholderAPI. */
     private Object placeholders;
 
@@ -136,6 +137,8 @@ public final class PrisonCore extends JavaPlugin {
         enchantEffects.start();
         specialItems = new io.github.jiggy4413.prisoncore.enchants.SpecialItems(this, enchants);
         specialItems.load();
+        totemDebug = new io.github.jiggy4413.prisoncore.debug.TotemDebug(this);
+        getServer().getPluginManager().registerEvents(totemDebug, this);
 
         store = new Store(this);
         store.load();
@@ -198,6 +201,9 @@ public final class PrisonCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (totemDebug != null) {
+            totemDebug.stop(); // give other plugins their own totem listeners back
+        }
         if (placeholders != null) {
             try {
                 PapiHook.unregister(placeholders);
@@ -376,6 +382,12 @@ public final class PrisonCore extends JavaPlugin {
             return true;
         }
 
+        // /prisoncore debug totems
+        if (args.length > 0 && args[0].equalsIgnoreCase("debug")) {
+            totemDebug.command(sender, args);
+            return true;
+        }
+
         // /prisoncore
         if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
             if (!sender.hasPermission("prisoncore.admin")) {
@@ -450,18 +462,22 @@ public final class PrisonCore extends JavaPlugin {
         sender.sendMessage(Text.color("&7Ranks menu: " + (isRanksMenuAvailable() ? "&aactive" : "&cinactive (Rankup not found)")));
         if (sender.hasPermission("prisoncore.admin")) {
             sender.sendMessage(Text.color("&e/prisoncore reload &7- reload ranks-menu.yml, or load a newer PrisonCore jar"));
+            sender.sendMessage(Text.color("&e/prisoncore debug totems &7- find out why totems don't save players"));
         }
         return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 2 && args[0].equalsIgnoreCase("debug") && sender.hasPermission("prisoncore.admin")) {
+            return "totems".startsWith(args[1].toLowerCase()) ? Collections.singletonList("totems") : Collections.<String>emptyList();
+        }
         if (args.length != 1) {
             return Collections.emptyList();
         }
         List<String> options = command.getName().equalsIgnoreCase("prisonranks")
                 ? Arrays.asList("ranks", "prestiges")
-                : (sender.hasPermission("prisoncore.admin") ? Collections.singletonList("reload") : Collections.<String>emptyList());
+                : (sender.hasPermission("prisoncore.admin") ? Arrays.asList("reload", "give", "debug") : Collections.<String>emptyList());
         List<String> out = new ArrayList<String>();
         for (String o : options) {
             if (o.startsWith(args[0].toLowerCase())) {
