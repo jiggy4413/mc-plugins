@@ -9,8 +9,9 @@
     unbreakable: true
     name: "&b&lWinter Nova Helmet"
     armor: 3
-    armor-toughness: 2
-    lore: ["", "&7When on Head:", "&9+3 Armor", "&9+2 Armor Toughness", "", "&7A Winter Crate exclusive."]
+    armor-toughness: 3
+    knockback-resistance: 0.1
+    lore: ["", "&7When on Head:", "&9+3 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Winter Crate exclusive."]
 
   winter-nova-chestplate:
     material: LEATHER_CHESTPLATE
@@ -19,8 +20,9 @@
     unbreakable: true
     name: "&b&lWinter Nova Chestplate"
     armor: 8
-    armor-toughness: 2
-    lore: ["", "&7When on Body:", "&9+8 Armor", "&9+2 Armor Toughness", "", "&7A Winter Crate exclusive."]
+    armor-toughness: 3
+    knockback-resistance: 0.1
+    lore: ["&eDodge: 9% chance to take no", "&edamage from a player's hit.", "", "&7When on Body:", "&9+8 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Winter Crate exclusive."]
     enchants: {dodge: 3}
 
   winter-nova-leggings:
@@ -30,8 +32,9 @@
     unbreakable: true
     name: "&b&lWinter Nova Leggings"
     armor: 6
-    armor-toughness: 2
-    lore: ["", "&7When on Legs:", "&9+6 Armor", "&9+2 Armor Toughness", "", "&7A Winter Crate exclusive."]
+    armor-toughness: 3
+    knockback-resistance: 0.1
+    lore: ["&eLast Stand: Strength and Resistance", "&efor 7s when you drop below 25% health.", "", "&7When on Legs:", "&9+6 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Winter Crate exclusive."]
     enchants: {last-stand: 3}
 
   winter-nova-boots:
@@ -41,8 +44,9 @@
     unbreakable: true
     name: "&b&lWinter Nova Boots"
     armor: 3
-    armor-toughness: 2
-    lore: ["", "&7When on Feet:", "&9+3 Armor", "&9+2 Armor Toughness", "", "&7A Winter Crate exclusive."]
+    armor-toughness: 3
+    knockback-resistance: 0.1
+    lore: ["&eSpeed: permanent Speed I", "&ewhile you wear these boots.", "", "&7When on Feet:", "&9+3 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Winter Crate exclusive."]
     enchants: {speed: 1}
 
   valentines-nova-helmet:
