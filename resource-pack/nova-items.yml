@@ -4,7 +4,7 @@
 
   winterhelmet:
     material: LEATHER_HELMET
-    color: "#EEF6FF"
+    color: "#A8DCFF"
     model-data: 1001
     unbreakable: true
     name: "&b&lWinter Nova Helmet"
@@ -15,7 +15,7 @@
 
   winterchestplate:
     material: LEATHER_CHESTPLATE
-    color: "#EEF6FF"
+    color: "#A8DCFF"
     model-data: 1001
     unbreakable: true
     name: "&b&lWinter Nova Chestplate"
@@ -27,7 +27,7 @@
 
   winterleggings:
     material: LEATHER_LEGGINGS
-    color: "#EEF6FF"
+    color: "#A8DCFF"
     model-data: 1001
     unbreakable: true
     name: "&b&lWinter Nova Leggings"
@@ -39,7 +39,7 @@
 
   winterboots:
     material: LEATHER_BOOTS
-    color: "#EEF6FF"
+    color: "#A8DCFF"
     model-data: 1001
     unbreakable: true
     name: "&b&lWinter Nova Boots"
