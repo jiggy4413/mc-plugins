@@ -283,7 +283,7 @@ public final class WarpsMenu implements InventoryHolder {
         if (prefix != null && !prefix.isEmpty() && meta.hasDisplayName()) {
             meta.setDisplayName(Text.color(player, prefix) + meta.getDisplayName());
         }
-        meta.addEnchant(org.bukkit.enchantments.Enchantment.LUCK, 1, true);
+        meta.setEnchantmentGlintOverride(true);
         meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
     }

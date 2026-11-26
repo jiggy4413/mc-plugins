@@ -1,11 +1,15 @@
 package io.github.jiggy4413.prisoncore.world;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
+import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.generator.WorldInfo;
 
 /**
  * Generates completely empty chunks, with one bedrock block under the spawn point so players
@@ -20,23 +24,59 @@ public final class VoidGenerator extends ChunkGenerator {
 
     private static final int SPAWN_Y = 64;
 
-    @Override
-    public ChunkData generateChunkData(World world, Random random, int chunkX, int chunkZ, BiomeGrid biome) {
-        ChunkData data = createChunkData(world);
-
-        // the_void biome: no mob spawning, no rain or snow
-        for (int x = 0; x < 16; x += 4) {
-            for (int z = 0; z < 16; z += 4) {
-                for (int y = 0; y < world.getMaxHeight(); y += 4) {
-                    biome.setBiome(x, y, z, Biome.THE_VOID);
-                }
-            }
+    /** the_void biome everywhere: no mob spawning, no rain or snow */
+    private static final BiomeProvider VOID_BIOME = new BiomeProvider() {
+        @Override
+        public Biome getBiome(WorldInfo worldInfo, int x, int y, int z) {
+            return Biome.THE_VOID;
         }
 
+        @Override
+        public List<Biome> getBiomes(WorldInfo worldInfo) {
+            return Collections.singletonList(Biome.THE_VOID);
+        }
+    };
+
+    @Override
+    public BiomeProvider getDefaultBiomeProvider(WorldInfo worldInfo) {
+        return VOID_BIOME;
+    }
+
+    @Override
+    public void generateSurface(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, ChunkData data) {
         if (chunkX == 0 && chunkZ == 0) {
             data.setBlock(0, SPAWN_Y - 1, 0, Material.BEDROCK);
         }
-        return data;
+    }
+
+    @Override
+    public boolean shouldGenerateNoise() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldGenerateSurface() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldGenerateCaves() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldGenerateDecorations() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldGenerateMobs() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldGenerateStructures() {
+        return false;
     }
 
     @Override

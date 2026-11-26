@@ -5,7 +5,7 @@ name: Build plugins
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, paper-1.21 ]
   pull_request:
   workflow_dispatch:
 
@@ -19,11 +19,11 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Set up Java 8
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: zulu
-          java-version: '8'
+          java-version: '21'
           cache: maven
 
       - name: Build with Maven
@@ -49,3 +49,16 @@ jobs:
             --notes "Built automatically from commit ${GITHUB_SHA::7}. Download the jar(s) below and upload them to the server's plugins folder." \
             --target "$GITHUB_SHA" \
             --latest
+
+      # On pushes to paper-1.21, publish the 1.21.4 jars as a separate pre-release
+      - name: Publish 1.21 release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/paper-1.21'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest-1.21 --cleanup-tag --yes || true
+          gh release create latest-1.21 */target/*.jar \
+            --title "Latest build (Paper 1.21.4)" \
+            --notes "Paper 1.21.4 / Java 21 build from commit ${GITHUB_SHA::7}." \
+            --target "$GITHUB_SHA" \
+            --prerelease

@@ -92,7 +92,7 @@ public final class SpecialItems {
                     continue;
                 }
                 // not an Enchanter enchant: any normal Minecraft enchant works too (power, punch, infinity...)
-                org.bukkit.enchantments.Enchantment vanilla = org.bukkit.enchantments.Enchantment.getByKey(
+                org.bukkit.enchantments.Enchantment vanilla = org.bukkit.Registry.ENCHANTMENT.get(
                         org.bukkit.NamespacedKey.minecraft(key.replace('-', '_')));
                 if (vanilla != null) {
                     item.addUnsafeEnchantment(vanilla, level);

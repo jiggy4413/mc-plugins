@@ -174,7 +174,7 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
                     d.name = s.getString("name", id);
                     String vanilla = s.getString("vanilla", "");
                     if (vanilla != null && !vanilla.isEmpty()) {
-                        d.vanilla = Enchantment.getByKey(NamespacedKey.minecraft(vanilla.toLowerCase(Locale.ROOT)));
+                        d.vanilla = org.bukkit.Registry.ENCHANTMENT.get(NamespacedKey.minecraft(vanilla.toLowerCase(Locale.ROOT)));
                         if (d.vanilla == null) {
                             plugin.getLogger().warning(FILE + ": unknown vanilla enchant '" + vanilla + "' for " + id);
                             continue;
@@ -411,7 +411,7 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
         for (Player p : Bukkit.getOnlinePlayers()) {
             int lvl = heldLevel(p, Category.PICKAXE, "haste");
             if (lvl > 0) {
-                p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 80, lvl - 1, true, false, false), true);
+                p.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, 80, lvl - 1, true, false, false), true);
             }
         }
     }
@@ -495,7 +495,7 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
         if (broken > 0) {
             mines.blocksChanged(m, broken);
             center.getWorld().playSound(center.getLocation(), org.bukkit.Sound.ENTITY_GENERIC_EXPLODE, 0.4f, 1.2f);
-            center.getWorld().spawnParticle(org.bukkit.Particle.EXPLOSION_LARGE, center.getLocation().add(0.5, 0.5, 0.5), 1);
+            center.getWorld().spawnParticle(org.bukkit.Particle.EXPLOSION, center.getLocation().add(0.5, 0.5, 0.5), 1);
             give(p, items, center);
         }
     }
@@ -513,7 +513,7 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
         }
         Def d = def(Category.SWORD, "lifesteal");
         double heal = event.getFinalDamage() * d.effect(lvl) / 100.0;
-        double max = p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        double max = p.getAttribute(Attribute.MAX_HEALTH).getValue();
         p.setHealth(Math.min(max, p.getHealth() + heal));
     }
 

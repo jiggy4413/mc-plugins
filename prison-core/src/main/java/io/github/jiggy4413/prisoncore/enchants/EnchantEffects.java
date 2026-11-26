@@ -143,7 +143,7 @@ public final class EnchantEffects implements Listener {
 
         int exec = enchants.heldLevel(p, Enchants.Category.SWORD, "executioner");
         if (exec > 0) {
-            double max = target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+            double max = target.getAttribute(Attribute.MAX_HEALTH).getValue();
             double below = settings("executioner").getDouble("below-health-percent", 30);
             if (target.getHealth() <= max * below / 100.0) {
                 event.setDamage(event.getDamage() * (1 + strength(Enchants.Category.SWORD, "executioner", exec) / 100.0));
@@ -203,7 +203,7 @@ public final class EnchantEffects implements Listener {
                         return;
                     }
                     target.damage(perTick); // no attacker, so it can't set off other enchants
-                    target.getWorld().spawnParticle(org.bukkit.Particle.BLOCK_CRACK, target.getLocation().add(0, 1, 0),
+                    target.getWorld().spawnParticle(org.bukkit.Particle.BLOCK, target.getLocation().add(0, 1, 0),
                             8, 0.2, 0.4, 0.2, Material.REDSTONE_BLOCK.createBlockData());
                 }
             }.runTaskTimer(enchants.plugin(), 20L, 20L);
@@ -215,7 +215,7 @@ public final class EnchantEffects implements Listener {
         int freeze = enchants.heldLevel(p, Enchants.Category.SWORD, "freeze");
         if (freeze > 0 && roll(strength(Enchants.Category.SWORD, "freeze", freeze))) {
             int ticks = Math.max(1, settings("freeze").getInt("seconds", 2)) * 20;
-            target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, ticks, 1, false, true, true), true);
+            target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, ticks, 1, false, true, true), true);
             target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.6f, 1.6f);
         }
     }
@@ -246,7 +246,7 @@ public final class EnchantEffects implements Listener {
         if (lvl <= 0) {
             return;
         }
-        double max = p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        double max = p.getAttribute(Attribute.MAX_HEALTH).getValue();
         double after = p.getHealth() - event.getFinalDamage();
         ConfigurationSection s = settings("last-stand");
         if (after <= 0 || after > max * s.getDouble("below-health-percent", 25) / 100.0) {
@@ -259,8 +259,8 @@ public final class EnchantEffects implements Listener {
         }
         lastStandAt.put(p.getUniqueId(), now);
         int ticks = (int) Math.round(strength(Enchants.Category.ARMOR, "last-stand", lvl) * 20);
-        p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, ticks, 0, false, true, true), true);
-        p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, ticks, 0, false, true, true), true);
+        p.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, ticks, 0, false, true, true), true);
+        p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, ticks, 0, false, true, true), true);
         p.getWorld().playSound(p.getLocation(), Sound.ENTITY_RAVAGER_ROAR, 0.6f, 1.2f);
         enchants.actionBar(p, "&6&lLAST STAND!");
     }
@@ -322,7 +322,7 @@ public final class EnchantEffects implements Listener {
         if (fl != null && roll(strength(Enchants.Category.SWORD, "freeze", fl))) {
             LivingEntity target = (LivingEntity) event.getEntity();
             int ticks = Math.max(1, settings("freeze").getInt("seconds", 2)) * 20;
-            target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, ticks, 1, false, true, true), true);
+            target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, ticks, 1, false, true, true), true);
             target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.6f, 1.6f);
         }
     }

@@ -143,7 +143,7 @@ public final class ItemTemplate {
         }
 
         if (glow != null && glow) {
-            meta.addEnchant(Enchantment.LUCK, 1, true);
+            meta.setEnchantmentGlintOverride(true);
         }
         if (modelData != null) {
             meta.setCustomModelData(modelData);
@@ -162,26 +162,26 @@ public final class ItemTemplate {
         }
         // players have 1 base damage and 4 base attack speed; the modifiers add the rest
         if (attackDamage != null) {
-            meta.removeAttributeModifier(org.bukkit.attribute.Attribute.GENERIC_ATTACK_DAMAGE);
-            meta.addAttributeModifier(org.bukkit.attribute.Attribute.GENERIC_ATTACK_DAMAGE,
-                    new org.bukkit.attribute.AttributeModifier(java.util.UUID.nameUUIDFromBytes("pc_damage".getBytes()),
-                            "prisoncore.damage", attackDamage - 1, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER,
-                            org.bukkit.inventory.EquipmentSlot.HAND));
+            meta.removeAttributeModifier(org.bukkit.attribute.Attribute.ATTACK_DAMAGE);
+            meta.addAttributeModifier(org.bukkit.attribute.Attribute.ATTACK_DAMAGE,
+                    new org.bukkit.attribute.AttributeModifier(new org.bukkit.NamespacedKey("prisoncore", "damage"),
+                            attackDamage - 1, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER,
+                            org.bukkit.inventory.EquipmentSlotGroup.MAINHAND));
         }
         if (attackSpeed != null) {
-            meta.removeAttributeModifier(org.bukkit.attribute.Attribute.GENERIC_ATTACK_SPEED);
-            meta.addAttributeModifier(org.bukkit.attribute.Attribute.GENERIC_ATTACK_SPEED,
-                    new org.bukkit.attribute.AttributeModifier(java.util.UUID.nameUUIDFromBytes("pc_speed".getBytes()),
-                            "prisoncore.speed", attackSpeed - 4, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER,
-                            org.bukkit.inventory.EquipmentSlot.HAND));
+            meta.removeAttributeModifier(org.bukkit.attribute.Attribute.ATTACK_SPEED);
+            meta.addAttributeModifier(org.bukkit.attribute.Attribute.ATTACK_SPEED,
+                    new org.bukkit.attribute.AttributeModifier(new org.bukkit.NamespacedKey("prisoncore", "speed"),
+                            attackSpeed - 4, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER,
+                            org.bukkit.inventory.EquipmentSlotGroup.MAINHAND));
         }
         // armor stats replace the item's normal ones (Minecraft drops an item's default armor once it has
         // its own), so leather can show a full armor bar
         if (armor != null || armorToughness != null || knockbackResistance != null) {
             org.bukkit.inventory.EquipmentSlot slot = wornSlot(mat);
-            armorStat(meta, org.bukkit.attribute.Attribute.GENERIC_ARMOR, "armor", armor, slot);
-            armorStat(meta, org.bukkit.attribute.Attribute.GENERIC_ARMOR_TOUGHNESS, "toughness", armorToughness, slot);
-            armorStat(meta, org.bukkit.attribute.Attribute.GENERIC_KNOCKBACK_RESISTANCE, "knockback", knockbackResistance, slot);
+            armorStat(meta, org.bukkit.attribute.Attribute.ARMOR, "armor", armor, slot);
+            armorStat(meta, org.bukkit.attribute.Attribute.ARMOR_TOUGHNESS, "toughness", armorToughness, slot);
+            armorStat(meta, org.bukkit.attribute.Attribute.KNOCKBACK_RESISTANCE, "knockback", knockbackResistance, slot);
         }
         if (meta instanceof SkullMeta && "viewer".equalsIgnoreCase(skull) && viewer != null) {
             ((SkullMeta) meta).setOwningPlayer(viewer);
@@ -262,7 +262,7 @@ public final class ItemTemplate {
         }
         meta.removeAttributeModifier(attribute);
         meta.addAttributeModifier(attribute, new org.bukkit.attribute.AttributeModifier(
-                java.util.UUID.nameUUIDFromBytes(("pc_" + id + "_" + slot.name()).getBytes()),
-                "prisoncore." + id, value, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, slot));
+                new org.bukkit.NamespacedKey("prisoncore", id + "_" + slot.name().toLowerCase(java.util.Locale.ROOT)),
+                value, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, slot.getGroup()));
     }
 }
