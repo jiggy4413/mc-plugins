@@ -58,7 +58,7 @@ final class MrlImporter {
         Reader reader = new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8);
         try {
             // plain YAML read: MineResetLite's "==" class marker is just treated as a key
-            root = new Yaml(new SafeConstructor()).load(reader);
+            root = new Yaml(new SafeConstructor(new org.yaml.snakeyaml.LoaderOptions())).load(reader);
         } finally {
             reader.close();
         }
