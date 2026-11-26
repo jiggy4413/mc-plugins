@@ -9,11 +9,11 @@ Every push builds automatically. Get the newest jar from **Releases → Latest b
 | Module | Jar | Purpose |
 |---|---|---|
 | `prison-core` | `PrisonCore-1.18.0.jar` | Ranks & prestiges menu, warps menu, mines with percentage resets, void worlds |
-| `stubs/rankup-api` | none | Compile-only copy of Rankup 3.11.3's API. Never installed on the server. |
+| `stubs/rankup-api` | none | Compile-only copy of Rankup 3.15.3's API. Never installed on the server. |
 | `stubs/placeholderapi` | none | Compile-only copy of PlaceholderAPI's expansion API. Never installed on the server. |
 
 ## PrisonCore: ranks & prestiges menu
-Replaces `/ranks` and `/prestiges` from **Rankup 3.11.3 (by Okx)** with a fully styled menu.
+Replaces `/ranks` and `/prestiges` from **Rankup 3.15.3 (by Okx)** with a fully styled menu.
 Rankup still does the actual rankups, costs and permissions; clicking the next rank runs `/rankup`
 and clicking the next prestige runs `/prestige` for the player.
 

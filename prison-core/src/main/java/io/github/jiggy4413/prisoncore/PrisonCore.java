@@ -334,7 +334,7 @@ public final class PrisonCore extends JavaPlugin {
             rankup = RankupBridge.create(plugin);
             getLogger().info("Hooked into Rankup " + plugin.getDescription().getVersion() + ".");
         } catch (Throwable t) {
-            // e.g. a Rankup version whose code differs from 3.11.3
+            // e.g. a Rankup version whose code differs from 3.15.3
             rankup = null;
             getLogger().severe("Couldn't hook into Rankup: " + t);
         }

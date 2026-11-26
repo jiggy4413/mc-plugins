@@ -17,7 +17,7 @@ import sh.okx.rankup.requirements.ProgressiveRequirement;
 import sh.okx.rankup.requirements.Requirement;
 
 /**
- * The only class that talks to Rankup (3.11.3 by Okx). It reads Rankup's live data every time,
+ * The only class that talks to Rankup (3.15.3 by Okx). It reads Rankup's live data every time,
  * so "/pru reload" changes show up without restarting PrisonCore.
  *
  * Only create this when the Rankup plugin is enabled, otherwise Java can't find Rankup's classes.
@@ -57,7 +57,12 @@ public final class RankupBridge {
 
     /** Money formatted the way Rankup does it (1.5K, 2M...). */
     public String formatMoney(double amount) {
-        return rankup.formatMoney(amount);
+        try {
+            return rankup.getPlaceholders().formatMoney(amount);
+        } catch (Throwable t) {
+            // Rankup not fully loaded (or a different version): plain formatting
+            return new java.text.DecimalFormat("#,##0.##").format(amount);
+        }
     }
 
     // ------------------------------------------------------------------ ranks
@@ -158,7 +163,7 @@ public final class RankupBridge {
     }
 
     private static List<LadderEntry.Requirement> requirements(Rank from, Player player, boolean alreadyDone) {
-        Set<Requirement> set;
+        Iterable<Requirement> set;
         try {
             set = from.getRequirements().getRequirements(player);
         } catch (RuntimeException e) {

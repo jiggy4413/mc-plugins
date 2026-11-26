@@ -5,15 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!--
-      Compile-only copy of the Rankup 3.11.3 (by Okx) method signatures that PrisonCore calls.
+      Compile-only copy of the Rankup 3.15.3 (by Okx) method signatures that PrisonCore calls.
       Rankup isn't published to a Maven repository, so these stubs let us compile against it.
       They are NEVER packaged into PrisonCore: at runtime the real classes come from the
-      Rankup plugin on the server. Signatures must match Rankup 3.11.3 exactly.
+      Rankup plugin on the server. Signatures must match Rankup 3.15.3 exactly.
     -->
     <parent>
         <groupId>io.github.jiggy4413</groupId>
         <artifactId>mc-plugins</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
