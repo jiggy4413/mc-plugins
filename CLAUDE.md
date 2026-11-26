@@ -6,6 +6,8 @@ mine resets and void worlds. Every push to `main` is built by GitHub Actions and
 the "Latest build" release. See README.md for commands and setup.
 
 ## Things to keep in mind when changing these plugins
+- Branch `paper-1.21` is the Paper 1.21.4 / Java 21 port (PrisonCore 2.x), published as the "latest-1.21"
+  pre-release. `main` is still the 1.16.5 / Java 8 version (1.19.x). The server is moving to 1.21.4.
 - Mine names on the server: A-K are `amine`, `bmine` ... `kmine`; L-Z are just the letter: `l`, `m` ... `z`.
   Plus `woodmine` and `pvpmine`. Never rename them or assume `lmine`-`zmine`.
 - Special item names in the server's items.yml have no dashes (easier to type in game): armor is
