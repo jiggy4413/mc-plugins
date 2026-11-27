@@ -166,9 +166,12 @@ RO = (196, 26, 50); ROL = (238, 74, 90); ROD = (128, 12, 32)
 LF = (88, 158, 70); LFD = (46, 110, 50); TH = (196, 176, 132)
 
 def metal(u, v, seed):
-    """black plate with a faint wine sheen"""
-    c = BKL if (u % 8 == 0 or v % 8 == 0) else BK     # subtle plate seams
-    return noise(c, u, v, seed, 4)
+    """smooth black steel: soft light sheen sweeping across the plate, no seams"""
+    t = 0.5 + 0.5*math.sin(u*0.42 + v*0.10 + seed*0.7)
+    t = t**3                                     # narrow, bright highlight bands
+    hi = (78, 66, 78)
+    c = tuple(int(BK[i] + (hi[i]-BK[i])*t*0.8) for i in range(3))
+    return noise(c, u, v, seed, 2)
 
 def around(face, u, W, D):
     """position along the perimeter of a limb or body, so vines wrap around continuously."""
@@ -510,8 +513,8 @@ sheet.convert('RGB').save(os.path.join(out, 'all-sets-preview.png'))
 # ---- close-up sheets for the two new sets
 NOTES = {
     'Thornheart':   ['A dark knight overgrown with roses.',
-                     'Black plate with a deep wine sheen; a big rose blooms on the chest.',
-                     'Shoulder guards only (like vanilla) with roses on top; vines wrap the legs.',
+                     'Smooth black steel; a big rose blooms on the chest.',
+                     'Shoulder guards only (like vanilla), roses on top.',
                      'Helmet: knight T-visor, a 3D crown of thorns and one red rose.',
                      'Leggings: wine-red with a rose on each knee.'],
     'Tidecaller':   ['Lagoon turquoise fading to deep teal, with foam-white waves.',
