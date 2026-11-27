@@ -28,7 +28,8 @@ the "Latest build" release. See README.md for commands and setup.
   - Winter Nova stays the Nova design. Valentines and Summer are NOT Nova anymore: brand-new designs:
     **Thornheart** (Valentines, final design) and **Tidecaller** (Summer), in `resource-pack/concepts/new-sets/`.
   - Crate set rotation: Winter Nova until Feb 13 -> Thornheart from Feb 14 -> Agamemnon Mar 1 to May 1
-    -> Tidecaller from May 1.
+    -> Tidecaller from May 1. Cadence: a new custom set every two months, plus occasional extra-limited
+    sets (1-2 weeks, like Thornheart).
   - Concept art rules: chestplate sleeves stop at the shoulder (like vanilla); always fill the bottom faces
     of legs/boots; plates should read as metal armor (no brick seams or knit patterns).
   - The Agamemnon (Warlord) black/gold set with the custom helmet is part of the plan; concepts are in
