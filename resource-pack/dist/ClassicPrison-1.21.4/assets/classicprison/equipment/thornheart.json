@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "classicprison:thornheart"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "classicprison:thornheart"
+      }
+    ]
+  }
+}

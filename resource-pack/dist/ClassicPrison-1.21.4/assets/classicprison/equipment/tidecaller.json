@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "classicprison:tidecaller"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "classicprison:tidecaller"
+      }
+    ]
+  }
+}

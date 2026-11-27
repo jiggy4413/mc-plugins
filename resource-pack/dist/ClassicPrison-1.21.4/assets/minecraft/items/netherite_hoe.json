@@ -1,0 +1,41 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/netherite_hoe"
+    },
+    "entries": [
+      {
+        "threshold": 2004,
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/frost/frost_scythe"
+        }
+      },
+      {
+        "threshold": 2005,
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/netherite_hoe"
+        }
+      },
+      {
+        "threshold": 2014,
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/frost/gold_frost_scythe"
+        }
+      },
+      {
+        "threshold": 2015,
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/netherite_hoe"
+        }
+      }
+    ]
+  }
+}

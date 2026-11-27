@@ -1,0 +1,143 @@
+# Custom armor sets for Classic Prison 1.21.4 (needs PrisonCore 2.2.0+ and the ClassicPrison-1.21.4 pack).
+# Paste these under "items:" in plugins/PrisonCore/items.yml (two-space indent), then /prisoncore reload.
+# Give with: /prisoncore give <player> <name>   e.g. /prisoncore give jidot thornheartchestplate
+#
+# All pieces are netherite, so they have netherite armor stats (3/8/6/3, 3 toughness, knockback resistance).
+# item-model = the inventory icon, equipment = how it looks when worn. Helmets use "model": the 3D helmet
+# model is worn on the head. Only Winter Nova has enchants so far; the other sets are look-only for now.
+# The old leather Winter/Valentines/Summer Nova entries (nova-items.yml) are replaced by these.
+
+  # ---- Winter Nova
+  winterhelmet:
+    material: NETHERITE_HELMET
+    item-model: "classicprison:winter_helmet"
+    equipment: "model"
+    unbreakable: true
+    name: "&b&lWinter Nova Helmet"
+    lore: ["", "&7When on Head:", "&9+3 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Winter Crate exclusive."]
+
+  winterchestplate:
+    material: NETHERITE_CHESTPLATE
+    item-model: "classicprison:winter_chestplate"
+    equipment: "classicprison:winter"
+    unbreakable: true
+    name: "&b&lWinter Nova Chestplate"
+    lore: ["&eDodge: 9% chance to take no", "&edamage from a player's hit.", "", "&7When on Body:", "&9+8 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Winter Crate exclusive."]
+    enchants: {dodge: 3}
+
+  winterleggings:
+    material: NETHERITE_LEGGINGS
+    item-model: "classicprison:winter_leggings"
+    equipment: "classicprison:winter"
+    unbreakable: true
+    name: "&b&lWinter Nova Leggings"
+    lore: ["&eLast Stand: Strength and Resistance", "&efor 7s when you drop below 25% health.", "", "&7When on Legs:", "&9+6 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Winter Crate exclusive."]
+    enchants: {last-stand: 3}
+
+  winterboots:
+    material: NETHERITE_BOOTS
+    item-model: "classicprison:winter_boots"
+    equipment: "classicprison:winter"
+    unbreakable: true
+    name: "&b&lWinter Nova Boots"
+    lore: ["&eSpeed: permanent Speed I", "&ewhile you wear these boots.", "", "&7When on Feet:", "&9+3 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Winter Crate exclusive."]
+    enchants: {speed: 1}
+
+  # ---- Thornheart
+  thornhearthelmet:
+    material: NETHERITE_HELMET
+    item-model: "classicprison:thornheart_helmet"
+    equipment: "model"
+    unbreakable: true
+    name: "&4&lThornheart Helmet"
+    lore: ["", "&7When on Head:", "&9+3 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A limited Valentines Crate exclusive."]
+
+  thornheartchestplate:
+    material: NETHERITE_CHESTPLATE
+    item-model: "classicprison:thornheart_chestplate"
+    equipment: "classicprison:thornheart"
+    unbreakable: true
+    name: "&4&lThornheart Chestplate"
+    lore: ["", "&7When on Body:", "&9+8 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A limited Valentines Crate exclusive."]
+
+  thornheartleggings:
+    material: NETHERITE_LEGGINGS
+    item-model: "classicprison:thornheart_leggings"
+    equipment: "classicprison:thornheart"
+    unbreakable: true
+    name: "&4&lThornheart Leggings"
+    lore: ["", "&7When on Legs:", "&9+6 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A limited Valentines Crate exclusive."]
+
+  thornheartboots:
+    material: NETHERITE_BOOTS
+    item-model: "classicprison:thornheart_boots"
+    equipment: "classicprison:thornheart"
+    unbreakable: true
+    name: "&4&lThornheart Boots"
+    lore: ["", "&7When on Feet:", "&9+3 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A limited Valentines Crate exclusive."]
+
+  # ---- Agamemnon
+  agamemnonhelmet:
+    material: NETHERITE_HELMET
+    item-model: "classicprison:agamemnon_helmet"
+    equipment: "model"
+    unbreakable: true
+    name: "&6&lAgamemnon Helmet"
+    lore: ["", "&7When on Head:", "&9+3 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Spring Crate exclusive."]
+
+  agamemnonchestplate:
+    material: NETHERITE_CHESTPLATE
+    item-model: "classicprison:agamemnon_chestplate"
+    equipment: "classicprison:agamemnon"
+    unbreakable: true
+    name: "&6&lAgamemnon Chestplate"
+    lore: ["", "&7When on Body:", "&9+8 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Spring Crate exclusive."]
+
+  agamemnonleggings:
+    material: NETHERITE_LEGGINGS
+    item-model: "classicprison:agamemnon_leggings"
+    equipment: "classicprison:agamemnon"
+    unbreakable: true
+    name: "&6&lAgamemnon Leggings"
+    lore: ["", "&7When on Legs:", "&9+6 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Spring Crate exclusive."]
+
+  agamemnonboots:
+    material: NETHERITE_BOOTS
+    item-model: "classicprison:agamemnon_boots"
+    equipment: "classicprison:agamemnon"
+    unbreakable: true
+    name: "&6&lAgamemnon Boots"
+    lore: ["", "&7When on Feet:", "&9+3 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Spring Crate exclusive."]
+
+  # ---- Tidecaller
+  tidecallerhelmet:
+    material: NETHERITE_HELMET
+    item-model: "classicprison:tidecaller_helmet"
+    equipment: "model"
+    unbreakable: true
+    name: "&3&lTidecaller Helmet"
+    lore: ["", "&7When on Head:", "&9+3 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Summer Crate exclusive."]
+
+  tidecallerchestplate:
+    material: NETHERITE_CHESTPLATE
+    item-model: "classicprison:tidecaller_chestplate"
+    equipment: "classicprison:tidecaller"
+    unbreakable: true
+    name: "&3&lTidecaller Chestplate"
+    lore: ["", "&7When on Body:", "&9+8 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Summer Crate exclusive."]
+
+  tidecallerleggings:
+    material: NETHERITE_LEGGINGS
+    item-model: "classicprison:tidecaller_leggings"
+    equipment: "classicprison:tidecaller"
+    unbreakable: true
+    name: "&3&lTidecaller Leggings"
+    lore: ["", "&7When on Legs:", "&9+6 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Summer Crate exclusive."]
+
+  tidecallerboots:
+    material: NETHERITE_BOOTS
+    item-model: "classicprison:tidecaller_boots"
+    equipment: "classicprison:tidecaller"
+    unbreakable: true
+    name: "&3&lTidecaller Boots"
+    lore: ["", "&7When on Feet:", "&9+3 Armor", "&9+3 Armor Toughness", "&9+1 Knockback Resistance", "", "&7A Summer Crate exclusive."]
