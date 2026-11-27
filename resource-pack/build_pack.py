@@ -81,17 +81,32 @@ def fill_bottoms(img, boxes):
 
 import colorsys
 
+# Minecraft's own gold armor / gold ingot palette, dark to light
+GOLD_RAMP = [(117, 40, 2), (162, 88, 12), (204, 129, 16), (233, 177, 21), (245, 214, 52), (253, 245, 95), (255, 255, 139)]
+
+def ramp(t, lo, hi):
+    """Pick a colour between ramp entries lo..hi by brightness t (0..1), with smooth blending."""
+    x = lo + max(0.0, min(1.0, t)) * (hi - lo)
+    i = int(x); f = x - i
+    if i >= hi:
+        return GOLD_RAMP[hi]
+    c0, c1 = GOLD_RAMP[i], GOLD_RAMP[i + 1]
+    return tuple(int(c0[k] + (c1[k] - c0[k]) * f) for k in range(3))
+
 def gold(c):
-    """Recolour Winter Nova's icy blues into gold (Golden Winter Nova), like the gold frost weapons."""
+    """Recolour Winter Nova into Golden Winter Nova using vanilla gold armor's colours.
+    Blues become the bright golds (by brightness); whites/greys become the deeper golds, so the old
+    white trims read as darker gold; near-black outlines stay dark."""
     r, g, b = c[0] / 255, c[1] / 255, c[2] / 255
     a = c[3] if len(c) > 3 else 255
     h, sat, v = colorsys.rgb_to_hsv(r, g, b)
-    if sat > 0.10 and 0.42 <= h <= 0.75:                 # blues -> gold (yellow gold, not orange)
-        h = 0.135; sat = min(0.72, sat * 1.25 + 0.22); v = min(1.0, v * 1.0)
-    elif sat <= 0.10 and v > 0.45:                         # whites / light greys -> a slightly darker gold
-        h = 0.128; sat = 0.62; v = v * 0.74
-    r, g, b = colorsys.hsv_to_rgb(h, sat, v)
-    return (int(r * 255), int(g * 255), int(b * 255), a)
+    if v < 0.22:
+        return (int(c[0] * 0.9 + 20), int(c[1] * 0.6 + 8), int(c[2] * 0.3), a)   # warm the dark outlines a touch
+    if sat > 0.10 and 0.42 <= h <= 0.75:                 # blues -> bright golds
+        return ramp((v - 0.45) / 0.55, 3, 5) + (a,)
+    if sat <= 0.10:                                       # whites / greys -> deeper golds
+        return ramp((v - 0.3) / 0.7, 1, 3) + (a,)
+    return ramp(v, 1, 5) + (a,)                           # anything else (yellow eyes etc.)
 
 def gold_image(img):
     out = img.copy(); px = out.load()
