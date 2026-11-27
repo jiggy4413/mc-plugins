@@ -3,8 +3,8 @@
 # entries, then /prisoncore reload.  Give with: /prisoncore give <player> <name>
 #
 # All pieces are netherite and show their normal netherite stats in the tooltip (show-attributes: true).
-# set: <id> = which set a piece belongs to. A set piece's enchants (Speed, Dodge, Last Stand) only work
-# while all 4 pieces of the SAME set are worn. Only the Winter sets have bonuses so far.
+# set: <id> = which set a piece belongs to. A set piece's enchants only work while all 4 pieces of the SAME
+# set are worn. Winter Nova: full set = Speed I. Golden Winter Nova: full set = Speed II. Nothing else yet.
 # item-model = inventory icon, equipment = worn look ("model" = the 3D helmet is worn on the head).
 
   # ---- Winter Nova
@@ -16,7 +16,7 @@
     show-attributes: true
     unbreakable: true
     name: "&b&lWinter Nova Helmet"
-    lore: ["", "&6&lFULL SET BONUS", "&eSpeed I", "&eDodge: 9% chance to take no damage from a player's hit", "&eLast Stand: Strength + Resistance for 7s below 25% health", "", "&7Wear all 4 pieces to activate.", "&7A Winter Crate exclusive."]
+    lore: ["", "&6&lFULL SET BONUS", "&eSpeed I", "", "&7Wear all 4 pieces to activate.", "&7A Winter Crate exclusive."]
 
   winterchestplate:
     material: NETHERITE_CHESTPLATE
@@ -26,8 +26,7 @@
     show-attributes: true
     unbreakable: true
     name: "&b&lWinter Nova Chestplate"
-    lore: ["", "&6&lFULL SET BONUS", "&eSpeed I", "&eDodge: 9% chance to take no damage from a player's hit", "&eLast Stand: Strength + Resistance for 7s below 25% health", "", "&7Wear all 4 pieces to activate.", "&7A Winter Crate exclusive."]
-    enchants: {dodge: 3}
+    lore: ["", "&6&lFULL SET BONUS", "&eSpeed I", "", "&7Wear all 4 pieces to activate.", "&7A Winter Crate exclusive."]
 
   winterleggings:
     material: NETHERITE_LEGGINGS
@@ -37,8 +36,7 @@
     show-attributes: true
     unbreakable: true
     name: "&b&lWinter Nova Leggings"
-    lore: ["", "&6&lFULL SET BONUS", "&eSpeed I", "&eDodge: 9% chance to take no damage from a player's hit", "&eLast Stand: Strength + Resistance for 7s below 25% health", "", "&7Wear all 4 pieces to activate.", "&7A Winter Crate exclusive."]
-    enchants: {last-stand: 3}
+    lore: ["", "&6&lFULL SET BONUS", "&eSpeed I", "", "&7Wear all 4 pieces to activate.", "&7A Winter Crate exclusive."]
 
   winterboots:
     material: NETHERITE_BOOTS
@@ -48,7 +46,7 @@
     show-attributes: true
     unbreakable: true
     name: "&b&lWinter Nova Boots"
-    lore: ["", "&6&lFULL SET BONUS", "&eSpeed I", "&eDodge: 9% chance to take no damage from a player's hit", "&eLast Stand: Strength + Resistance for 7s below 25% health", "", "&7Wear all 4 pieces to activate.", "&7A Winter Crate exclusive."]
+    lore: ["", "&6&lFULL SET BONUS", "&eSpeed I", "", "&7Wear all 4 pieces to activate.", "&7A Winter Crate exclusive."]
     enchants: {speed: 1}
 
   # ---- Golden Winter Nova
@@ -60,7 +58,7 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Winter Nova Helmet"
-    lore: ["", "&6&lFULL SET BONUS", "&eSpeed II", "&eDodge: 9% chance to take no damage from a player's hit", "&eLast Stand: Strength + Resistance for 7s below 25% health", "", "&7Wear all 4 pieces to activate.", "&7A rare Winter Crate exclusive."]
+    lore: ["", "&6&lFULL SET BONUS", "&eSpeed II", "", "&7Wear all 4 pieces to activate.", "&7A rare Winter Crate exclusive."]
 
   goldwinterchestplate:
     material: NETHERITE_CHESTPLATE
@@ -70,8 +68,7 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Winter Nova Chestplate"
-    lore: ["", "&6&lFULL SET BONUS", "&eSpeed II", "&eDodge: 9% chance to take no damage from a player's hit", "&eLast Stand: Strength + Resistance for 7s below 25% health", "", "&7Wear all 4 pieces to activate.", "&7A rare Winter Crate exclusive."]
-    enchants: {dodge: 3}
+    lore: ["", "&6&lFULL SET BONUS", "&eSpeed II", "", "&7Wear all 4 pieces to activate.", "&7A rare Winter Crate exclusive."]
 
   goldwinterleggings:
     material: NETHERITE_LEGGINGS
@@ -81,8 +78,7 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Winter Nova Leggings"
-    lore: ["", "&6&lFULL SET BONUS", "&eSpeed II", "&eDodge: 9% chance to take no damage from a player's hit", "&eLast Stand: Strength + Resistance for 7s below 25% health", "", "&7Wear all 4 pieces to activate.", "&7A rare Winter Crate exclusive."]
-    enchants: {last-stand: 3}
+    lore: ["", "&6&lFULL SET BONUS", "&eSpeed II", "", "&7Wear all 4 pieces to activate.", "&7A rare Winter Crate exclusive."]
 
   goldwinterboots:
     material: NETHERITE_BOOTS
@@ -92,7 +88,7 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Winter Nova Boots"
-    lore: ["", "&6&lFULL SET BONUS", "&eSpeed II", "&eDodge: 9% chance to take no damage from a player's hit", "&eLast Stand: Strength + Resistance for 7s below 25% health", "", "&7Wear all 4 pieces to activate.", "&7A rare Winter Crate exclusive."]
+    lore: ["", "&6&lFULL SET BONUS", "&eSpeed II", "", "&7Wear all 4 pieces to activate.", "&7A rare Winter Crate exclusive."]
     enchants: {speed: 2}
 
   # ---- Thornheart
