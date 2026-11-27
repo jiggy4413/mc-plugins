@@ -7,7 +7,7 @@
 # set are worn. Winter Nova: full set = Speed I. Golden Winter Nova: full set = Speed II. Nothing else yet.
 # item-model = inventory icon, equipment = worn look ("model" = the 3D helmet is worn on the head).
 
-  # ---- Winter Nova
+  # ---- Winter Nova ---- #
   winterhelmet:
     material: NETHERITE_HELMET
     item-model: "classicprison:winter_helmet"
@@ -49,7 +49,6 @@
     lore: ["", "&6&lFULL SET BONUS", "&eSpeed I", "", "&7Wear all 4 pieces to activate.", "&7A Winter Crate exclusive."]
     enchants: {speed: 1}
 
-  # ---- Golden Winter Nova
   goldwinterhelmet:
     material: NETHERITE_HELMET
     item-model: "classicprison:goldwinter_helmet"
@@ -91,7 +90,8 @@
     lore: ["", "&6&lFULL SET BONUS", "&eSpeed II", "", "&7Wear all 4 pieces to activate.", "&7A rare Winter Crate exclusive."]
     enchants: {speed: 2}
 
-  # ---- Thornheart
+
+  # ---- Thornheart ---- #
   thornhearthelmet:
     material: NETHERITE_HELMET
     item-model: "classicprison:thornheart_helmet"
@@ -132,7 +132,9 @@
     name: "&4&lThornheart Boots"
     lore: ["", "&7A limited Valentines Crate exclusive."]
 
-  # ---- Agamemnon
+
+
+  # ---- Agamemnon ---- #
   agamemnonhelmet:
     material: NETHERITE_HELMET
     item-model: "classicprison:agamemnon_helmet"
@@ -173,7 +175,7 @@
     name: "&6&lAgamemnon Boots"
     lore: ["", "&7A Spring Crate exclusive."]
 
-  # ---- Tidecaller
+  # ---- Tidecaller ---- #
   tidecallerhelmet:
     material: NETHERITE_HELMET
     item-model: "classicprison:tidecaller_helmet"

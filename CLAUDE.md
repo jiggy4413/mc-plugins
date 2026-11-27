@@ -25,7 +25,9 @@ the "Latest build" release. See README.md for commands and setup.
   (set with `git config user.name` / `git config user.email` in a fresh clone), with Claude as co-author.
 - The 1.21.4 resource pack is generated: `python3 resource-pack/build_pack.py` -> `resource-pack/dist/ClassicPrison-1.21.4.zip`
   (+ .sha1). Armor set items: `resource-pack/armor-sets-items.yml` (items.yml `item-model` / `equipment` fields,
-  PrisonCore 2.3.0+). The old `classic-prison-pack/` folder is the 1.16 pack (still the source of the frost weapon art).
+  PrisonCore 2.3.0+). Follow the server's items.yml layout for new sets: a `# ---- Set Name ---- #` header,
+  then helmet/chestplate/leggings/boots, each with material, item-model, equipment, set, show-attributes,
+  unbreakable, name, lore (and enchants only for real set bonuses). Two-space indent under `items:`. The old `classic-prison-pack/` folder is the 1.16 pack (still the source of the frost weapon art).
 - Custom armor plan for the 1.21.4 resource pack (decided Nov 2026):
   - ALL custom armor sets are NETHERITE items with their own worn texture (1.21.4 equipment assets),
     not dyed leather. Vanilla leather/chainmail must look normal again.
