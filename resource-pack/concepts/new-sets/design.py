@@ -288,37 +288,52 @@ def thornheart_layers():
     return l1, l2
 
 def thornheart_helmet3d(dy=0):
-    """No full helmet: a small black-steel cap on top of the head (face stays visible),
-    crowned with twisted thorny vines and a few roses."""
+    """A black-steel brimmed hat (face stays visible). The hatband is a twisted thorny vine
+    with roses tucked into it."""
     Q = []
     V1 = (70, 128, 62, 255); V2 = (42, 88, 46, 255); T = (176, 150, 104, 255); TD = (124, 98, 64, 255)
     def vinec(face, u, v, fw, fh):
         return V1 if face in ('top', 'front', 'left') else V2
     def thornc(face, u, v, fw, fh):
         return T if face in ('top', 'front', 'right') else TD
-    # the cap: covers the top of the head down to the brow, with a wine-red trim on its edge
-    def capc(face, u, v, fw, fh):
-        if face == 'bottom': return None
+    # wide flat brim at the brow, with a wine-red edge
+    def brimc(face, u, v, fw, fh):
         if face == 'top': return metal(u, v, 47)
-        if v == fh - 1: return noise(ROD, u, v, 48, 4)
-        if v == fh - 2: return noise(WN, u, v, 49, 4)
-        return metal(u, v, 50)
-    Q += solid(-5.1, 30.2 + dy, -5.1, 10.2, 2.9, 10.2, capc)
-    # crown of two twisted thorny vines sitting on the rim of the cap
-    n = 28
-    for strand, (rad, ph) in enumerate(((4.9, 0.0), (5.1, 1.7))):
+        if face == 'bottom': return noise(BK, u, v, 46, 3)
+        return noise(ROD, u, v, 48, 4)
+    Q += solid(-7.6, 30.6 + dy, -7.6, 15.2, 0.6, 15.2, brimc)
+    # the crown of the hat: a steel block with a slightly narrower top tier
+    def crownc(face, u, v, fw, fh):
+        if face == 'bottom': return None
+        if face == 'top': return metal(u, v, 51)
+        return metal(u, v, 52)
+    Q += solid(-4.7, 31.2 + dy, -4.7, 9.4, 3.6, 9.4, crownc)
+    def topc(face, u, v, fw, fh):
+        if face == 'bottom': return None
+        if face == 'top':                                         # a pinched dent across the top
+            return noise(BK, u, v, 53, 3) if abs(u - fw/2 + 0.5) < 1 else metal(u, v, 54)
+        return metal(u, v, 55)
+    Q += solid(-4.3, 34.8 + dy, -4.3, 8.6, 1.0, 8.6, topc)
+    # hatband: a thin wine band under the twisted thorny vine
+    Q += solid(-4.85, 31.2 + dy, -4.85, 9.7, 1.0, 9.7,
+               lambda f, u, v, fw, fh: None if f in ('top', 'bottom') else noise(WN, u, v, 56, 4))
+    n = 32
+    for strand, ph in enumerate((0.0, 1.9)):                      # two strands twisting around the band
         for i in range(n):
             a = i / n * 2 * math.pi
-            x = math.cos(a) * rad; z = math.sin(a) * rad
-            y = 32.5 + 0.6 * math.sin(a * 4 + ph)
-            Q += solid(x - 0.75, y + dy, z - 0.75, 1.5, 1.2, 1.5, vinec)
-    for i in range(14):                                           # thorns pointing up and outward
-        a = i / 14 * 2 * math.pi + 0.2
-        x = math.cos(a) * 5.6; z = math.sin(a) * 5.6
-        y = 32.8 + 0.6 * math.sin(a * 4)
-        Q += solid(x - 0.3, y + 1.0 + dy, z - 0.3, 0.6, 0.9 + (i % 3) * 0.5, 0.6, thornc)
-        Q += solid(x + math.cos(a) * 0.6 - 0.25, y + 0.5 + dy, z + math.sin(a) * 0.6 - 0.25, 0.5, 0.5, 0.5, thornc)
-    # roses woven into the crown: a big one at the front corner, two smaller ones further round
+            r = 5.05 / max(abs(math.cos(a)), abs(math.sin(a)))     # follow the square crown
+            r = min(r, 6.4)
+            x = math.cos(a) * r; z = math.sin(a) * r
+            y = 31.3 + 0.35 * math.sin(a * 6 + ph)
+            Q += solid(x - 0.55, y + dy, z - 0.55, 1.1, 0.9, 1.1, vinec)
+    for i in range(16):                                           # thorns sticking out of the band
+        a = i / 16 * 2 * math.pi + 0.2
+        r = min(5.7 / max(abs(math.cos(a)), abs(math.sin(a))), 7.0)
+        x = math.cos(a) * r; z = math.sin(a) * r
+        Q += solid(x - 0.25, 31.6 + (i % 3) * 0.4 + dy, z - 0.25, 0.5, 0.5, 0.5, thornc)
+        Q += solid(x + math.cos(a) * 0.45 - 0.2, 31.9 + (i % 3) * 0.4 + dy, z + math.sin(a) * 0.45 - 0.2,
+                   0.4, 0.4, 0.4, thornc)
+    # roses tucked into the band on the front-left side, the biggest in front
     R1 = (238, 74, 90, 255); R2 = (196, 26, 50, 255); R3 = (128, 12, 32, 255)
     def petals(face, u, v, fw, fh):
         if face == 'top':
@@ -327,18 +342,14 @@ def thornheart_helmet3d(dy=0):
         if face == 'bottom': return R3
         return R1 if v == 0 else (R2 if (u + v) % 3 else R3)
     LEAF = lambda f, u, v, fw, fh: (88, 158, 70, 255) if f != 'bottom' else (46, 110, 50, 255)
-    for ang, size in ((-0.75, 1.0), (1.35, 0.75), (2.75, 0.8)):
-        cx = math.cos(ang) * 5.0; cz = math.sin(ang) * 5.0
-        layers = ((3.4, 1.2, 32.6), (2.8, 1.1, 33.7), (2.0, 1.0, 34.7), (1.2, 0.7, 35.6))
+    for (cx, cz, size) in ((3.0, -5.3, 0.85), (5.3, -2.6, 0.7), (5.3, 0.6, 0.55)):
+        layers = ((3.0, 1.1, 31.2), (2.4, 1.0, 32.2), (1.6, 0.8, 33.1), (0.9, 0.6, 33.8))
         base = layers[0][2]
         for (w, h, y0) in layers:
             w *= size; h *= size; y0 = base + (y0 - base) * size
             Q += solid(cx - w/2, y0 + dy, cz - w/2, w, h, w, petals)
-        # two leaves tucked under each rose, along the crown
-        tx, tz = -math.sin(ang), math.cos(ang)
-        for sgn in (-1, 1):
-            lx = cx + tx * sgn * 2.0 * size; lz = cz + tz * sgn * 2.0 * size
-            Q += solid(lx - 0.8, 32.5 + dy, lz - 0.8, 1.6, 0.5, 1.6, LEAF)
+    Q += solid(1.0, 31.4 + dy, -5.7, 1.6, 0.4, 0.9, LEAF)
+    Q += solid(5.6, 31.5 + dy, -4.4, 0.9, 0.4, 1.4, LEAF)
     return Q
 
 # ============================================================== TIDECALLER (Summer)
@@ -555,7 +566,7 @@ NOTES = {
     'Thornheart':   ['A dark knight overgrown with roses.',
                      'Smooth black steel; a big rose blooms on the chest.',
                      'Shoulder guards only (like vanilla), roses on top.',
-                     'Helmet: a small steel cap crowned with thorny vines and three roses.',
+                     'Helmet: a black-steel brimmed hat; thorny vine hatband with roses.',
                      'Leggings: wine-red with a rose on each knee.'],
     'Tidecaller':   ['Lagoon armor: turquoise steel deepening to sea teal.',
                      'One rolling foam wave around the waist; coral starfish on the chest.',
