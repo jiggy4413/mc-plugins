@@ -15,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -60,15 +61,25 @@ public final class NpcCommandPass implements Listener {
     }
 
     // ------------------------------------------------------------------ remember NPC clicks
+    // LOWEST: Citizens runs the NPC's commands while it handles the click, so the click has to be
+    // recorded before Citizens sees it, or the first click's command arrives before we know about it.
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onRightClick(PlayerInteractEntityEvent event) {
         if (isNpc(event.getRightClicked())) {
             clicked.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    // armor stand NPCs and some clicks come in as this event, which has its own listener list
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onRightClickAt(PlayerInteractAtEntityEvent event) {
+        if (isNpc(event.getRightClicked())) {
+            clicked.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onLeftClick(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player && isNpc(event.getEntity())) {
             clicked.put(event.getDamager().getUniqueId(), System.currentTimeMillis());
