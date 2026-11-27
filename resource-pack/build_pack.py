@@ -409,24 +409,21 @@ write_json(by_cmd(vb, [(2003, fb), (2013, gb)]), 'assets', 'minecraft', 'items',
 
 # ---------------------------------------------------------------- brighter armor glint
 def armor_glint(size=128):
-    """Armor enchant glint that shimmers constantly, like the item glint on the 3D helmets.
-    Armor glint stretches this texture over the whole body, so big soft shapes read as slow waves;
-    tight repeating streaks plus a steady base brightness read as a constant shimmer instead.
-    Must tile seamlessly (it scrolls)."""
+    """Armor enchant glint that stays on constantly, like the item glint on the 3D helmets.
+    Armor glint is the texture scrolled across the body; anywhere the texture is darker, the shine fades,
+    which is what reads as waves. So this one is almost evenly bright everywhere, with only tiny
+    fine sparkles on top - a constant glow with a little shimmer. Must tile seamlessly."""
     img = Image.new('RGBA', (size, size)); px = img.load()
     tau = 2 * math.pi
-    # (cycles across x, cycles across y, phase, weight): many fine diagonal streaks
-    waves = [(16, 8, 0.0, 1.0), (8, -16, 1.3, 0.8), (24, 12, 2.1, 0.55), (12, -24, 0.7, 0.45),
-             (32, 16, 2.9, 0.3), (20, -10, 1.1, 0.35), (6, 3, 0.4, 0.25)]
-    total = sum(w[3] for w in waves)
+    fine = [(32, 16, 0.0, 1.0), (16, -32, 1.3, 0.8), (48, 24, 2.1, 0.6), (24, -48, 0.7, 0.5)]
+    total = sum(w[3] for w in fine)
     for y in range(size):
         for x in range(size):
             u, v = x / size, y / size
-            n = sum(a * math.sin(tau * (fx * u + fy * v) + ph) for fx, fy, ph, a in waves)
-            t = (n / total + 1) / 2                     # 0..1
-            t = max(0.0, min(1.0, t)) ** 1.3
-            k = 0.55 + 0.45 * t                         # steady base shine + bright streaks
-            px[x, y] = (int(min(255, 170 * k + 45)), int(min(255, 90 * k + 30)), 255, 255)
+            n = sum(a * math.sin(tau * (fx * u + fy * v) + ph) for fx, fy, ph, a in fine)
+            t = (n / total + 1) / 2                     # 0..1, only at a very fine scale
+            k = 0.88 + 0.12 * t                         # nearly flat: never dims, so no waves
+            px[x, y] = (int(min(255, 190 * k + 40)), int(min(255, 105 * k + 30)), 255, 255)
     return img
 
 armor_glint().save(p('assets', 'minecraft', 'textures', 'misc', 'enchanted_glint_armor.png'))
