@@ -235,14 +235,16 @@ def thorn_body(face, u, v, W, H):
     return noise(WN, u, v, 54, 5) if (v > H*0.7) else metal(u, v, 55)
 
 def thorn_arm(face, u, v, W, H):
+    """Shoulder guard only, like vanilla chestplates: the rest of the arm is the player's skin."""
     if face == 'top':                                               # rose blooming on the shoulder
         return rose(u, v, W/2-0.5, W/2-0.5, W/2+0.6) or noise(ROD, u, v, 60, 4)
-    if face == 'bottom': return metal(u, v, 61)
+    if face == 'bottom': return None                                # open sleeve end
+    if v >= 10: return None                                         # stops at the shoulder
+    if v == 9: return noise(ROD, u, v, 62, 4)                        # wine trim on the edge
     if v < 6:
         r = rose(u, v, W/2-0.5, -0.5, 6.0)
         if r: return r
         if v == 5 or v == 4 and u % 3 == 0: return LF
-    if H-2 <= v: return noise(WN, u, v, 62, 4)
     k = vine(face, u, v, W, H, W, 2, 0.6)
     return vine_color(k, u, v) if k else metal(u, v, 63)
 
@@ -509,7 +511,7 @@ sheet.convert('RGB').save(os.path.join(out, 'all-sets-preview.png'))
 NOTES = {
     'Thornheart':   ['A dark knight overgrown with roses.',
                      'Black plate with a deep wine sheen; a big rose blooms on the chest.',
-                     'Roses bloom on the shoulders; thorny vines wrap the arms and legs.',
+                     'Shoulder guards only (like vanilla) with roses on top; vines wrap the legs.',
                      'Helmet: knight T-visor, a 3D crown of thorns and one red rose.',
                      'Leggings: wine-red with a rose on each knee.'],
     'Tidecaller':   ['Lagoon turquoise fading to deep teal, with foam-white waves.',
