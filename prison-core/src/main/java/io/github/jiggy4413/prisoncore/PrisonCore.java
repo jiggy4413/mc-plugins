@@ -62,6 +62,7 @@ public final class PrisonCore extends JavaPlugin {
     private io.github.jiggy4413.prisoncore.debug.TotemDebug totemDebug;
     private io.github.jiggy4413.prisoncore.npc.NpcCommandPass npcCommands;
     private io.github.jiggy4413.prisoncore.auto.AutoMine autoMine;
+    private io.github.jiggy4413.prisoncore.enchants.DamageTooltip damageTooltip;
     /** The PlaceholderAPI expansion, kept as Object so this class never needs PlaceholderAPI. */
     private Object placeholders;
 
@@ -137,6 +138,16 @@ public final class PrisonCore extends JavaPlugin {
         enchantEffects = new io.github.jiggy4413.prisoncore.enchants.EnchantEffects(enchants, mines, tokens);
         getServer().getPluginManager().registerEvents(enchantEffects, this);
         enchantEffects.start();
+        damageTooltip = new io.github.jiggy4413.prisoncore.enchants.DamageTooltip(this);
+        getServer().getPluginManager().registerEvents(damageTooltip, this);
+        // after every plugin is up, so OldCombatMechanics' config is readable
+        getServer().getScheduler().runTask(this, new Runnable() {
+            @Override
+            public void run() {
+                damageTooltip.load(enchants.flag("damage-tooltip", true));
+                damageTooltip.updateAllOnline();
+            }
+        });
         specialItems = new io.github.jiggy4413.prisoncore.enchants.SpecialItems(this, enchants);
         specialItems.load();
         totemDebug = new io.github.jiggy4413.prisoncore.debug.TotemDebug(this);
@@ -456,6 +467,8 @@ public final class PrisonCore extends JavaPlugin {
                     sender.sendMessage(ChatColor.RED + storeProblem);
                 }
                 String enchantsProblem = enchants.load();
+                damageTooltip.load(enchants.flag("damage-tooltip", true));
+                damageTooltip.updateAllOnline();
                 String itemsProblem = specialItems.load();
                 if (itemsProblem != null) {
                     sender.sendMessage(ChatColor.RED + itemsProblem);

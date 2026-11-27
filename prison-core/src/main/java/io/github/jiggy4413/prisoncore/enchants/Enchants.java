@@ -221,6 +221,11 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
         }
     }
 
+    /** A true/false setting from enchants.yml. */
+    public boolean flag(String path, boolean def) {
+        return config == null ? def : config.getBoolean(path, def);
+    }
+
     FileConfiguration config() {
         return config;
     }

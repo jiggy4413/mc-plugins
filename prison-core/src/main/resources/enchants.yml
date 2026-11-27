@@ -102,6 +102,10 @@ enchant-settings:
     below-health-percent: 25
     cooldown-seconds: 60
 
+# Weapon tooltips like 1.16.5: the "Attack Damage" number includes Sharpness (Minecraft 1.21 stopped doing
+# that). Uses OldCombatMechanics' old-tool-damage values when that module is on. false = vanilla tooltips.
+damage-tooltip: true
+
 # Armor sets (items.yml `set: <id>`): a set piece's armor enchants (Speed, Dodge, Last Stand...) only work
 # while all 4 pieces of that set are worn. Action bar messages when the set bonus turns on/off ("" = none).
 set-bonus:
