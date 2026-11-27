@@ -68,6 +68,13 @@ public final class SpecialItems {
         if (s.isString("texture")) {
             ItemTemplate.applyTexture(item, s.getString("texture"));
         }
+        if (s.isString("set")) {
+            // armor set id: the set's armor enchants only work while all 4 pieces of it are worn
+            org.bukkit.inventory.meta.ItemMeta meta = item.getItemMeta();
+            meta.getPersistentDataContainer().set(ArmorSets.KEY, org.bukkit.persistence.PersistentDataType.STRING,
+                    s.getString("set").trim().toLowerCase(Locale.ROOT));
+            item.setItemMeta(meta);
+        }
         ConfigurationSection ench = s.getConfigurationSection("enchants");
         Enchants.Category c = Enchants.category(item);
         Map<String, String> filled = new java.util.HashMap<String, String>();

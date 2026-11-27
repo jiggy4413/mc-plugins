@@ -23,6 +23,7 @@ import org.bukkit.inventory.meta.SkullMeta;
  * item-model (resource pack model id, e.g. classicprison:thornheart_chestplate),
  * equipment (how worn armor looks: a resource pack equipment id like classicprison:thornheart,
  * or "model" to wear the item's own 3D model, used for 3D helmets),
+ * show-attributes (true: keep the normal Minecraft stats in the tooltip, e.g. "+8 Armor" on netherite),
  * texture (a head texture: Minecraft-Heads "Value", a textures.minecraft.net URL, or its id).
  */
 public final class ItemTemplate {
@@ -49,6 +50,8 @@ public final class ItemTemplate {
     private String itemModel;
     /** Worn look: an equipment asset id, or "model" to show the item's own model when worn. */
     private String equipment;
+    /** Keep Minecraft's own stats in the tooltip ("When on Body: +8 Armor"). */
+    private Boolean showAttributes;
 
     private ItemTemplate() {
     }
@@ -110,6 +113,9 @@ public final class ItemTemplate {
             }
             if (t.equipment == null && s.isString("equipment")) {
                 t.equipment = s.getString("equipment");
+            }
+            if (t.showAttributes == null && s.isBoolean("show-attributes")) {
+                t.showAttributes = s.getBoolean("show-attributes");
             }
         }
         return t;
@@ -219,7 +225,16 @@ public final class ItemTemplate {
         if (meta instanceof SkullMeta && "viewer".equalsIgnoreCase(skull) && viewer != null) {
             ((SkullMeta) meta).setOwningPlayer(viewer);
         }
-        meta.addItemFlags(ItemFlag.values());
+        if (showAttributes != null && showAttributes) {
+            // everything except the stats; hiding attributes on 1.21 can also drop the item's default stats
+            for (ItemFlag f : ItemFlag.values()) {
+                if (f != ItemFlag.HIDE_ATTRIBUTES) {
+                    meta.addItemFlags(f);
+                }
+            }
+        } else {
+            meta.addItemFlags(ItemFlag.values());
+        }
         item.setItemMeta(meta);
         if (texture != null && !texture.isEmpty()) {
             applyTexture(item, apply(texture, placeholders));

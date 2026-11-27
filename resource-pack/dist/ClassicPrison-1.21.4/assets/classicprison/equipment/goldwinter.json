@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "classicprison:goldwinter"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "classicprison:goldwinter"
+      }
+    ]
+  }
+}

@@ -69,6 +69,7 @@ public final class EnchantEffects implements Listener {
             @Override
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
+                    setMessage(p);
                     int speed = worn(p, "speed");
                     if (speed > 0) {
                         p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 80, speed - 1, true, false, false), true);
@@ -78,7 +79,32 @@ public final class EnchantEffects implements Listener {
         }, 40L, 40L);
     }
 
+    /** Full set the player had at the last check, to tell them when the set bonus turns on or off. */
+    private final java.util.Map<java.util.UUID, String> lastSet = new java.util.HashMap<java.util.UUID, String>();
+
+    private void setMessage(Player p) {
+        String now = ArmorSets.fullSet(p);
+        String before = lastSet.get(p.getUniqueId());
+        if (now == null ? before == null : now.equals(before)) {
+            return;
+        }
+        if (now == null) {
+            lastSet.remove(p.getUniqueId());
+        } else {
+            lastSet.put(p.getUniqueId(), now);
+        }
+        org.bukkit.configuration.ConfigurationSection s = enchants.config().getConfigurationSection("set-bonus");
+        String msg = now != null
+                ? (s == null ? "&a&lSET BONUS ACTIVE" : s.getString("active", "&a&lSET BONUS ACTIVE"))
+                : (s == null ? "&7Set bonus off" : s.getString("inactive", "&7Set bonus off"));
+        if (msg != null && !msg.isEmpty()) {
+            p.spigot().sendMessage(net.md_5.bungee.api.ChatMessageType.ACTION_BAR,
+                    net.md_5.bungee.api.chat.TextComponent.fromLegacyText(io.github.jiggy4413.prisoncore.util.Text.color(msg)));
+        }
+    }
+
     public void stop() {
+        lastSet.clear();
         if (effectTask != null) {
             effectTask.cancel();
             effectTask = null;
@@ -112,7 +138,7 @@ public final class EnchantEffects implements Listener {
         int best = 0;
         for (EquipmentSlot slot : new EquipmentSlot[] {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
             ItemStack it = p.getInventory().getItem(slot);
-            if (Enchants.category(it) == Enchants.Category.ARMOR) {
+            if (Enchants.category(it) == Enchants.Category.ARMOR && ArmorSets.active(p, it)) {
                 best = Math.max(best, enchants.level(it, d));
             }
         }

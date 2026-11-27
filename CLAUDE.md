@@ -11,7 +11,8 @@ the "Latest build" release. See README.md for commands and setup.
 - Mine names on the server: A-K are `amine`, `bmine` ... `kmine`; L-Z are just the letter: `l`, `m` ... `z`.
   Plus `woodmine` and `pvpmine`. Never rename them or assume `lmine`-`zmine`.
 - Special item names in the server's items.yml have no dashes (easier to type in game): armor is
-  `winterhelmet`, `winterchestplate`, `winterleggings`, `winterboots` (same for thornheart/agamemnon/tidecaller), weapons are
+  `winterhelmet`, `winterchestplate`, `winterleggings`, `winterboots` (same for goldwinter/thornheart/agamemnon/tidecaller; items.yml `set:` ties them into a set whose
+  armor enchants only work as a full set), weapons are
   `frostsword`, `frostaxe`, `frostbow`, `frostscythe`.
 - `prison-core/src/main/resources/warps-menu.yml` is the server's own warps config, copied exactly
   (CRLF line endings). Keep it as is in future builds unless asked for a change.
@@ -24,7 +25,7 @@ the "Latest build" release. See README.md for commands and setup.
   (set with `git config user.name` / `git config user.email` in a fresh clone), with Claude as co-author.
 - The 1.21.4 resource pack is generated: `python3 resource-pack/build_pack.py` -> `resource-pack/dist/ClassicPrison-1.21.4.zip`
   (+ .sha1). Armor set items: `resource-pack/armor-sets-items.yml` (items.yml `item-model` / `equipment` fields,
-  PrisonCore 2.2.0+). The old `classic-prison-pack/` folder is the 1.16 pack (still the source of the frost weapon art).
+  PrisonCore 2.3.0+). The old `classic-prison-pack/` folder is the 1.16 pack (still the source of the frost weapon art).
 - Custom armor plan for the 1.21.4 resource pack (decided Nov 2026):
   - ALL custom armor sets are NETHERITE items with their own worn texture (1.21.4 equipment assets),
     not dyed leather. Vanilla leather/chainmail must look normal again.

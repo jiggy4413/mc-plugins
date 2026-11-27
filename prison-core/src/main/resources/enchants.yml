@@ -102,6 +102,12 @@ enchant-settings:
     below-health-percent: 25
     cooldown-seconds: 60
 
+# Armor sets (items.yml `set: <id>`): a set piece's armor enchants (Speed, Dodge, Last Stand...) only work
+# while all 4 pieces of that set are worn. Action bar messages when the set bonus turns on/off ("" = none).
+set-bonus:
+  active: "&a&lSET BONUS ACTIVE"
+  inactive: "&7Set bonus off"
+
 enchants:
   pickaxe:
     efficiency:

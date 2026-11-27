@@ -39,7 +39,7 @@ R = G['R']
 Image = G['Image']
 from PIL import ImageDraw  # noqa: E402
 
-SETS = ['winter', 'thornheart', 'agamemnon', 'tidecaller']
+SETS = ['winter', 'goldwinter', 'thornheart', 'agamemnon', 'tidecaller']
 PIECES = ['helmet', 'chestplate', 'leggings', 'boots']
 
 def p(*parts):
@@ -79,6 +79,28 @@ def fill_bottoms(img, boxes):
                     c = next((q for q in frow + krow if q[3]), (40, 40, 40, 255))
                 px[bx0+x, by0+y] = c
 
+import colorsys
+
+def gold(c):
+    """Recolour Winter Nova's icy blues into gold (Golden Winter Nova), like the gold frost weapons."""
+    r, g, b = c[0] / 255, c[1] / 255, c[2] / 255
+    a = c[3] if len(c) > 3 else 255
+    h, sat, v = colorsys.rgb_to_hsv(r, g, b)
+    if sat > 0.10 and 0.42 <= h <= 0.75:                 # blues -> gold
+        h = 0.115; sat = min(1.0, sat * 1.9 + 0.25); v = min(1.0, v * 1.02)
+    elif sat <= 0.10 and v > 0.55:                         # whites/greys -> warm cream
+        h = 0.13; sat = 0.18 + (1 - v) * 0.3
+    r, g, b = colorsys.hsv_to_rgb(h, sat, v)
+    return (int(r * 255), int(g * 255), int(b * 255), a)
+
+def gold_image(img):
+    out = img.copy(); px = out.load()
+    for y in range(out.size[1]):
+        for x in range(out.size[0]):
+            if px[x, y][3]:
+                px[x, y] = gold(px[x, y])
+    return out
+
 def winter_layers():
     t1 = G['tint'](os.path.join(CONCEPTS, 'helmets-3d', 'leather_layer_1.png'),
                    os.path.join(CONCEPTS, 'helmets-3d', 'leather_layer_1_overlay.png'), '#A8DCFF')
@@ -95,6 +117,8 @@ LAYERS = {
 }
 L1_BOXES = [(16, 16, 8, 12, 4), (40, 16, 4, 12, 4), (0, 16, 4, 12, 4)]   # body, arm, boot
 L2_BOXES = [(16, 16, 8, 12, 4), (0, 16, 4, 12, 4)]                    # waist, leg
+fill_bottoms(LAYERS['winter'][0], L1_BOXES); fill_bottoms(LAYERS['winter'][1], L2_BOXES)
+LAYERS['goldwinter'] = (gold_image(LAYERS['winter'][0]), gold_image(LAYERS['winter'][1]))
 for s, (l1, l2) in LAYERS.items():
     fill_bottoms(l1, L1_BOXES)
     fill_bottoms(l2, L2_BOXES)
@@ -125,6 +149,7 @@ def capture(fn, *args):
 
 HELMETS = {
     'winter': (LAYERS['winter'][0], lambda: G['winter_parts']()),
+    'goldwinter': (LAYERS['goldwinter'][0], lambda: G['winter_parts']()),
     'thornheart': (None, lambda: G['thornheart_helmet3d'](0)),        # a cap + crown, no full helmet
     'agamemnon': (R.H, lambda: R.helmet3d(0, 0, 0)),
     'tidecaller': (LAYERS['tidecaller'][0], lambda: G['tidecaller_helmet3d'](0)),
@@ -179,7 +204,11 @@ def helmet_model(name, shell_tex, builder):
             img = shell_tex.crop((fu*S, fv*S, (fu+fw)*S, (fv+fh)*S))
             sh[FACE[face]] = atlas.add(img)
         elements.append(('shell', [0, 0, 0], [16, 16, 16], sh))
-    for (x0, y0, z0, w, h, d, fn) in capture(builder):
+    boxes = capture(builder)
+    if name == 'goldwinter':
+        boxes = [(x0, y0, z0, w, h, d, (lambda f: (lambda *a: (gold(f(*a)) if f(*a) else None)))(fn))
+                 for (x0, y0, z0, w, h, d, fn) in boxes]
+    for (x0, y0, z0, w, h, d, fn) in boxes:
         W_, H_, D_ = max(1, int(w*2)), max(1, int(h*2)), max(1, int(d*2))
         faces = {}
         for face, (fw, fh) in {'front': (W_, H_), 'back': (W_, H_), 'right': (D_, H_), 'left': (D_, H_),
@@ -321,9 +350,11 @@ ICONS = {
     'agamemnon': {k: Image.open(os.path.join(CONCEPTS, 'agamemnon', f'warlord_{k}.png')).convert('RGBA')
                   for k in ('chestplate', 'leggings', 'boots')},
     'thornheart': thorn_icons(),
+    'goldwinter': None,
     'tidecaller': tide_icons(),
 }
 
+ICONS['goldwinter'] = {k: gold_image(v) for k, v in ICONS['winter'].items()}
 for s in SETS:
     for piece in PIECES:
         model_id = f'{NS}:item/{s}_{piece}'
