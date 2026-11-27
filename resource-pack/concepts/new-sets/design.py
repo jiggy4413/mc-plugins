@@ -288,27 +288,37 @@ def thornheart_layers():
     return l1, l2
 
 def thornheart_helmet3d(dy=0):
+    """No full helmet: a small black-steel cap on top of the head (face stays visible),
+    crowned with twisted thorny vines and a few roses."""
     Q = []
     V1 = (70, 128, 62, 255); V2 = (42, 88, 46, 255); T = (176, 150, 104, 255); TD = (124, 98, 64, 255)
     def vinec(face, u, v, fw, fh):
         return V1 if face in ('top', 'front', 'left') else V2
     def thornc(face, u, v, fw, fh):
         return T if face in ('top', 'front', 'right') else TD
-    # crown of twisted thorny vines around the top of the helmet
+    # the cap: covers the top of the head down to the brow, with a wine-red trim on its edge
+    def capc(face, u, v, fw, fh):
+        if face == 'bottom': return None
+        if face == 'top': return metal(u, v, 47)
+        if v == fh - 1: return noise(ROD, u, v, 48, 4)
+        if v == fh - 2: return noise(WN, u, v, 49, 4)
+        return metal(u, v, 50)
+    Q += solid(-5.1, 30.2 + dy, -5.1, 10.2, 2.9, 10.2, capc)
+    # crown of two twisted thorny vines sitting on the rim of the cap
     n = 28
-    for strand, (rad, ph) in enumerate(((4.9, 0.0), (5.1, 1.7))):   # two twisted strands
+    for strand, (rad, ph) in enumerate(((4.9, 0.0), (5.1, 1.7))):
         for i in range(n):
             a = i / n * 2 * math.pi
             x = math.cos(a) * rad; z = math.sin(a) * rad
-            y = 32.3 + 0.7 * math.sin(a * 4 + ph)
+            y = 32.5 + 0.6 * math.sin(a * 4 + ph)
             Q += solid(x - 0.75, y + dy, z - 0.75, 1.5, 1.2, 1.5, vinec)
     for i in range(14):                                           # thorns pointing up and outward
         a = i / 14 * 2 * math.pi + 0.2
         x = math.cos(a) * 5.6; z = math.sin(a) * 5.6
-        y = 32.6 + 0.7 * math.sin(a * 4)
+        y = 32.8 + 0.6 * math.sin(a * 4)
         Q += solid(x - 0.3, y + 1.0 + dy, z - 0.3, 0.6, 0.9 + (i % 3) * 0.5, 0.6, thornc)
         Q += solid(x + math.cos(a) * 0.6 - 0.25, y + 0.5 + dy, z + math.sin(a) * 0.6 - 0.25, 0.5, 0.5, 0.5, thornc)
-    # one rose with leaves on the left side of the crown
+    # roses woven into the crown: a big one at the front corner, two smaller ones further round
     R1 = (238, 74, 90, 255); R2 = (196, 26, 50, 255); R3 = (128, 12, 32, 255)
     def petals(face, u, v, fw, fh):
         if face == 'top':
@@ -316,11 +326,19 @@ def thornheart_helmet3d(dy=0):
             return (c + (255,)) if c else R2
         if face == 'bottom': return R3
         return R1 if v == 0 else (R2 if (u + v) % 3 else R3)
-    # layered bloom: wide outer petals, a narrower middle ring, a tight spiral bud on top
-    for (w, h, y0) in ((3.4, 1.2, 32.4), (2.8, 1.1, 33.5), (2.0, 1.0, 34.5), (1.2, 0.7, 35.4)):
-        Q += solid(5.3 - w/2, y0 + dy, -3.9 - w/2, w, h, w, petals)
-    Q += solid(2.4, 32.2 + dy, -5.0, 1.4, 0.6, 2.4, lambda f, u, v, fw, fh: (88, 158, 70, 255))
-    Q += solid(6.4, 32.2 + dy, -3.4, 1.4, 0.6, 2.4, lambda f, u, v, fw, fh: (88, 158, 70, 255))
+    LEAF = lambda f, u, v, fw, fh: (88, 158, 70, 255) if f != 'bottom' else (46, 110, 50, 255)
+    for ang, size in ((-0.75, 1.0), (1.35, 0.75), (2.75, 0.8)):
+        cx = math.cos(ang) * 5.0; cz = math.sin(ang) * 5.0
+        layers = ((3.4, 1.2, 32.6), (2.8, 1.1, 33.7), (2.0, 1.0, 34.7), (1.2, 0.7, 35.6))
+        base = layers[0][2]
+        for (w, h, y0) in layers:
+            w *= size; h *= size; y0 = base + (y0 - base) * size
+            Q += solid(cx - w/2, y0 + dy, cz - w/2, w, h, w, petals)
+        # two leaves tucked under each rose, along the crown
+        tx, tz = -math.sin(ang), math.cos(ang)
+        for sgn in (-1, 1):
+            lx = cx + tx * sgn * 2.0 * size; lz = cz + tz * sgn * 2.0 * size
+            Q += solid(lx - 0.8, 32.5 + dy, lz - 0.8, 1.6, 0.5, 1.6, LEAF)
     return Q
 
 # ============================================================== TIDECALLER (Summer)
@@ -512,7 +530,7 @@ def winter_icon(dy):
 SETS = [
     ('Agamemnon', 'existing concept', cm1, cm2, lambda dy=0: helmet3d(0, dy, 0), False),
     ('Winter Nova', 'existing, keeps its look', w1, w2, lambda dy=0: winter_icon(dy), True),
-    ('Thornheart', 'NEW  -  Valentines', th1, th2, thornheart_helmet3d, True),
+    ('Thornheart', 'NEW  -  Valentines', th1, th2, thornheart_helmet3d, False),
     ('Tidecaller', 'NEW  -  Summer', tc1, tc2, tidecaller_helmet3d, True),
 ]
 
@@ -537,7 +555,7 @@ NOTES = {
     'Thornheart':   ['A dark knight overgrown with roses.',
                      'Smooth black steel; a big rose blooms on the chest.',
                      'Shoulder guards only (like vanilla), roses on top.',
-                     'Helmet: knight T-visor, a 3D crown of thorns and one red rose.',
+                     'Helmet: a small steel cap crowned with thorny vines and three roses.',
                      'Leggings: wine-red with a rose on each knee.'],
     'Tidecaller':   ['Lagoon armor: turquoise steel deepening to sea teal.',
                      'One rolling foam wave around the waist; coral starfish on the chest.',
@@ -552,7 +570,7 @@ for name, tag, l1, l2, h3d, flat in SETS[2:]:
     for k, (yaw, pitch, lab) in enumerate(((-30, -12, 'front'), (150, -12, 'back'), (-90, -8, 'side'))):
         sh.alpha_composite(render(Q, yaw, pitch, 14, (310, 620)), (10+k*300, 70))
         tw = d.textlength(lab, font=fs); d.text((10+k*300+155-tw/2, 690), lab, fill=(210, 210, 210), font=fs)
-    hq = texbox(l1, 0, 0, -4, 0, -4, 8, 8, 8, 1.1) + h3d(-24)
+    hq = (texbox(l1, 0, 0, -4, 0, -4, 8, 8, 8, 1.1) if flat else []) + h3d(-24)
     sh.alpha_composite(render(hq, -50, -18, 19, (420, 420)), (930, 60))
     d.text((990, 470), 'helmet in inventory (3D)', fill=(210, 210, 210), font=fs)
     for j, line in enumerate(NOTES[name]):

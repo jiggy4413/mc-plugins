@@ -125,7 +125,7 @@ def capture(fn, *args):
 
 HELMETS = {
     'winter': (LAYERS['winter'][0], lambda: G['winter_parts']()),
-    'thornheart': (LAYERS['thornheart'][0], lambda: G['thornheart_helmet3d'](0)),
+    'thornheart': (None, lambda: G['thornheart_helmet3d'](0)),        # a cap + crown, no full helmet
     'agamemnon': (R.H, lambda: R.helmet3d(0, 0, 0)),
     'tidecaller': (LAYERS['tidecaller'][0], lambda: G['tidecaller_helmet3d'](0)),
 }
@@ -171,13 +171,14 @@ def face_image(fn, face, fw, fh):
 def helmet_model(name, shell_tex, builder):
     atlas = Atlas(); elements = []
     # the helmet shell: the head part of the worn texture, as a 16-unit cube (open underneath)
-    sh = {}
-    for face, (fu, fv, fw, fh) in rects(0, 0, 8, 8, 8).items():
-        if face == 'bottom':
-            continue
-        img = shell_tex.crop((fu*S, fv*S, (fu+fw)*S, (fv+fh)*S))
-        sh[FACE[face]] = atlas.add(img)
-    elements.append(('shell', [0, 0, 0], [16, 16, 16], sh))
+    if shell_tex is not None:
+        sh = {}
+        for face, (fu, fv, fw, fh) in rects(0, 0, 8, 8, 8).items():
+            if face == 'bottom':
+                continue
+            img = shell_tex.crop((fu*S, fv*S, (fu+fw)*S, (fv+fh)*S))
+            sh[FACE[face]] = atlas.add(img)
+        elements.append(('shell', [0, 0, 0], [16, 16, 16], sh))
     for (x0, y0, z0, w, h, d, fn) in capture(builder):
         W_, H_, D_ = max(1, int(w*2)), max(1, int(h*2)), max(1, int(d*2))
         faces = {}
@@ -196,6 +197,12 @@ def helmet_model(name, shell_tex, builder):
     atlas.pack()
     atlas.sheet.save(p('assets', NS, 'textures', 'item', 'helmet', name + '.png'))
     tex = f'{NS}:item/helmet/{name}'
+    # fit the inventory icon: scale so the whole helmet (crests included) fits the slot, centred
+    lo = [min(e[1][i] for e in elements) for i in range(3)]
+    hi = [max(e[2][i] for e in elements) for i in range(3)]
+    extent = max(hi[i] - lo[i] for i in range(3))
+    gs = round(min(0.625, 0.625 * 16 / max(extent, 1) * 1.05), 3)
+    gy = round(-((lo[1] + hi[1]) / 2 - 8) * gs, 3)
     model = {
         'parent': 'minecraft:block/block',
         'textures': {'0': tex, 'particle': tex},
@@ -203,7 +210,7 @@ def helmet_model(name, shell_tex, builder):
                       'faces': {f: {'uv': atlas.uv(i), 'texture': '#0'} for f, i in faces.items()}}
                      for (_, fr, to, faces) in elements],
         'display': {
-            'gui': {'rotation': [30, 225, 0], 'translation': [0, -2.25, 0], 'scale': [0.46, 0.46, 0.46]},
+            'gui': {'rotation': [30, 225, 0], 'translation': [0, gy, 0], 'scale': [gs, gs, gs]},
             'ground': {'rotation': [0, 0, 0], 'translation': [0, 3, 0], 'scale': [0.25, 0.25, 0.25]},
             'fixed': {'rotation': [0, 180, 0], 'translation': [0, -1, 0], 'scale': [0.45, 0.45, 0.45]},
             'thirdperson_righthand': {'rotation': [75, 45, 0], 'translation': [0, 2, 0], 'scale': [0.3, 0.3, 0.3]},
