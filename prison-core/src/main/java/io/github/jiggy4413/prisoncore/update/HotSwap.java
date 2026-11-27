@@ -31,6 +31,9 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  * Then it unloads this copy (same steps PlugMan uses), deletes the old jar, and loads the new one.
  *
+ * Paper 1.21 notes: Paper keeps its own plugin list (not Bukkit's), and if a jar isn't marked as
+ * Mojang-mapped it runs a remapped copy from plugins/.paper-remapped/. Both are handled below.
+ *
  * IMPORTANT: once the old copy is unloaded, its jar is closed, so this class can't load any other
  * PrisonCore classes. That's why it uses no lambdas or helper classes from the rest of the plugin,
  * and why PrisonCore loads this class (and SwapTask) when it starts.
@@ -44,8 +47,21 @@ public final class HotSwap {
     private final long startModified;
     private final long startLength;
 
-    public HotSwap(JavaPlugin plugin, File currentJar) {
+    /** The jar Paper actually runs (may be a remapped copy in plugins/.paper-remapped/). */
+    private final File runningJar;
+
+    public HotSwap(JavaPlugin plugin, File runningJar) {
         this.plugin = plugin;
+        this.runningJar = runningJar;
+        File currentJar = runningJar;
+        File pluginsDir = plugin.getDataFolder().getParentFile();
+        if (pluginsDir != null && !sameFile(runningJar.getParentFile(), pluginsDir)) {
+            // running from a remapped copy: the real jar is the one in plugins/ with the same name
+            File real = new File(pluginsDir, runningJar.getName());
+            if (real.isFile()) {
+                currentJar = real;
+            }
+        }
         this.currentJar = currentJar;
         this.startModified = currentJar.lastModified();
         this.startLength = currentJar.length();
@@ -88,8 +104,19 @@ public final class HotSwap {
     public String start(File newJar, CommandSender sender) {
         PluginManager pm = Bukkit.getPluginManager();
         try {
-            Field pluginsField = field(pm.getClass(), "plugins");
-            Field namesField = field(pm.getClass(), "lookupNames");
+            // Paper 1.19.3+: the real plugin list lives in paperPluginManager.instanceManager
+            Object registry = pm;
+            Object paperPm = value(pm, "paperPluginManager");
+            if (paperPm != null) {
+                Object instances = value(paperPm, "instanceManager");
+                if (instances == null) {
+                    return "This server's plugin manager isn't supported for live updates. Restart instead.";
+                }
+                registry = instances;
+            }
+            Field pluginsField = field(registry.getClass(), "plugins");
+            Field namesField = field(registry.getClass(), "lookupNames");
+            Object dependencyTree = value(registry, "dependencyTree"); // Paper only, may be null
             if (pluginsField == null || namesField == null) {
                 return "This server's plugin manager isn't supported for live updates. Restart instead.";
             }
@@ -104,7 +131,8 @@ public final class HotSwap {
                 return newJar.getName() + " isn't a PrisonCore jar.";
             }
 
-            SwapTask task = new SwapTask(plugin, currentJar, newJar, desc.getVersion(), pluginsField, namesField, sender);
+            SwapTask task = new SwapTask(plugin, currentJar, runningJar, newJar, desc.getVersion(), registry,
+                    pluginsField, namesField, dependencyTree, sender);
             // run next tick so the command that triggered this finishes first
             Bukkit.getScheduler().runTask(plugin, task);
             return null;
@@ -118,20 +146,26 @@ public final class HotSwap {
     private static final class SwapTask implements Runnable {
         private final JavaPlugin old;
         private final File oldJar;
+        private final File oldRunningJar;
         private final File newJar;
         private final String newVersion;
+        private final Object registry;
         private final Field pluginsField;
         private final Field namesField;
+        private final Object dependencyTree;
         private final CommandSender sender;
 
-        SwapTask(JavaPlugin old, File oldJar, File newJar, String newVersion, Field pluginsField, Field namesField,
-                 CommandSender sender) {
+        SwapTask(JavaPlugin old, File oldJar, File oldRunningJar, File newJar, String newVersion, Object registry,
+                 Field pluginsField, Field namesField, Object dependencyTree, CommandSender sender) {
             this.old = old;
             this.oldJar = oldJar;
+            this.oldRunningJar = oldRunningJar;
             this.newJar = newJar;
             this.newVersion = newVersion;
+            this.registry = registry;
             this.pluginsField = pluginsField;
             this.namesField = namesField;
+            this.dependencyTree = dependencyTree;
             this.sender = sender;
         }
 
@@ -159,10 +193,21 @@ public final class HotSwap {
                 }
 
                 // 3. forget the old plugin
-                ((List<?>) pluginsField.get(pm)).remove(old);
-                Collection<?> names = ((Map<?, ?>) namesField.get(pm)).values();
+                ((List<?>) pluginsField.get(registry)).remove(old);
+                Collection<?> names = ((Map<?, ?>) namesField.get(registry)).values();
                 while (names.remove(old)) {
                     // remove every alias pointing at it
+                }
+                if (dependencyTree != null) {
+                    // Paper refuses to load a plugin whose name is still in its dependency tree
+                    Object meta = old.getPluginMeta();
+                    for (Method m : dependencyTree.getClass().getMethods()) {
+                        if (m.getName().equals("remove") && m.getParameterCount() == 1
+                                && m.getParameterTypes()[0].isInstance(meta)) {
+                            m.invoke(dependencyTree, meta);
+                            break;
+                        }
+                    }
                 }
 
                 // 4. drop cached classes so the new jar's classes are used, then close the old jar
@@ -175,6 +220,9 @@ public final class HotSwap {
                 if (!newJar.getCanonicalFile().equals(oldJar.getCanonicalFile())) {
                     if (!oldJar.delete()) {
                         oldJar.deleteOnExit();
+                    }
+                    if (!oldRunningJar.getCanonicalFile().equals(oldJar.getCanonicalFile())) {
+                        oldRunningJar.delete(); // Paper's remapped copy; Paper makes a new one if needed
                     }
                     if (!newJar.getParentFile().getCanonicalFile().equals(pluginsDir.getCanonicalFile())) {
                         target = new File(pluginsDir, newJar.getName());
@@ -298,6 +346,18 @@ public final class HotSwap {
             return a.getCanonicalFile().equals(b.getCanonicalFile());
         } catch (IOException e) {
             return a.getAbsoluteFile().equals(b.getAbsoluteFile());
+        }
+    }
+
+    private static Object value(Object owner, String name) {
+        Field f = field(owner.getClass(), name);
+        if (f == null) {
+            return null;
+        }
+        try {
+            return f.get(owner);
+        } catch (IllegalAccessException e) {
+            return null;
         }
     }
 
