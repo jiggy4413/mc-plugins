@@ -1,0 +1,15 @@
+# NPC command pass-through
+#
+# Citizens NPCs with "-p" commands make the player TYPE the command, so PL-Hide blocks it like any
+# other typed command. For the commands listed here, PrisonCore lets it through - but ONLY when the
+# player clicked a Citizens NPC a moment ago. Typing the same command in chat is still blocked.
+#
+# The player still needs the command's own permission (e.g. EconomyShopGUI's sellall permission).
+# Only the first word counts: "sellall" covers "sellall", "sellall inventory", etc.
+
+commands:
+  - sellall
+
+# How long after clicking an NPC the command is let through, in milliseconds.
+# Raise it only if your NPC commands have a --delay.
+window-ms: 1000

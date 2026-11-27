@@ -60,6 +60,7 @@ public final class PrisonCore extends JavaPlugin {
     private io.github.jiggy4413.prisoncore.enchants.SpecialItems specialItems;
     private Store store;
     private io.github.jiggy4413.prisoncore.debug.TotemDebug totemDebug;
+    private io.github.jiggy4413.prisoncore.npc.NpcCommandPass npcCommands;
     /** The PlaceholderAPI expansion, kept as Object so this class never needs PlaceholderAPI. */
     private Object placeholders;
 
@@ -139,6 +140,9 @@ public final class PrisonCore extends JavaPlugin {
         specialItems.load();
         totemDebug = new io.github.jiggy4413.prisoncore.debug.TotemDebug(this);
         getServer().getPluginManager().registerEvents(totemDebug, this);
+        npcCommands = new io.github.jiggy4413.prisoncore.npc.NpcCommandPass(this);
+        npcCommands.load();
+        getServer().getPluginManager().registerEvents(npcCommands, this);
 
         store = new Store(this);
         store.load();
@@ -444,6 +448,7 @@ public final class PrisonCore extends JavaPlugin {
                 if (enchantsProblem != null) {
                     sender.sendMessage(ChatColor.RED + enchantsProblem);
                 }
+                npcCommands.load();
                 String boardProblem = board.load();
                 board.start();
                 if (boardProblem != null) {
@@ -454,7 +459,7 @@ public final class PrisonCore extends JavaPlugin {
                     sender.sendMessage(Text.color("&cranks-menu.yml has a mistake, so nothing changed:"));
                     sender.sendMessage(ChatColor.GRAY + problem);
                 } else {
-                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml, warps-menu.yml, help.yml, tokens.yml, scoreboard.yml, enchants.yml, store.yml, items.yml). No new jar found."));
+                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml, warps-menu.yml, help.yml, tokens.yml, scoreboard.yml, enchants.yml, store.yml, items.yml, npc-commands.yml). No new jar found."));
                 }
             } catch (Exception e) {
                 sender.sendMessage(Text.color("&cReload failed: " + e.getMessage() + " &7(check ranks-menu.yml for a YAML mistake)"));
