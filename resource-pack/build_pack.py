@@ -86,10 +86,10 @@ def gold(c):
     r, g, b = c[0] / 255, c[1] / 255, c[2] / 255
     a = c[3] if len(c) > 3 else 255
     h, sat, v = colorsys.rgb_to_hsv(r, g, b)
-    if sat > 0.10 and 0.42 <= h <= 0.75:                 # blues -> gold
-        h = 0.115; sat = min(1.0, sat * 1.9 + 0.25); v = min(1.0, v * 1.02)
-    elif sat <= 0.10 and v > 0.55:                         # whites/greys -> warm cream
-        h = 0.13; sat = 0.18 + (1 - v) * 0.3
+    if sat > 0.10 and 0.42 <= h <= 0.75:                 # blues -> gold (yellow gold, not orange)
+        h = 0.135; sat = min(0.72, sat * 1.25 + 0.22); v = min(1.0, v * 1.0)
+    elif sat <= 0.10 and v > 0.45:                         # whites / light greys -> a slightly darker gold
+        h = 0.128; sat = 0.62; v = v * 0.74
     r, g, b = colorsys.hsv_to_rgb(h, sat, v)
     return (int(r * 255), int(g * 255), int(b * 255), a)
 
