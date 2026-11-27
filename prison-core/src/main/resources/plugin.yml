@@ -53,6 +53,21 @@ commands:
     usage: /board [on|off]
     aliases: [board, sb]
     permission: prisoncore.board
+  autosmelt:
+    description: Turns auto-smelt on or off.
+    usage: /autosmelt [on|off]
+    aliases: [smelt]
+    permission: prisoncore.auto
+  autopickup:
+    description: Turns auto-pickup on or off.
+    usage: /autopickup [on|off]
+    aliases: [pickup, ap]
+    permission: prisoncore.auto
+  auto:
+    description: Opens the auto-smelt / auto-pickup menu.
+    usage: /auto
+    aliases: [automenu]
+    permission: prisoncore.auto
   prisonranks:
     description: Opens the ranks menu.
     usage: /prisonranks [prestiges]
@@ -94,4 +109,7 @@ permissions:
     default: true
   prisoncore.ranks:
     description: Open the ranks and prestiges menu.
+    default: true
+  prisoncore.auto:
+    description: Use auto-smelt and auto-pickup (/autosmelt, /autopickup, /auto).
     default: true

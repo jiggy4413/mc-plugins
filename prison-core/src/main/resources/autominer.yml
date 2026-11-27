@@ -1,0 +1,38 @@
+# Auto-smelt and auto-pickup
+#
+# Every player can turn these on and off with /autosmelt (/smelt), /autopickup (/pickup, /ap),
+# or the /auto menu. Their choice is saved and stays after they log out or the server restarts.
+# Works everywhere, on any block a player breaks (including blocks blown up by Explosive).
+
+# What a player has before they ever change it.
+defaults:
+  autosmelt: true
+  autopickup: true
+
+# --- Auto-smelt -------------------------------------------------------------------------------
+# Ores and raw metals always smelt (raw iron -> iron ingot, gold ore -> gold ingot,
+# ancient debris -> netherite scrap...), using the server's furnace recipes.
+# Raw iron/gold/copper blocks smelt to iron/gold/copper blocks.
+smelt-raw-blocks: true
+# Anything else that should smelt too, e.g. COBBLESTONE (-> stone), SAND (-> glass), OAK_LOG (-> charcoal).
+smelt-extra: []
+# Never smelt these, even if they're ores.
+smelt-exclude: []
+
+# --- Auto-pickup ------------------------------------------------------------------------------
+# Drops and XP go straight to the player. When the inventory is full, whatever doesn't fit is LOST
+# (nothing drops on the ground) and the player gets the warning below.
+inventory-full-warning-seconds: 2
+
+# --- Menu (/auto) -----------------------------------------------------------------------------
+menu:
+  title: "&8Auto Mining"
+
+# --- Messages ---------------------------------------------------------------------------------
+messages:
+  autosmelt-on: "&7Auto-smelt &aenabled&7."
+  autosmelt-off: "&7Auto-smelt &cdisabled&7."
+  autopickup-on: "&7Auto-pickup &aenabled&7."
+  autopickup-off: "&7Auto-pickup &cdisabled&7."
+  # action bar; leave empty ("") for no warning
+  inventory-full: "&c&lINVENTORY FULL! &7Items are being lost."

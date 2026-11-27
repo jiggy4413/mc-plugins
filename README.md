@@ -70,6 +70,18 @@ A second currency found while mining (2% of blocks by default, more in higher mi
 - **Staff/console:** `/tokens give|take|set <player> <amount>` (permission `prisoncore.tokens.admin`)
 - **Placeholders:** `%prisoncore_tokens%`, `%prisoncore_tokens_formatted%`, `%prisoncore_tokens_short%`
 
+## Auto-smelt & auto-pickup
+Every player can turn these on and off; the choice is saved. Works on any block a player breaks.
+
+- **Config:** `plugins/PrisonCore/autominer.yml` (defaults, what smelts, messages)
+- **Players:** `/autosmelt [on|off]` (`/smelt`), `/autopickup [on|off]` (`/pickup`, `/ap`), `/auto` menu
+- With auto-pickup, items that don't fit in a full inventory are lost (action bar warning)
+
+## Sell NPCs
+- **Console/staff:** `/prisoncore sellall <player>` sells a player's inventory at EconomyShopGUI prices
+- `plugins/PrisonCore/npc-commands.yml`: commands from Citizens NPCs (default `sellall`) that are let
+  through PL-Hide when the player just clicked an NPC; typing them yourself is still blocked
+
 ## Enchants
 Right-clicking an enchanting table (or `/enchanter`) opens the Enchanter: pickaxe, sword and armor,
 with the player's token and PvP point balances. Pickaxe enchants cost tokens; sword and armor

@@ -481,7 +481,8 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
                             || !m.contains(b.getWorld(), b.getX(), b.getY(), b.getZ())) {
                         continue;
                     }
-                    boolean smelt = config.getBoolean("explosive-auto-smelt", true);
+                    boolean smelt = config.getBoolean("explosive-auto-smelt", true)
+                            || (autoSmelt != null && autoSmelt.test(p));
                     for (ItemStack drop : b.getDrops(tool)) {
                         ItemStack s = smelt ? smelted(drop) : drop.clone();
                         s.setAmount(randomRound(s.getAmount() * multiplier));
@@ -537,35 +538,16 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
         }
     }
 
-    private Map<Material, ItemStack> smeltResults;
+    /** Who has auto-smelt on (set by PrisonCore); Explosive smelts for them even if the config says no. */
+    private java.util.function.Predicate<Player> autoSmelt = null;
 
-    /**
-     * The furnace result for an ore (iron ore → iron ingot, gold ore → gold ingot...), using the
-     * server's own furnace recipes. Anything that isn't an ore comes back unchanged.
-     */
+    public void setAutoSmelt(java.util.function.Predicate<Player> autoSmelt) {
+        this.autoSmelt = autoSmelt;
+    }
+
+    /** The furnace result for an ore or raw metal; anything else comes back unchanged. */
     private ItemStack smelted(ItemStack drop) {
-        if (!drop.getType().name().endsWith("_ORE") && drop.getType() != Material.ANCIENT_DEBRIS) {
-            return drop.clone();
-        }
-        if (smeltResults == null) {
-            smeltResults = new HashMap<Material, ItemStack>();
-            java.util.Iterator<org.bukkit.inventory.Recipe> it = Bukkit.recipeIterator();
-            while (it.hasNext()) {
-                org.bukkit.inventory.Recipe r = it.next();
-                if (r instanceof org.bukkit.inventory.FurnaceRecipe) {
-                    org.bukkit.inventory.FurnaceRecipe f = (org.bukkit.inventory.FurnaceRecipe) r;
-                    Material in = f.getInput().getType();
-                    if (!smeltResults.containsKey(in)) {
-                        smeltResults.put(in, f.getResult());
-                    }
-                }
-            }
-        }
-        ItemStack result = smeltResults.get(drop.getType());
-        if (result == null) {
-            return drop.clone();
-        }
-        return new ItemStack(result.getType(), drop.getAmount() * Math.max(1, result.getAmount()));
+        return io.github.jiggy4413.prisoncore.util.Smelting.smelt(drop);
     }
 
     private static int randomRound(double v) {

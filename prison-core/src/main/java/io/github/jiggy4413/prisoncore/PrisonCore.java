@@ -61,6 +61,7 @@ public final class PrisonCore extends JavaPlugin {
     private Store store;
     private io.github.jiggy4413.prisoncore.debug.TotemDebug totemDebug;
     private io.github.jiggy4413.prisoncore.npc.NpcCommandPass npcCommands;
+    private io.github.jiggy4413.prisoncore.auto.AutoMine autoMine;
     /** The PlaceholderAPI expansion, kept as Object so this class never needs PlaceholderAPI. */
     private Object placeholders;
 
@@ -140,6 +141,20 @@ public final class PrisonCore extends JavaPlugin {
         specialItems.load();
         totemDebug = new io.github.jiggy4413.prisoncore.debug.TotemDebug(this);
         getServer().getPluginManager().registerEvents(totemDebug, this);
+        autoMine = new io.github.jiggy4413.prisoncore.auto.AutoMine(this);
+        autoMine.load();
+        getServer().getPluginManager().registerEvents(autoMine, this);
+        for (String c : new String[] {"autosmelt", "autopickup", "auto"}) {
+            getCommand(c).setExecutor(autoMine);
+            getCommand(c).setTabCompleter(autoMine);
+        }
+        final io.github.jiggy4413.prisoncore.auto.AutoMine am = autoMine;
+        enchants.setAutoSmelt(new java.util.function.Predicate<Player>() {
+            @Override
+            public boolean test(Player p) {
+                return am.isSmelt(p);
+            }
+        });
         npcCommands = new io.github.jiggy4413.prisoncore.npc.NpcCommandPass(this);
         npcCommands.load();
         getServer().getPluginManager().registerEvents(npcCommands, this);
@@ -449,6 +464,7 @@ public final class PrisonCore extends JavaPlugin {
                     sender.sendMessage(ChatColor.RED + enchantsProblem);
                 }
                 npcCommands.load();
+                autoMine.load();
                 String boardProblem = board.load();
                 board.start();
                 if (boardProblem != null) {
@@ -459,7 +475,7 @@ public final class PrisonCore extends JavaPlugin {
                     sender.sendMessage(Text.color("&cranks-menu.yml has a mistake, so nothing changed:"));
                     sender.sendMessage(ChatColor.GRAY + problem);
                 } else {
-                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml, warps-menu.yml, help.yml, tokens.yml, scoreboard.yml, enchants.yml, store.yml, items.yml, npc-commands.yml). No new jar found."));
+                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml, warps-menu.yml, help.yml, tokens.yml, scoreboard.yml, enchants.yml, store.yml, items.yml, npc-commands.yml, autominer.yml). No new jar found."));
                 }
             } catch (Exception e) {
                 sender.sendMessage(Text.color("&cReload failed: " + e.getMessage() + " &7(check ranks-menu.yml for a YAML mistake)"));
