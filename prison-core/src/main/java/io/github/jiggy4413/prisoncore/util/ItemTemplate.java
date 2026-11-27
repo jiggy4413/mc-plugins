@@ -20,6 +20,9 @@ import org.bukkit.inventory.meta.SkullMeta;
  *
  * Fields: material, name, lore, glow, model-data, amount, color (#RRGGBB, leather), unbreakable,
  * skull ("viewer" = the player's head),
+ * item-model (resource pack model id, e.g. classicprison:thornheart_chestplate),
+ * equipment (how worn armor looks: a resource pack equipment id like classicprison:thornheart,
+ * or "model" to wear the item's own 3D model, used for 3D helmets),
  * texture (a head texture: Minecraft-Heads "Value", a textures.minecraft.net URL, or its id).
  */
 public final class ItemTemplate {
@@ -42,6 +45,10 @@ public final class ItemTemplate {
     private Double armor;
     private Double armorToughness;
     private Double knockbackResistance;
+    /** Resource pack item model (1.21.4 item_model component). */
+    private String itemModel;
+    /** Worn look: an equipment asset id, or "model" to show the item's own model when worn. */
+    private String equipment;
 
     private ItemTemplate() {
     }
@@ -97,6 +104,12 @@ public final class ItemTemplate {
             }
             if (t.knockbackResistance == null && (s.isDouble("knockback-resistance") || s.isInt("knockback-resistance"))) {
                 t.knockbackResistance = s.getDouble("knockback-resistance");
+            }
+            if (t.itemModel == null && s.isString("item-model")) {
+                t.itemModel = s.getString("item-model");
+            }
+            if (t.equipment == null && s.isString("equipment")) {
+                t.equipment = s.getString("equipment");
             }
         }
         return t;
@@ -182,6 +195,26 @@ public final class ItemTemplate {
             armorStat(meta, org.bukkit.attribute.Attribute.ARMOR, "armor", armor, slot);
             armorStat(meta, org.bukkit.attribute.Attribute.ARMOR_TOUGHNESS, "toughness", armorToughness, slot);
             armorStat(meta, org.bukkit.attribute.Attribute.KNOCKBACK_RESISTANCE, "knockback", knockbackResistance, slot);
+        }
+        if (itemModel != null) {
+            org.bukkit.NamespacedKey key = org.bukkit.NamespacedKey.fromString(apply(itemModel, placeholders).trim().toLowerCase());
+            if (key != null) {
+                meta.setItemModel(key);
+            }
+        }
+        if (equipment != null) {
+            org.bukkit.inventory.EquipmentSlot slot = wornSlot(mat);
+            if (slot != null) {
+                org.bukkit.inventory.meta.components.EquippableComponent eq = meta.getEquippable();
+                eq.setSlot(slot);
+                String e = apply(equipment, placeholders).trim().toLowerCase();
+                // "model": no armor layer, so the game draws the item's own (3D) model on the head
+                eq.setModel(e.equals("model") ? null : org.bukkit.NamespacedKey.fromString(e));
+                if (eq.getEquipSound() == null) {
+                    eq.setEquipSound(org.bukkit.Sound.ITEM_ARMOR_EQUIP_NETHERITE);
+                }
+                meta.setEquippable(eq);
+            }
         }
         if (meta instanceof SkullMeta && "viewer".equalsIgnoreCase(skull) && viewer != null) {
             ((SkullMeta) meta).setOwningPlayer(viewer);
