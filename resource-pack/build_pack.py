@@ -407,6 +407,25 @@ gb = bow('minecraft:item/frost/gold_frost_bow', 'minecraft:item/frost/gold_frost
          'minecraft:item/frost/gold_frost_bow_pulling_1', 'minecraft:item/frost/gold_frost_bow_pulling_2')
 write_json(by_cmd(vb, [(2003, fb), (2013, gb)]), 'assets', 'minecraft', 'items', 'bow.json')
 
+# ---------------------------------------------------------------- brighter armor glint
+def armor_glint(size=128):
+    """A brighter, more visible armor enchant glint (vanilla armor glint is much fainter than the item
+    glint the 3D helmets use). Purple shimmer streaks; must tile seamlessly because it scrolls."""
+    img = Image.new('RGBA', (size, size)); px = img.load()
+    tau = 2 * math.pi
+    waves = [(1, 2, 0.0, 0.9), (2, 1, 1.3, 0.7), (3, -2, 2.1, 0.5), (1, -3, 0.7, 0.45), (5, 4, 2.9, 0.25), (4, -5, 1.1, 0.2)]
+    for y in range(size):
+        for x in range(size):
+            u, v = x / size, y / size
+            n = sum(a * math.sin(tau * (fx * u + fy * v) + ph) for fx, fy, ph, a in waves)
+            t = (n / 3.0 + 1) / 2                      # 0..1
+            t = max(0.0, min(1.0, t)) ** 1.6
+            k = 0.35 + 0.65 * t                         # never fully dark: a steadier, stronger shine
+            px[x, y] = (int(150 * k + 40), int(70 * k + 20), int(255 * k), 255)
+    return img
+
+armor_glint().save(p('assets', 'minecraft', 'textures', 'misc', 'enchanted_glint_armor.png'))
+
 # ---------------------------------------------------------------- pack.mcmeta, icon, zip
 write_json({'pack': {'pack_format': 46, 'description': '§6Classic Prison §7- 1.21.4 items & armor'}},
            'pack.mcmeta')
