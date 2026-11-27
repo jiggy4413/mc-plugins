@@ -159,6 +159,165 @@ def heartbreaker_helmet3d(dy=0):
         Q += solid(x, 29.0+dy, -1.0, 0.5, 4.5, 7.0, wm)
     return Q
 
+
+# ============================================================== THORNHEART (Valentines)
+BK = (30, 24, 30); BKL = (52, 42, 50); WN = (74, 14, 32); WNL = (104, 22, 44)
+RO = (196, 26, 50); ROL = (238, 74, 90); ROD = (128, 12, 32)
+LF = (88, 158, 70); LFD = (46, 110, 50); TH = (196, 176, 132)
+
+def metal(u, v, seed):
+    """black plate with a faint wine sheen"""
+    c = BKL if (u % 8 == 0 or v % 8 == 0) else BK     # subtle plate seams
+    return noise(c, u, v, seed, 4)
+
+def around(face, u, W, D):
+    """position along the perimeter of a limb or body, so vines wrap around continuously."""
+    order = {'front': 0, 'left': W, 'back': W + D, 'right': 2*W + D}
+    return order.get(face, 0) + u
+
+def vine(face, u, v, W, H, D, seed=0, slope=0.55, period=None, thick=1.5):
+    """returns 'v' on a vine, 't' on a thorn, 'l' on a leaf, else None"""
+    P = (W + D) if period is None else period          # two vines spiral around each part
+    p = around(face, u, W, D)
+    y = (v + seed) * slope
+    d = (p - y) % P
+    if min(d, P - d) < thick:
+        return 'v'
+    if thick <= d <= thick + 1.2 and int(v + seed) % 4 == 0: return 't'
+    if P - thick - 1.8 <= d <= P - thick and int(v + seed) % 6 == 3: return 'l'
+    return None
+
+def vine_color(k, u, v):
+    return {'v': noise(LFD, u, v, 40, 6), 't': TH, 'l': LF}[k]
+
+def rose(u, v, cx, cy, r):
+    """a little rose bloom: spiral of petals"""
+    dx, dy = u - cx, v - cy; d = math.hypot(dx, dy)
+    if d > r: return None
+    a = math.atan2(dy, dx)
+    swirl = (a / (2*math.pi) * 2 + d / r * 1.6) % 1
+    if d < r*0.28: return ROD
+    return ROL if swirl < 0.33 else (RO if swirl < 0.75 else ROD)
+
+def thorn_helmet(face, u, v, W, H):
+    if face == 'bottom': return metal(u, v, 41)
+    if face == 'top':
+        k = vine('front', u + v, v, W, H, W, 3, 0.9, 10)
+        return vine_color(k, u, v) if k else metal(u, v, 42)
+    if v >= H-2: return noise(WN, u, v, 43, 5) if v == H-2 else noise(ROD, u, v, 43, 4)
+    if face == 'front':
+        # classic knight T-visor
+        if 6 <= v <= 7 and 3 <= u <= W-4: return VOID
+        if W//2-1 <= u <= W//2 and 6 <= v <= 11: return VOID
+        if v == 5 and 3 <= u <= W-4: return noise(WNL, u, v, 44, 4)
+        k = vine(face, u, v, W, H, W, 1)
+        if k and not (2 <= u <= W-3 and 4 <= v <= 12): return vine_color(k, u, v)
+        return metal(u, v, 45)
+    if face == 'right' or face == 'left':
+        r = rose(u, v, W*0.55, H*0.45, 3.2) if face == 'left' else None
+        if r: return r
+    k = vine(face, u, v, W, H, W, 1)
+    return vine_color(k, u, v) if k else metal(u, v, 46)
+
+def thorn_body(face, u, v, W, H):
+    if face == 'top': return noise(WN, u, v, 50, 4)
+    if face == 'bottom': return metal(u, v, 51)
+    if v <= 1: return noise(WN, u, v, 52, 4)
+    if H-3 <= v: return noise(WN, u, v, 53, 4) if v < H-1 else noise(ROD, u, v, 53, 4)   # belt
+    if face == 'front':
+        r = rose(u, v, W/2-0.5, H*0.4, 5.2)
+        if r: return r
+        dx, dy = u - (W/2-0.5), v - H*0.4
+        # leaves on each side of the big rose
+        if 5.2 < math.hypot(dx, dy) < 7.5 and abs(dy + abs(dx)*0.35) < 1.3 and abs(dx) > 3: return LF
+    k = vine(face, u, v, W, H, 8, 0, 0.45)
+    if k: return vine_color(k, u, v)
+    return noise(WN, u, v, 54, 5) if (v > H*0.7) else metal(u, v, 55)
+
+def thorn_arm(face, u, v, W, H):
+    if face == 'top':                                               # rose blooming on the shoulder
+        return rose(u, v, W/2-0.5, W/2-0.5, W/2+0.6) or noise(ROD, u, v, 60, 4)
+    if face == 'bottom': return metal(u, v, 61)
+    if v < 6:
+        r = rose(u, v, W/2-0.5, -0.5, 6.0)
+        if r: return r
+        if v == 5 or v == 4 and u % 3 == 0: return LF
+    if H-2 <= v: return noise(WN, u, v, 62, 4)
+    k = vine(face, u, v, W, H, W, 2, 0.6)
+    return vine_color(k, u, v) if k else metal(u, v, 63)
+
+def thorn_boot(face, u, v, W, H):
+    if face == 'top': return None
+    if face == 'bottom': return noise(BK, u, v, 70, 4)
+    if v < H-11: return None
+    if v >= H-2: return noise(WN, u, v, 71, 4) if v == H-2 else noise(BK, u, v, 71, 3)
+    if v == H-11: return noise(ROD, u, v, 72, 4)
+    k = vine(face, u, v, W, H, W, 4, 0.8)
+    return vine_color(k, u, v) if k else metal(u, v, 73)
+
+def thorn_legs(face, u, v, W, H):
+    if face == 'top': return None
+    if face == 'bottom': return noise(WN, u, v, 80, 4)
+    if v <= 2: return noise(ROD, u, v, 81, 4) if v < 2 else noise(BK, u, v, 81, 4)
+    if face == 'front' and 9 <= v <= 13:                          # rose on each knee
+        r = rose(u, v, W/2-0.5, 11, 2.6)
+        if r: return r
+    k = vine(face, u, v, W, H, W, 5, 0.5)
+    if k: return vine_color(k, u, v)
+    return noise(WN if (u + v // 3) % 5 else WNL, u, v, 82, 5)
+
+def thorn_leg_body(face, u, v, W, H):
+    if face in ('top', 'bottom'): return None if face == 'top' else noise(WN, u, v, 83, 4)
+    if v < H-6: return None
+    if v >= H-2: return noise(ROD, u, v, 84, 4)
+    return noise(WN, u, v, 85, 5)
+
+def thornheart_layers():
+    l1 = Image.new('RGBA', (128, 64), (0, 0, 0, 0)); l2 = Image.new('RGBA', (128, 64), (0, 0, 0, 0))
+    paint(l1, 0, 0, 8, 8, 8, thorn_helmet)
+    paint(l1, 16, 16, 8, 12, 4, thorn_body)
+    paint(l1, 40, 16, 4, 12, 4, thorn_arm)
+    paint(l1, 0, 16, 4, 12, 4, thorn_boot)
+    paint(l2, 16, 16, 8, 12, 4, thorn_leg_body)
+    paint(l2, 0, 16, 4, 12, 4, thorn_legs)
+    return l1, l2
+
+def thornheart_helmet3d(dy=0):
+    Q = []
+    V1 = (70, 128, 62, 255); V2 = (42, 88, 46, 255); T = (176, 150, 104, 255); TD = (124, 98, 64, 255)
+    def vinec(face, u, v, fw, fh):
+        return V1 if face in ('top', 'front', 'left') else V2
+    def thornc(face, u, v, fw, fh):
+        return T if face in ('top', 'front', 'right') else TD
+    # crown of twisted thorny vines around the top of the helmet
+    n = 28
+    for strand, (rad, ph) in enumerate(((4.9, 0.0), (5.1, 1.7))):   # two twisted strands
+        for i in range(n):
+            a = i / n * 2 * math.pi
+            x = math.cos(a) * rad; z = math.sin(a) * rad
+            y = 32.3 + 0.7 * math.sin(a * 4 + ph)
+            Q += solid(x - 0.75, y + dy, z - 0.75, 1.5, 1.2, 1.5, vinec)
+    for i in range(14):                                           # thorns pointing up and outward
+        a = i / 14 * 2 * math.pi + 0.2
+        x = math.cos(a) * 5.6; z = math.sin(a) * 5.6
+        y = 32.6 + 0.7 * math.sin(a * 4)
+        Q += solid(x - 0.3, y + 1.0 + dy, z - 0.3, 0.6, 0.9 + (i % 3) * 0.5, 0.6, thornc)
+        Q += solid(x + math.cos(a) * 0.6 - 0.25, y + 0.5 + dy, z + math.sin(a) * 0.6 - 0.25, 0.5, 0.5, 0.5, thornc)
+    # one rose with leaves on the left side of the crown
+    R1 = (238, 74, 90, 255); R2 = (196, 26, 50, 255); R3 = (128, 12, 32, 255)
+    def petals(face, u, v, fw, fh):
+        if face == 'top':
+            c = rose(u, v, fw/2-0.5, fh/2-0.5, max(fw, fh)/2+0.4)
+            return (c + (255,)) if c else R2
+        if face == 'bottom': return R3
+        return R1 if v == 0 else (R2 if (u + v) % 3 else R3)
+    # layered bloom: wide outer petals, a narrower middle ring, a tight spiral bud on top
+    for (w, h, y0) in ((3.4, 1.2, 32.4), (2.8, 1.1, 33.5), (2.0, 1.0, 34.5), (1.2, 0.7, 35.4)):
+        Q += solid(5.3 - w/2, y0 + dy, -3.9 - w/2, w, h, w, petals)
+    Q += solid(2.4, 32.2 + dy, -5.0, 1.4, 0.6, 2.4, lambda f, u, v, fw, fh: (88, 158, 70, 255))
+    Q += solid(6.4, 32.2 + dy, -3.4, 1.4, 0.6, 2.4, lambda f, u, v, fw, fh: (88, 158, 70, 255))
+    return Q
+
 # ============================================================== TIDECALLER (Summer)
 TQ = (38, 186, 176); TQL = (120, 226, 214); TD = (14, 110, 115); DEEP = (8, 70, 82)
 SAND = (242, 213, 155); SANDD = (204, 168, 104); CO = (255, 127, 80); COD = (214, 84, 52); FOAM = (244, 252, 250)
@@ -193,7 +352,7 @@ def tide_helmet(face, u, v, W, H):
     return base
 
 def tide_body(face, u, v, W, H):
-    if face == 'bottom': return None
+    if face == 'bottom': return noise(TD, u, v, 32, 4)
     if face == 'top': return SAND
     if v <= 1: return SAND
     if H-4 <= v:                                                     # sand belt + shell buckle
@@ -211,7 +370,7 @@ def tide_body(face, u, v, W, H):
     return base
 
 def tide_arm(face, u, v, W, H):
-    if face == 'bottom': return None
+    if face == 'bottom': return SAND
     if face == 'top': return SAND
     if v < 7:                                                        # scallop-shell pauldron
         ridge = u % 3 == 0
@@ -230,14 +389,16 @@ def tide_boot(face, u, v, W, H):
     return noise(TD, u, v, 28, 6)
 
 def tide_legs(face, u, v, W, H):
-    if face in ('top', 'bottom'): return None
+    if face == 'bottom': return noise(DEEP, u, v, 31, 4)
+    if face == 'top': return None
     if v <= 2: return SAND if v < 2 else SANDD
     if wave(u, v, W, H, 9.0, 1.0, 5) or wave(u, v, W, H, 16.0, 1.0, 5): return TQL
     if 11 <= v <= 12 and face == 'front': return CO
     return noise(DEEP if v > 13 else TD, u, v, 29, 6)
 
 def tide_leg_body(face, u, v, W, H):
-    if face in ('top', 'bottom'): return None
+    if face == 'bottom': return noise(TD, u, v, 33, 4)
+    if face == 'top': return None
     if v < H-6: return None
     if v >= H-2: return SAND
     return noise(TD, u, v, 30, 6)
@@ -303,13 +464,13 @@ def worn(l1, l2, extra, helmet_flat=True):
 def icon_q(l1, extra_fn):
     return texbox(l1, 0, 0, -4, 0, -4, 8, 8, 8, 1.1) + extra_fn(-24)
 
-hb1, hb2 = heartbreaker_layers(); tc1, tc2 = tidecaller_layers()
+th1, th2 = thornheart_layers(); tc1, tc2 = tidecaller_layers()
 w1 = tint('leather_layer_1.png', 'leather_layer_1_overlay.png', '#A8DCFF')
 w2 = tint('leather_layer_2.png', 'leather_layer_2_overlay.png', '#A8DCFF')
 cm1 = Image.open('chainmail_layer_1.png').convert('RGBA'); cm2 = Image.open('chainmail_layer_2.png').convert('RGBA')
 
 out = os.path.join(HERE)
-for name, img in (('heartbreaker_layer_1', hb1), ('heartbreaker_layer_2', hb2),
+for name, img in (('thornheart_layer_1', th1), ('thornheart_layer_2', th2),
                   ('tidecaller_layer_1', tc1), ('tidecaller_layer_2', tc2)):
     img.save(os.path.join(out, name + '.png'))
 
@@ -324,7 +485,7 @@ def winter_icon(dy):
 SETS = [
     ('Agamemnon', 'existing concept', cm1, cm2, lambda dy=0: helmet3d(0, dy, 0), False),
     ('Winter Nova', 'existing, keeps its look', w1, w2, lambda dy=0: winter_icon(dy), True),
-    ('Heartbreaker', 'NEW  -  Valentines', hb1, hb2, heartbreaker_helmet3d, True),
+    ('Thornheart', 'NEW  -  Valentines', th1, th2, thornheart_helmet3d, True),
     ('Tidecaller', 'NEW  -  Summer', tc1, tc2, tidecaller_helmet3d, True),
 ]
 
@@ -346,11 +507,11 @@ sheet.convert('RGB').save(os.path.join(out, 'all-sets-preview.png'))
 
 # ---- close-up sheets for the two new sets
 NOTES = {
-    'Heartbreaker': ['Crimson + rose-gold knight with a heart-shaped visor.',
-                     'Pink heart emblem on the chest, lace trim, heart belt buckle.',
-                     'Layered rose-petal pauldrons, white cuffs.',
-                     "Helmet: Cupid's arrow pierced straight through it, plus small wings.",
-                     'Boots: tiny cupid wings on the outer ankles.'],
+    'Thornheart':   ['A dark knight overgrown with roses.',
+                     'Black plate with a deep wine sheen; a big rose blooms on the chest.',
+                     'Roses bloom on the shoulders; thorny vines wrap the arms and legs.',
+                     'Helmet: knight T-visor, a 3D crown of thorns and one red rose.',
+                     'Leggings: wine-red with a rose on each knee.'],
     'Tidecaller':   ['Lagoon turquoise fading to deep teal, with foam-white waves.',
                      'Coral starfish on the chest, shell buckle on a sand belt.',
                      'Scallop-shell pauldrons, sand soles, coral straps.',
