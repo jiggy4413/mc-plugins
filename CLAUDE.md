@@ -25,7 +25,12 @@ the "Latest build" release. See README.md for commands and setup.
 - Custom armor plan for the 1.21.4 resource pack (decided Nov 2026, not built yet):
   - ALL custom armor sets are NETHERITE items with their own worn texture (1.21.4 equipment assets),
     not dyed leather. Vanilla leather/chainmail must look normal again.
-  - Winter Nova stays the Nova design. Valentines and Summer are NOT Nova anymore: brand-new designs.
+  - Winter Nova stays the Nova design. Valentines and Summer are NOT Nova anymore: brand-new designs:
+    **Thornheart** (Valentines, final design) and **Tidecaller** (Summer), in `resource-pack/concepts/new-sets/`.
+  - Crate set rotation: Winter Nova until Feb 13 -> Thornheart from Feb 14 -> Agamemnon Mar 1 to May 1
+    -> Tidecaller from May 1.
+  - Concept art rules: chestplate sleeves stop at the shoulder (like vanilla); always fill the bottom faces
+    of legs/boots; plates should read as metal armor (no brick seams or knit patterns).
   - The Agamemnon (Warlord) black/gold set with the custom helmet is part of the plan; concepts are in
     `resource-pack/concepts/`.
   - Frost weapons keep their textures/models, converted to the 1.21.4 item model format.

@@ -332,81 +332,100 @@ def wave(u, v, W, H, top, amp=1.5, period=8):
     yy = top + amp*math.sin(u/period*2*math.pi)
     return abs(v - yy) < 0.9
 
+def steel(base, u, v, seed, hi_amt=0.55):
+    """smooth tinted metal plate with a soft sweeping highlight (same idea as Thornheart's steel)"""
+    t = (0.5 + 0.5*math.sin(u*0.42 + v*0.10 + seed*0.7)) ** 3
+    hi = tuple(min(255, c + 70) for c in base)
+    c = tuple(int(base[i] + (hi[i]-base[i])*t*hi_amt) for i in range(3))
+    return noise(c, u, v, seed, 2)
+
+def crest(u, v, top, amp=1.6, period=16):
+    """one rolling wave line: 'f' foam crest, 's' a thin shadow under it"""
+    yy = top + amp*math.sin(u/period*2*math.pi)
+    if abs(v - yy) < 0.8: return 'f'
+    if 0.8 <= v - yy < 1.8: return 's'
+    return None
+
+def tide_plate(u, v, H, seed):
+    """turquoise at the top, deepening to teal toward the bottom"""
+    return steel(TQ if v < H*0.45 else (TD if v < H*0.8 else DEEP), u, v, seed)
+
 def tide_helmet(face, u, v, W, H):
-    base = noise(TQ, u, v, 21, 8)
-    if face == 'bottom': return None
+    if face == 'bottom': return steel(TD, u, v, 21)
     if face == 'top':
         if W//2-2 <= u <= W//2+1: return SAND if u in (W//2-1, W//2) else SANDD
-        return base
-    if v >= H-2: return SANDD if v == H-1 else SAND
+        return steel(TQ, u, v, 22)
+    if v >= H-2: return SANDD if v == H-1 else SAND               # sand rim
     if face == 'front':
-        if 8 <= v <= 9 and 2 <= u <= W-3: return VOID if v == 9 else (20, 40, 46)   # visor slit
-        if v == 7 and 2 <= u <= W-3: return FOAM
-        if wave(u, v, W, H, 4.0, 1.2, 6): return FOAM
-        if v < 4: return noise(TQL, u, v, 22, 6)
-        if v >= 11 and (u in (2, 3, W-4, W-3)) and v < H-2: return CO           # coral cheek studs
-        return base
-    if face in ('left', 'right'):
-        if wave(u, v, W, H, 5.0, 1.2, 6): return FOAM
-        if v < 5: return noise(TQL, u, v, 23, 6)
-        if 9 <= v <= 11 and 6 <= u <= 9: return SAND if (u+v) % 2 else SANDD   # shell ear guard
-        return base
-    if face == 'back':
-        if wave(u, v, W, H, 6.0, 1.2, 6): return FOAM
-        return noise(TD, u, v, 24, 6) if v > 6 else noise(TQL, u, v, 24, 6)
-    return base
+        if 8 <= v <= 9 and 2 <= u <= W-3: return VOID              # visor slit
+        if v == 7 and 2 <= u <= W-3: return SANDD
+        if v == 10 and 2 <= u <= W-3: return TD
+    k = crest(u + (0 if face == 'front' else 5), v, 4.5, 1.0, 16)
+    if k == 'f': return FOAM
+    if k == 's': return steel(TD, u, v, 23)
+    if face in ('left', 'right') and 9 <= v <= 12 and 5 <= u <= 10:  # coral rivet on the cheek guard
+        if (u - 7.5)**2 + (v - 10.5)**2 < 3: return CO if (u + v) % 2 else COD
+    return steel(TQ if v < 5 else TQ, u, v, 24)
 
 def tide_body(face, u, v, W, H):
-    if face == 'bottom': return noise(TD, u, v, 32, 4)
+    if face == 'bottom': return steel(TD, u, v, 25)
     if face == 'top': return SAND
-    if v <= 1: return SAND
-    if H-4 <= v:                                                     # sand belt + shell buckle
-        if face == 'front' and W//2-2 <= u <= W//2+1: return CO if (u+v) % 2 else COD
+    if v <= 1: return SAND                                          # sand collar
+    if H-3 <= v:                                                    # sand belt + shell buckle
+        if face == 'front' and W//2-2 <= u <= W//2+1: return CO if v != H-1 else COD
         return SANDD if v == H-1 else SAND
-    depth = v / H
-    base = noise(TQL if depth < 0.3 else (TQ if depth < 0.6 else TD), u, v, 25, 6)
-    for top in (6.0, 12.0, 17.0):
-        if wave(u, v, W, H, top, 1.3, 7): return FOAM
-    if face == 'front':                                              # coral starfish
-        cx, cy = W/2-0.5, H*0.42
+    k = crest(around(face, u, W, 8), v, H*0.62, 1.6, 16)           # one wave rolling around the waist
+    if k == 'f': return FOAM
+    if k == 's': return steel(DEEP, u, v, 26)
+    if face == 'front':                                             # big coral starfish
+        cx, cy = W/2-0.5, H*0.33
         dx, dy = u-cx, v-cy; r = math.hypot(dx, dy); a = math.atan2(dy, dx)
-        arm = 2.0 + 3.6*max(0, math.cos(5*(a + math.pi/2))) ** 2
-        if r <= arm: return CO if r < arm-0.8 else COD
-    return base
+        arm = 2.6 + 3.8*max(0, math.cos(5*(a + math.pi/2)))**1.1
+        if r <= arm:
+            if r < 1.4: return (255, 176, 128)
+            if r < arm-1.0: return (255, 150, 104) if (int(u)+int(v)) % 3 == 0 else CO
+            return COD
+    return tide_plate(u, v, H, 27)
 
 def tide_arm(face, u, v, W, H):
-    if face == 'bottom': return SAND
-    if face == 'top': return SAND
-    if v < 7:                                                        # scallop-shell pauldron
-        ridge = u % 3 == 0
-        return SANDD if ridge or v == 6 else (SAND if v < 4 else noise(CO, u, v, 26, 6))
-    if H-3 <= v: return FOAM if v < H-1 else SAND
-    if wave(u, v, W, H, 12.0, 1.0, 5): return FOAM
-    return noise(TQ if v < 12 else TD, u, v, 27, 6)
+    """shoulder guard only: a ribbed scallop shell, like vanilla chestplates stop at the shoulder"""
+    if face == 'bottom': return None
+    if face == 'top':
+        x = (u+0.5)/W*2-1; y = (v+0.5)/W*2-1
+        rib = int((math.atan2(y, x + 1.2)/math.pi)*10) % 2
+        return SAND if rib else SANDD
+    if v >= 10: return None
+    if v == 9: return CO
+    if v < 7:
+        return SANDD if u % 3 == 0 or v == 6 else (SAND if v < 4 else (232, 190, 120))
+    return steel(TQ, u, v, 28)
 
 def tide_boot(face, u, v, W, H):
     if face == 'top': return None
     if face == 'bottom': return SANDD
     if v < H-11: return None
-    if v >= H-2: return SANDD if v == H-1 else SAND                 # sandy sole
-    if v in (H-8, H-5): return CO                                    # coral straps
+    if v >= H-2: return SANDD if v == H-1 else SAND               # sandy sole
     if v == H-11: return FOAM
-    return noise(TD, u, v, 28, 6)
+    if v == H-6: return CO                                          # coral strap
+    return steel(TD, u, v, 29)
 
 def tide_legs(face, u, v, W, H):
-    if face == 'bottom': return noise(DEEP, u, v, 31, 4)
     if face == 'top': return None
+    if face == 'bottom': return steel(DEEP, u, v, 30)
     if v <= 2: return SAND if v < 2 else SANDD
-    if wave(u, v, W, H, 9.0, 1.0, 5) or wave(u, v, W, H, 16.0, 1.0, 5): return TQL
-    if 11 <= v <= 12 and face == 'front': return CO
-    return noise(DEEP if v > 13 else TD, u, v, 29, 6)
+    if face == 'front' and 10 <= v <= 13 and 1 <= u <= W-2:        # coral knee guard
+        return COD if v in (10, 13) else CO
+    k = crest(around(face, u, W, W), v, 16.5, 1.0, 16)
+    if k == 'f': return FOAM
+    if k == 's': return steel(DEEP, u, v, 31)
+    return steel(TD if v < 16 else DEEP, u, v, 32)
 
 def tide_leg_body(face, u, v, W, H):
-    if face == 'bottom': return noise(TD, u, v, 33, 4)
+    if face == 'bottom': return steel(TD, u, v, 33)
     if face == 'top': return None
     if v < H-6: return None
     if v >= H-2: return SAND
-    return noise(TD, u, v, 30, 6)
+    return steel(TD, u, v, 34)
 
 def tidecaller_layers():
     l1 = Image.new('RGBA', (128, 64), (0, 0, 0, 0)); l2 = Image.new('RGBA', (128, 64), (0, 0, 0, 0))
@@ -431,14 +450,17 @@ def tidecaller_helmet3d(dy=0):
         rib = int((math.atan2(y, x)/math.pi)*9) % 2
         return SA if rib else SAD
     Q += solid(-0.6, 33.0+dy, -4.8, 1.2, 6.5, 10.0, fan)
-    # coral branches growing from the temples
+    # branching coral growing up from each temple (trunk, two forks, little tips)
     def coral(face, u, v, fw, fh): return C if face in ('front', 'top', 'right') else CD
     for side in (-1, 1):
-        bx = 4.6 if side > 0 else -5.6
-        Q += solid(bx, 28.0+dy, -1.0, 1.0, 4.0, 1.0, coral)
-        Q += solid(bx+side*1.0, 31.0+dy, -1.0, 1.0, 1.0, 1.0, coral)
-        Q += solid(bx+side*1.6, 31.0+dy, -1.0, 1.0, 2.5, 1.0, coral)
-        Q += solid(bx, 32.0+dy, -2.0, 1.0, 1.5, 1.0, coral)
+        bx = 4.7 if side > 0 else -5.7
+        Q += solid(bx, 28.5+dy, -1.4, 1.0, 3.0, 1.0, coral)                    # trunk
+        Q += solid(bx + side*0.8, 31.0+dy, -1.4, 1.0, 1.0, 1.0, coral)          # outer fork
+        Q += solid(bx + side*1.6, 31.6+dy, -1.4, 1.0, 2.4, 1.0, coral)
+        Q += solid(bx, 31.5+dy, -1.4, 1.0, 1.6, 1.0, coral)                    # inner fork
+        Q += solid(bx - side*0.6, 32.8+dy, -1.4, 1.0, 1.4, 1.0, coral)
+        Q += solid(bx + side*1.6, 33.8+dy, -2.2, 1.0, 0.8, 1.0, coral)          # tips poking forward
+        Q += solid(bx - side*0.6, 34.0+dy, -0.6, 1.0, 0.8, 1.0, coral)
     return Q
 
 # ============================================================== winter (unchanged Nova) + agamemnon
@@ -517,11 +539,11 @@ NOTES = {
                      'Shoulder guards only (like vanilla), roses on top.',
                      'Helmet: knight T-visor, a 3D crown of thorns and one red rose.',
                      'Leggings: wine-red with a rose on each knee.'],
-    'Tidecaller':   ['Lagoon turquoise fading to deep teal, with foam-white waves.',
-                     'Coral starfish on the chest, shell buckle on a sand belt.',
-                     'Scallop-shell pauldrons, sand soles, coral straps.',
-                     'Helmet: a scallop-shell fan crest and coral branches at the temples.',
-                     'Leggings: deep-sea teal with lighter wave lines.'],
+    'Tidecaller':   ['Lagoon armor: turquoise steel deepening to sea teal.',
+                     'One rolling foam wave around the waist; coral starfish on the chest.',
+                     'Ribbed scallop-shell shoulder guards (stop at the shoulder).',
+                     'Helmet: wave across the brow, shell fan crest, coral branches.',
+                     'Coral knee guards, sand belt and sandy soles.'],
 }
 for name, tag, l1, l2, h3d, flat in SETS[2:]:
     sh = Image.new('RGBA', (1500, 820), BG); d = ImageDraw.Draw(sh)
