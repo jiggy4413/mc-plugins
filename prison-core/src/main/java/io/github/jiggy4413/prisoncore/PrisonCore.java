@@ -63,6 +63,7 @@ public final class PrisonCore extends JavaPlugin {
     private io.github.jiggy4413.prisoncore.npc.NpcCommandPass npcCommands;
     private io.github.jiggy4413.prisoncore.auto.AutoMine autoMine;
     private io.github.jiggy4413.prisoncore.enchants.DamageTooltip damageTooltip;
+    private io.github.jiggy4413.prisoncore.cosmetics.Cosmetics cosmetics;
     /** The PlaceholderAPI expansion, kept as Object so this class never needs PlaceholderAPI. */
     private Object placeholders;
 
@@ -138,6 +139,11 @@ public final class PrisonCore extends JavaPlugin {
         enchantEffects = new io.github.jiggy4413.prisoncore.enchants.EnchantEffects(enchants, mines, tokens);
         getServer().getPluginManager().registerEvents(enchantEffects, this);
         enchantEffects.start();
+        cosmetics = new io.github.jiggy4413.prisoncore.cosmetics.Cosmetics(this);
+        cosmetics.load();
+        getServer().getPluginManager().registerEvents(cosmetics, this);
+        getCommand("cosmetics").setExecutor(cosmetics);
+        cosmetics.start();
         damageTooltip = new io.github.jiggy4413.prisoncore.enchants.DamageTooltip(this);
         getServer().getPluginManager().registerEvents(damageTooltip, this);
         // after every plugin is up, so OldCombatMechanics' config is readable
@@ -231,6 +237,9 @@ public final class PrisonCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (cosmetics != null) {
+            cosmetics.stop(); // remove the back bling displays
+        }
         if (totemDebug != null) {
             totemDebug.stop(); // give other plugins their own totem listeners back
         }
@@ -412,6 +421,12 @@ public final class PrisonCore extends JavaPlugin {
             return true;
         }
 
+        // /prisoncore cosmetic unlock|lock <player> <id> (crate rewards, run from the console)
+        if (args.length > 0 && args[0].equalsIgnoreCase("cosmetic")) {
+            cosmetics.adminCommand(sender, args);
+            return true;
+        }
+
         // /prisoncore sellall <player> (for sell NPCs, run from the console)
         if (args.length > 0 && args[0].equalsIgnoreCase("sellall")) {
             io.github.jiggy4413.prisoncore.sell.SellAllCommand.run(sender, args);
@@ -467,6 +482,7 @@ public final class PrisonCore extends JavaPlugin {
                     sender.sendMessage(ChatColor.RED + storeProblem);
                 }
                 String enchantsProblem = enchants.load();
+                cosmetics.load();
                 damageTooltip.load(enchants.flag("damage-tooltip", true));
                 damageTooltip.updateAllOnline();
                 String itemsProblem = specialItems.load();
@@ -503,6 +519,7 @@ public final class PrisonCore extends JavaPlugin {
         if (sender.hasPermission("prisoncore.admin")) {
             sender.sendMessage(Text.color("&e/prisoncore reload &7- reload ranks-menu.yml, or load a newer PrisonCore jar"));
             sender.sendMessage(Text.color("&e/prisoncore sellall <player> &7- sell a player's inventory at shop prices (sell NPCs)"));
+            sender.sendMessage(Text.color("&e/prisoncore cosmetic <unlock|lock> <player> <id> &7- give/take a cosmetic (crates)"));
             sender.sendMessage(Text.color("&e/prisoncore debug totems &7- find out why totems don't save players"));
         }
         return true;
@@ -518,7 +535,7 @@ public final class PrisonCore extends JavaPlugin {
         }
         List<String> options = command.getName().equalsIgnoreCase("prisonranks")
                 ? Arrays.asList("ranks", "prestiges")
-                : (sender.hasPermission("prisoncore.admin") ? Arrays.asList("reload", "give", "sellall", "debug") : Collections.<String>emptyList());
+                : (sender.hasPermission("prisoncore.admin") ? Arrays.asList("reload", "give", "sellall", "cosmetic", "debug") : Collections.<String>emptyList());
         List<String> out = new ArrayList<String>();
         for (String o : options) {
             if (o.startsWith(args[0].toLowerCase())) {

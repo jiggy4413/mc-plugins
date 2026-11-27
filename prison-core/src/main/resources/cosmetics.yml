@@ -1,0 +1,38 @@
+# Cosmetics (look-only, no stats)
+#
+# Players unlock cosmetics (crate rewards) and wear them from the /cosmetics menu.
+# Unlocks are saved on the player and never lost (not an item: can't be dropped, traded or lost on death).
+#
+#   Unlock from a crate (SpecializedCrates command reward, run from console):
+#     prisoncore cosmetic unlock {player} snowflake
+#   Take it away again:   prisoncore cosmetic lock <player> <id>
+#
+# Back blings are worn on the back. They need the ClassicPrison resource pack (item-model).
+
+menu:
+  title: "&8Cosmetics"
+
+back-blings:
+  snowflake:
+    name: "&b&lSnowflake"
+    item-model: "classicprison:snowflake_backbling"
+    lore: ["&7A giant snowflake worn on your back.", "", "&7A Winter Crate exclusive."]
+    # width in blocks
+    size: 1.2
+  goldsnowflake:
+    name: "&6&lGolden Snowflake"
+    item-model: "classicprison:goldsnowflake_backbling"
+    lore: ["&7A giant golden snowflake worn on your back.", "", "&7A rare Winter Crate exclusive."]
+    size: 1.2
+
+# Where back blings sit, in blocks: how far behind the body and how high (from the feet) the centre is.
+back-offset: 0.32
+back-height: 1.32
+# lower the back bling this much while sneaking
+sneak-drop: 0.18
+
+messages:
+  equipped: "&aNow wearing {name}&a."
+  removed: "&7Back bling removed."
+  locked: "&cYou haven't unlocked that yet."
+  unlocked: "&aYou unlocked the {name} &aback bling! &7Wear it with &f/cosmetics&7."

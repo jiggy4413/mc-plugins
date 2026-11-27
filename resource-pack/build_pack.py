@@ -422,6 +422,39 @@ gb = bow('minecraft:item/frost/gold_frost_bow', 'minecraft:item/frost/gold_frost
          'minecraft:item/frost/gold_frost_bow_pulling_1', 'minecraft:item/frost/gold_frost_bow_pulling_2')
 write_json(by_cmd(vb, [(2003, fb), (2013, gb)]), 'assets', 'minecraft', 'items', 'bow.json')
 
+# ---------------------------------------------------------------- back blings (cosmetics.yml)
+fsrc = open(os.path.join(CONCEPTS, 'backbling', 'snowflake.py')).read()
+fsrc = fsrc[fsrc.index('def flake_mask('):fsrc.index('def snowflake(')]
+FL = {'math': math}
+exec(compile(fsrc, 'snowflake.py', 'exec'), FL)
+
+def flake_sprite(kind, size=48):
+    """The concept snowflake as a flat sprite; item/generated extrudes it into a thin 3D crystal."""
+    pal = FL['palette'](kind)
+    img = Image.new('RGBA', (size, size), (0, 0, 0, 0)); px = img.load()
+    m = FL['flake_mask']
+    for y in range(size):
+        for x in range(size):
+            fx = (x + 0.5) / size * 2 - 1; fy = (y + 0.5) / size * 2 - 1
+            k = m(fx, fy)
+            if k:
+                px[x, y] = pal[k] + (255,)
+            else:
+                st = 2.0 / size
+                if any(m(fx + dx * st, fy + dy * st) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                    px[x, y] = pal['outline'] + (255,)
+    return img
+
+for bid, kind in (('snowflake', 'blue'), ('goldsnowflake', 'gold')):
+    flake_sprite(kind).save(p('assets', NS, 'textures', 'item', 'backbling', bid + '.png'))
+    write_json({'parent': 'minecraft:item/generated',
+                'textures': {'layer0': f'{NS}:item/backbling/{bid}'},
+                'display': {'fixed': {'rotation': [0, 180, 0], 'translation': [0, 0, 0], 'scale': [1, 1, 1]},
+                            'gui': {'rotation': [0, 0, 0], 'translation': [0, 0, 0], 'scale': [1, 1, 1]}}},
+               'assets', NS, 'models', 'item', 'backbling', bid + '.json')
+    write_json({'model': {'type': 'minecraft:model', 'model': f'{NS}:item/backbling/{bid}'}},
+               'assets', NS, 'items', bid + '_backbling.json')
+
 # ---------------------------------------------------------------- brighter armor glint
 def armor_glint(size=128):
     """Armor enchant glint that stays on constantly, like the item glint on the 3D helmets.

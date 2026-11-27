@@ -77,6 +77,12 @@ Every player can turn these on and off; the choice is saved. Works on any block 
 - **Players:** `/autosmelt [on|off]` (`/smelt`), `/autopickup [on|off]` (`/pickup`, `/ap`), `/auto` menu
 - With auto-pickup, items that don't fit in a full inventory are lost (action bar warning)
 
+## Cosmetics (back blings)
+- **Config:** `plugins/PrisonCore/cosmetics.yml` (back blings, size and position, messages)
+- **Players:** `/cosmetics` (`/backbling`) menu to wear/remove unlocked back blings
+- **Crates/console:** `/prisoncore cosmetic unlock <player> <id>` (and `lock`); unlocks are saved on the player
+- Needs the ClassicPrison resource pack (models `classicprison:<id>_backbling`)
+
 ## Sell NPCs
 - **Console/staff:** `/prisoncore sellall <player>` sells a player's inventory at EconomyShopGUI prices
 - `plugins/PrisonCore/npc-commands.yml`: commands from Citizens NPCs (default `sellall`) that are let

@@ -13,7 +13,7 @@ loadbefore: [Multiverse-Core, PL-Hide, PL-Hide-Free, PLHide]
 commands:
   prisoncore:
     description: PrisonCore info and admin commands.
-    usage: /prisoncore [reload | give <player> <item> [amount] | sellall <player> | debug totems]
+    usage: /prisoncore [reload | give <player> <item> [amount] | sellall <player> | cosmetic <unlock|lock> <player> <id> | debug totems]
     aliases: [pcore]
   pmine:
     description: Set up and manage PrisonCore mines.
@@ -63,6 +63,11 @@ commands:
     usage: /autopickup [on|off]
     aliases: [pickup, ap]
     permission: prisoncore.auto
+  cosmetics:
+    description: Opens the cosmetics menu (back blings).
+    usage: /cosmetics
+    aliases: [backbling, backblings]
+    permission: prisoncore.cosmetics
   auto:
     description: Opens the auto-smelt / auto-pickup menu.
     usage: /auto
@@ -112,4 +117,7 @@ permissions:
     default: true
   prisoncore.auto:
     description: Use auto-smelt and auto-pickup (/autosmelt, /autopickup, /auto).
+    default: true
+  prisoncore.cosmetics:
+    description: Open the /cosmetics menu and wear unlocked cosmetics.
     default: true
