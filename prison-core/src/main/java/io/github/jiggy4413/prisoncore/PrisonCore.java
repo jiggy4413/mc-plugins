@@ -382,6 +382,12 @@ public final class PrisonCore extends JavaPlugin {
             return true;
         }
 
+        // /prisoncore sellall <player> (for sell NPCs, run from the console)
+        if (args.length > 0 && args[0].equalsIgnoreCase("sellall")) {
+            io.github.jiggy4413.prisoncore.sell.SellAllCommand.run(sender, args);
+            return true;
+        }
+
         // /prisoncore debug totems
         if (args.length > 0 && args[0].equalsIgnoreCase("debug")) {
             totemDebug.command(sender, args);
@@ -462,6 +468,7 @@ public final class PrisonCore extends JavaPlugin {
         sender.sendMessage(Text.color("&7Ranks menu: " + (isRanksMenuAvailable() ? "&aactive" : "&cinactive (Rankup not found)")));
         if (sender.hasPermission("prisoncore.admin")) {
             sender.sendMessage(Text.color("&e/prisoncore reload &7- reload ranks-menu.yml, or load a newer PrisonCore jar"));
+            sender.sendMessage(Text.color("&e/prisoncore sellall <player> &7- sell a player's inventory at shop prices (sell NPCs)"));
             sender.sendMessage(Text.color("&e/prisoncore debug totems &7- find out why totems don't save players"));
         }
         return true;
@@ -477,7 +484,7 @@ public final class PrisonCore extends JavaPlugin {
         }
         List<String> options = command.getName().equalsIgnoreCase("prisonranks")
                 ? Arrays.asList("ranks", "prestiges")
-                : (sender.hasPermission("prisoncore.admin") ? Arrays.asList("reload", "give", "debug") : Collections.<String>emptyList());
+                : (sender.hasPermission("prisoncore.admin") ? Arrays.asList("reload", "give", "sellall", "debug") : Collections.<String>emptyList());
         List<String> out = new ArrayList<String>();
         for (String o : options) {
             if (o.startsWith(args[0].toLowerCase())) {

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+      Compile-only copy of the EconomyShopGUI API (by Gypopo) method signatures that PrisonCore calls.
+      The API is only on JitPack, so these stubs let us compile against it.
+      They are NEVER packaged into PrisonCore: at runtime the real classes come from the
+      EconomyShopGUI plugin on the server. Signatures copied from github.com/Gypopo/EconomyShopGUI-API.
+    -->
+    <parent>
+        <groupId>io.github.jiggy4413</groupId>
+        <artifactId>mc-plugins</artifactId>
+        <version>2.0.2</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>economyshopgui-api-stubs</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+        </dependency>
+    </dependencies>
+</project>
