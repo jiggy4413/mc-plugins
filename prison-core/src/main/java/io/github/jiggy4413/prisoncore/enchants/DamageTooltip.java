@@ -117,6 +117,14 @@ public final class DamageTooltip implements Listener {
 
     /** Updates one item's damage lines in place. Returns true if anything changed. */
     public boolean update(ItemStack item) {
+        return update(item, false);
+    }
+
+    /**
+     * @param onlyFix only repair items that already carry these lines (copies made by other plugins, e.g.
+     *                EssentialsX kits keep the lore but drop the hidden-stats flag); don't add new ones.
+     */
+    public boolean update(ItemStack item, boolean onlyFix) {
         if (item == null || !isWeapon(item.getType())) {
             return false;
         }
@@ -124,12 +132,18 @@ public final class DamageTooltip implements Listener {
         if (meta == null) {
             return false;
         }
+        List<String> lore = meta.hasLore() ? new ArrayList<String>(meta.getLore()) : new ArrayList<String>();
         Integer owned = meta.getPersistentDataContainer().get(linesKey, PersistentDataType.INTEGER);
+        if (owned == null && endsWithOurLines(lore)) {
+            owned = 4;                                          // a copy that lost our marker: still ours
+        }
+        if (owned == null && onlyFix) {
+            return false;
+        }
         // items whose stats someone else hid (PrisonCore frost weapons with their own damage lore): leave alone
         if (owned == null && meta.hasItemFlag(ItemFlag.HIDE_ATTRIBUTES)) {
             return false;
         }
-        List<String> lore = meta.hasLore() ? new ArrayList<String>(meta.getLore()) : new ArrayList<String>();
         if (owned != null) {
             for (int i = 0; i < owned && !lore.isEmpty(); i++) {
                 lore.remove(lore.size() - 1);
@@ -158,7 +172,8 @@ public final class DamageTooltip implements Listener {
         ours.add(Text.color("&2 " + NUM.format(stats[1]) + " Attack Speed"));
         List<String> before = meta.hasLore() ? meta.getLore() : null;
         lore.addAll(ours);
-        if (owned != null && owned == ours.size() && lore.equals(before)) {
+        if (owned != null && owned == ours.size() && lore.equals(before) && meta.hasItemFlag(ItemFlag.HIDE_ATTRIBUTES)
+                && meta.getPersistentDataContainer().has(linesKey, PersistentDataType.INTEGER)) {
             return false;                                       // already up to date
         }
         // hiding stats can make the game drop an item's default attributes, so write them out first
@@ -173,6 +188,22 @@ public final class DamageTooltip implements Listener {
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);
         return true;
+    }
+
+    /** True if the lore ends with our 4 lines ("", "When in Main Hand:", " X Attack Damage", " Y Attack Speed"). */
+    private static boolean endsWithOurLines(List<String> lore) {
+        int n = lore.size();
+        if (n < 4) {
+            return false;
+        }
+        String a = strip(lore.get(n - 4)), b = strip(lore.get(n - 3)), c = strip(lore.get(n - 2)), d = strip(lore.get(n - 1));
+        return a.isEmpty() && b.equals("When in Main Hand:") && c.startsWith(" ") && c.endsWith(" Attack Damage")
+                && d.startsWith(" ") && d.endsWith(" Attack Speed");
+    }
+
+    private static String strip(String s) {
+        String t = org.bukkit.ChatColor.stripColor(s);
+        return t == null ? "" : t;
     }
 
     /** {damage, attack speed} as the player experiences them, or null if the item has no attack damage. */
@@ -240,6 +271,22 @@ public final class DamageTooltip implements Listener {
         if (it != null && update(it)) {
             inv.setItem(event.getNewSlot(), it);
         }
+    }
+
+    /** Menus like kit previews show copies that lost the hidden-stats flag: repair those (only those). */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onOpen(org.bukkit.event.inventory.InventoryOpenEvent event) {
+        org.bukkit.inventory.Inventory top = event.getView().getTopInventory();
+        if (top == null || top.getHolder() == event.getPlayer()) {
+            return;
+        }
+        ItemStack[] items = top.getContents();
+        for (int i = 0; i < items.length; i++) {
+            if (items[i] != null && update(items[i], true)) {
+                top.setItem(i, items[i]);
+            }
+        }
+        updateInventory(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
