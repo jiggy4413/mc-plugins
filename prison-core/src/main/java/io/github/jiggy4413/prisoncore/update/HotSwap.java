@@ -182,13 +182,21 @@ public final class HotSwap {
                 pm.disablePlugin(old);
 
                 // 2. remove our commands so the new copy can register them again
+                //    (Paper 1.21's command map can't remove through an iterator, so collect the names first)
                 Map<String, Command> known = commandMap.getKnownCommands();
-                Iterator<Map.Entry<String, Command>> it = known.entrySet().iterator();
-                while (it.hasNext()) {
-                    Command cmd = it.next().getValue();
+                List<String> ours = new ArrayList<String>();
+                for (Map.Entry<String, Command> e : known.entrySet()) {
+                    Command cmd = e.getValue();
                     if (cmd instanceof PluginCommand && ((PluginCommand) cmd).getPlugin() == old) {
                         cmd.unregister(commandMap);
-                        it.remove();
+                        ours.add(e.getKey());
+                    }
+                }
+                for (int i = 0; i < ours.size(); i++) {
+                    try {
+                        known.remove(ours.get(i));
+                    } catch (RuntimeException ignored) {
+                        // already gone
                     }
                 }
 
