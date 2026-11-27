@@ -22,3 +22,10 @@ the "Latest build" release. See README.md for commands and setup.
   filled in on the server.
 - Commits are authored as `jiggy4413 <118291312+jiggy4413@users.noreply.github.com>`
   (set with `git config user.name` / `git config user.email` in a fresh clone), with Claude as co-author.
+- Custom armor plan for the 1.21.4 resource pack (decided Nov 2026, not built yet):
+  - ALL custom armor sets are NETHERITE items with their own worn texture (1.21.4 equipment assets),
+    not dyed leather. Vanilla leather/chainmail must look normal again.
+  - Winter Nova stays the Nova design. Valentines and Summer are NOT Nova anymore: brand-new designs.
+  - The Agamemnon (Warlord) black/gold set with the custom helmet is part of the plan; concepts are in
+    `resource-pack/concepts/`.
+  - Frost weapons keep their textures/models, converted to the 1.21.4 item model format.
