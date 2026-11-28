@@ -28,26 +28,39 @@ def lum(c):
     return 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2]
 
 
+def is_vine(c):
+    r, g, b = c[:3]
+    return g > r and g > b
+
+
 class Golder:
-    """maps colours to gold by brightness, stretched over the brightness range of one asset."""
-    def __init__(self, colors, lo=0.2, hi=0.84):
-        ls = [lum(c) for c in colors if not is_gem(c)]
-        self.l0, self.l1 = (min(ls), max(ls)) if ls else (0, 255)
-        self.lo, self.hi = lo, hi
+    """maps colours to gold by brightness, stretched over the brightness range of one asset.
+    With vines_dark, green vine/leaf pixels get the deep end of the ramp and the plate the bright end,
+    so the armor reads as bright gold with darker gold vines on it."""
+    def __init__(self, colors, lo=0.2, hi=0.84, vines_dark=False):
+        self.vd = vines_dark
+        plate = [lum(c) for c in colors if not is_gem(c) and not (vines_dark and is_vine(c))]
+        vines = [lum(c) for c in colors if vines_dark and is_vine(c)]
+        self.l0, self.l1 = (min(plate), max(plate)) if plate else (0, 255)
+        self.v0, self.v1 = (min(vines), max(vines)) if vines else (0, 255)
+        self.lo, self.hi = (0.42, 0.86) if vines_dark else (lo, hi)
 
     def __call__(self, c):
         if is_gem(c):
             return tuple(c[:3])
+        if self.vd and is_vine(c):
+            t = (lum(c) - self.v0) / max(1, self.v1 - self.v0)
+            return ramp(0.1 + 0.26 * t)
         t = (lum(c) - self.l0) / max(1, self.l1 - self.l0)
         return ramp(self.lo + (self.hi - self.lo) * t)
 
 
-def gold_image(img, outline=None):
+def gold_image(img, outline=None, vines_dark=False):
     img = img.convert('RGBA')
     px = img.load()
     cols = [px[x, y] for y in range(img.size[1]) for x in range(img.size[0])
             if px[x, y][3] and (outline is None or px[x, y][:3] != tuple(outline))]
-    g = Golder(cols)
+    g = Golder(cols, vines_dark=vines_dark)
     out = img.copy(); po = out.load()
     for y in range(img.size[1]):
         for x in range(img.size[0]):
@@ -58,8 +71,8 @@ def gold_image(img, outline=None):
     return out
 
 
-def gold_quads(Q):
-    g = Golder([c for _, c, _ in Q])
+def gold_quads(Q, vines_dark=False):
+    g = Golder([c for _, c, _ in Q], vines_dark=vines_dark)
     return [(p, g(c) + (255,), f) for p, c, f in Q]
 
 
@@ -106,11 +119,12 @@ d.text((30, 18), 'Valentines Collection  -  Thornheart & Cupid, regular and gold
 
 # ---- armor: four sets, front and back
 for i, (name, M, l1, l2, h3d, gold, col) in enumerate(SETS):
-    a1, a2 = (gold_image(l1), gold_image(l2)) if gold else (l1, l2)
+    vd = M is T
+    a1, a2 = (gold_image(l1, vines_dark=vd), gold_image(l2, vines_dark=vd)) if gold else (l1, l2)
     R.L1, R.L2 = a1, a2
     hq = h3d(0)
     if gold:
-        hq = gold_quads(hq)
+        hq = gold_quads(hq, vines_dark=vd)
     Q = player(with_helmet3d=False) + hq
     x0 = 30 + i * 2 * 190 + (W - 60 - ARMOR_W) // 2
     sheet.alpha_composite(render(Q, -30, -12, 11, (190, 520)), (x0, 90))
@@ -131,14 +145,14 @@ for j, (name, M, l1, l2, h3d, gold, col) in enumerate(SETS):
         s = fn(M)
         im = s.image()
         if gold:
-            im = gold_image(im, s.outline)
+            im = gold_image(im, s.outline, vines_dark=M is T)
         big = im.resize((32 * TS, 32 * TS), Image.NEAREST)
         sheet.alpha_composite(big, (LEFT + i * TC + 9, y + (row_h - 26 - 32 * TS) // 2))
     for k, fn in enumerate(BLINGS[M]):
         s = fn()
         im = s.image()
         if gold:
-            im = gold_image(im, s.outline)
+            im = gold_image(im, s.outline, vines_dark=M is T)
         big = im.resize((48 * BS, 48 * BS), Image.NEAREST)
         bx = LEFT + len(TOOLS) * TC + 30 + k * BC
         sheet.alpha_composite(big, (bx + 9, y))
