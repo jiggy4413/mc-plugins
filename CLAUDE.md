@@ -49,3 +49,6 @@ the "Latest build" release. See README.md for commands and setup.
   Gold versions: vanilla gold palette, red roses/hearts stay red, Gold Thornheart plate bright + vines darker
   (`concepts/goldify.py`). Art: `concepts/weapons/` (tools, back blings), `concepts/new-sets/cupid.py` (armor),
   full sheet `concepts/valentines-collection.png`.
+- Custom weapon enchants (rule from the server owner): every weapon enchant has 5 levels. Regular crate
+  weapons roll level I-IV at random each time they're given (items.yml `enchants: {id: {1: 40, 2: 30, 3: 20,
+  4: 10}}`, like the frost weapons); gold versions always get level V.
