@@ -66,6 +66,9 @@ public final class Cosmetics implements Listener, CommandExecutor {
     private final Map<UUID, ItemDisplay> shown = new HashMap<UUID, ItemDisplay>();
     private final Map<UUID, String> shownId = new HashMap<UUID, String>();
     private BukkitTask task;
+    /** Client-side back blings (PacketEvents), by wearer. Null map entries never stored. */
+    private final Map<UUID, PacketBackBling> packets = new HashMap<UUID, PacketBackBling>();
+    private Boolean packetMode;
 
     public Cosmetics(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -201,12 +204,27 @@ public final class Cosmetics implements Listener, CommandExecutor {
 
     // ------------------------------------------------------------------ the back bling on the player
 
+    private boolean packetMode() {
+        if (packetMode == null) {
+            packetMode = Bukkit.getPluginManager().isPluginEnabled("packetevents") && PacketBackBling.available();
+            plugin.getLogger().info(packetMode
+                    ? "Back blings: client-side riders via PacketEvents (no lag, teleports unaffected)."
+                    : "Back blings: PacketEvents not found, using a following entity (may trail slightly).");
+        }
+        return packetMode;
+    }
+
     private void tick() {
+        boolean pm = packetMode();
         for (Player p : Bukkit.getOnlinePlayers()) {
             String id = worn(p);
             ConfigurationSection c = id == null ? null : backBlings.get(id);
             boolean hide = c == null || p.isDead() || p.getGameMode() == GameMode.SPECTATOR
                     || p.hasPotionEffect(PotionEffectType.INVISIBILITY) || !owned(p).contains(id);
+            if (pm) {
+                tickPacket(p, hide ? null : id, c);
+                continue;
+            }
             ItemDisplay d = shown.get(p.getUniqueId());
             if (hide) {
                 if (d != null) {
@@ -233,6 +251,118 @@ public final class Cosmetics implements Listener, CommandExecutor {
             }
         }
     }
+
+    // ------------------------------------------------------------------ client-side mode (PacketEvents)
+
+    private List<Player> viewers(Player wearer) {
+        List<Player> out = new ArrayList<Player>(wearer.getTrackedBy());
+        out.add(wearer);
+        return out;
+    }
+
+    private void tickPacket(Player p, String id, ConfigurationSection c) {
+        PacketBackBling b = packets.get(p.getUniqueId());
+        if (id == null) {
+            if (b != null) {
+                packets.remove(p.getUniqueId());
+                for (Player v : viewers(p)) {
+                    b.hide(v);
+                }
+            }
+            return;
+        }
+        if (b == null || !b.cosmeticId.equals(id)) {
+            if (b != null) {
+                for (Player v : viewers(p)) {
+                    b.hide(v);
+                }
+            }
+            b = new PacketBackBling(Bukkit.getUnsafe().nextEntityId(), id, icon(c, false),
+                    (float) c.getDouble("size", 1.2),
+                    (float) config.getDouble("rider-up", -0.5),
+                    (float) -config.getDouble("back-offset", 0.32));
+            packets.put(p.getUniqueId(), b);
+            for (Player v : viewers(p)) {
+                b.show(p, v);
+            }
+            b.lastYaw = p.getBodyYaw();
+            return;
+        }
+        float yaw = p.getBodyYaw();
+        if (Float.isNaN(b.lastYaw) || Math.abs(yaw - b.lastYaw) > 0.5f) {
+            b.lastYaw = yaw;
+            for (Player v : viewers(p)) {
+                b.rotate(v, yaw);
+            }
+        }
+    }
+
+    /** Send the wearer's back bling again (after respawn, world change, teleport...). */
+    private void resend(final Player p, long delay) {
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+            @Override
+            public void run() {
+                PacketBackBling b = packets.remove(p.getUniqueId());
+                if (b != null && p.isOnline()) {
+                    for (Player v : viewers(p)) {
+                        b.hide(v);
+                    }
+                }
+                // the next tick spawns it again for everyone who can see the player
+            }
+        }, delay);
+    }
+
+    @EventHandler
+    public void onTrack(final io.papermc.paper.event.player.PlayerTrackEntityEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        final Player wearer = (Player) event.getEntity();
+        final Player viewer = event.getPlayer();
+        if (!packets.containsKey(wearer.getUniqueId())) {
+            return;
+        }
+        // after the game has sent the wearer to this viewer
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+            @Override
+            public void run() {
+                PacketBackBling b = packets.get(wearer.getUniqueId());
+                if (b != null && wearer.isOnline() && viewer.isOnline()) {
+                    b.show(wearer, viewer);
+                }
+            }
+        }, 2L);
+    }
+
+    @EventHandler
+    public void onUntrack(io.papermc.paper.event.player.PlayerUntrackEntityEvent event) {
+        if (event.getEntity() instanceof Player) {
+            PacketBackBling b = packets.get(event.getEntity().getUniqueId());
+            if (b != null) {
+                b.hide(event.getPlayer());
+            }
+        }
+    }
+
+    @EventHandler(priority = org.bukkit.event.EventPriority.MONITOR, ignoreCancelled = true)
+    public void onTeleport(org.bukkit.event.player.PlayerTeleportEvent event) {
+        if (packets.containsKey(event.getPlayer().getUniqueId())) {
+            resend(event.getPlayer(), 3L);
+        }
+    }
+
+    @EventHandler
+    public void onRespawn(org.bukkit.event.player.PlayerRespawnEvent event) {
+        resend(event.getPlayer(), 3L);
+    }
+
+    @EventHandler
+    public void onWorld(org.bukkit.event.player.PlayerChangedWorldEvent event) {
+        resend(event.getPlayer(), 3L);
+    }
+
+    // ------------------------------------------------------------------ following-entity mode (fallback)
 
     private Location backLocation(Player p) {
         Location l = p.getLocation();
@@ -277,11 +407,21 @@ public final class Cosmetics implements Listener, CommandExecutor {
         for (UUID id : new ArrayList<UUID>(shown.keySet())) {
             remove(id);
         }
+        for (Map.Entry<UUID, PacketBackBling> e : new ArrayList<Map.Entry<UUID, PacketBackBling>>(packets.entrySet())) {
+            Player p = Bukkit.getPlayer(e.getKey());
+            if (p != null) {
+                for (Player v : viewers(p)) {
+                    e.getValue().hide(v);
+                }
+            }
+        }
+        packets.clear();
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         remove(event.getPlayer().getUniqueId());
+        packets.remove(event.getPlayer().getUniqueId());   // viewers drop the player and its riders anyway
     }
 
     // ------------------------------------------------------------------ /cosmetics menu

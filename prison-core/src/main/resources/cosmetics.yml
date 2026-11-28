@@ -25,10 +25,14 @@ back-blings:
     lore: ["&7A giant golden snowflake worn on your back.", "", "&7A rare Winter Crate exclusive."]
     size: 1.2
 
-# Where back blings sit, in blocks: how far behind the body and how high (from the feet) the centre is.
+# Where back blings sit, in blocks.
+# back-offset: how far behind the body the centre is.
 back-offset: 0.32
+# rider-up: with PacketEvents (normal), the back bling rides on top of the player's head and is moved
+# down by this much (negative = down) to sit on the back. It follows the player with no delay.
+rider-up: -0.5
+# Without PacketEvents only (fallback): height of the centre above the feet, and how much lower when sneaking.
 back-height: 1.32
-# lower the back bling this much while sneaking
 sneak-drop: 0.18
 
 messages:
