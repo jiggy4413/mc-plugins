@@ -25,6 +25,68 @@ back-blings:
     lore: ["&7A giant golden snowflake worn on your back.", "", "&7A rare Winter Crate exclusive."]
     size: 1.2
 
+  # ---- Valentines (Thornheart + Cupid, regular and gold) ---- #
+  heartofthorns:
+    name: "&4&lHeart of Thorns"
+    item-model: "classicprison:heartofthorns_backbling"
+    lore: ["&7A steel heart wrapped in thorny vines.", "", "&7A limited Valentines Crate exclusive."]
+    size: 1.2
+  goldheartofthorns:
+    name: "&6&lGolden Heart of Thorns"
+    item-model: "classicprison:goldheartofthorns_backbling"
+    lore: ["&7A golden heart wrapped in thorny vines.", "", "&7A rare limited Valentines Crate exclusive."]
+    size: 1.2
+  thornwings:
+    name: "&4&lThorn Wings"
+    item-model: "classicprison:thornwings_backbling"
+    lore: ["&7Black-steel wings edged in crimson.", "", "&7A limited Valentines Crate exclusive."]
+    size: 1.6
+  goldthornwings:
+    name: "&6&lGolden Thorn Wings"
+    item-model: "classicprison:goldthornwings_backbling"
+    lore: ["&7Golden wings edged in crimson.", "", "&7A rare limited Valentines Crate exclusive."]
+    size: 1.6
+  blackrose:
+    name: "&4&lBlack Rose"
+    item-model: "classicprison:blackrose_backbling"
+    lore: ["&7A giant black rose on a thorny stem.", "", "&7A limited Valentines Crate exclusive."]
+    size: 1.2
+  goldblackrose:
+    name: "&6&lGolden Black Rose"
+    item-model: "classicprison:goldblackrose_backbling"
+    lore: ["&7A giant golden rose on a thorny stem.", "", "&7A rare limited Valentines Crate exclusive."]
+    size: 1.2
+  angelwings:
+    name: "&d&lAngel Wings"
+    item-model: "classicprison:angelwings_backbling"
+    lore: ["&7White feathered wings with pink tips.", "", "&7A limited Valentines Crate exclusive."]
+    size: 1.6
+  goldangelwings:
+    name: "&6&lGolden Angel Wings"
+    item-model: "classicprison:goldangelwings_backbling"
+    lore: ["&7Golden feathered wings.", "", "&7A rare limited Valentines Crate exclusive."]
+    size: 1.6
+  cupidquiver:
+    name: "&d&lCupid's Quiver"
+    item-model: "classicprison:cupidquiver_backbling"
+    lore: ["&7A quiver of heart-tipped arrows.", "", "&7A limited Valentines Crate exclusive."]
+    size: 1.2
+  goldcupidquiver:
+    name: "&6&lGolden Cupid's Quiver"
+    item-model: "classicprison:goldcupidquiver_backbling"
+    lore: ["&7A golden quiver of heart-tipped arrows.", "", "&7A rare limited Valentines Crate exclusive."]
+    size: 1.2
+  wingedheart:
+    name: "&d&lWinged Heart"
+    item-model: "classicprison:wingedheart_backbling"
+    lore: ["&7A winged heart with a golden halo.", "", "&7A limited Valentines Crate exclusive."]
+    size: 1.2
+  goldwingedheart:
+    name: "&6&lGolden Winged Heart"
+    item-model: "classicprison:goldwingedheart_backbling"
+    lore: ["&7A golden winged heart with a halo.", "", "&7A rare limited Valentines Crate exclusive."]
+    size: 1.2
+
 # Where back blings sit, in blocks.
 # back-offset: how far behind the body the centre is.
 back-offset: 0.32

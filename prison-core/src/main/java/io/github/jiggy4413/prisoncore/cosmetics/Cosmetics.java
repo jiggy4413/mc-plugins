@@ -56,7 +56,6 @@ import org.joml.Vector3f;
 public final class Cosmetics implements Listener, CommandExecutor {
 
     private static final String FILE = "cosmetics.yml";
-    private static final int REMOVE_SLOT = 22;
 
     private final JavaPlugin plugin;
     private final NamespacedKey ownedKey;
@@ -478,6 +477,7 @@ public final class Cosmetics implements Listener, CommandExecutor {
 
     private static final class Holder implements InventoryHolder {
         Inventory inventory;
+        int removeSlot;
         final List<String> slots = new ArrayList<String>();
 
         @Override
@@ -498,7 +498,11 @@ public final class Cosmetics implements Listener, CommandExecutor {
 
     private void open(Player p) {
         Holder h = new Holder();
-        Inventory inv = Bukkit.createInventory(h, 27, Text.color(p, config.getString("menu.title", "&8Cosmetics")));
+        // one row of 7 per 7 back blings, between a border row on top and the remove button row below
+        int rows = Math.max(1, Math.min(4, (backBlings.size() + 6) / 7));
+        int size = 9 * (rows + 2);
+        h.removeSlot = size - 5;
+        Inventory inv = Bukkit.createInventory(h, size, Text.color(p, config.getString("menu.title", "&8Cosmetics")));
         h.inventory = inv;
         fill(p, h);
         p.openInventory(inv);
@@ -518,7 +522,13 @@ public final class Cosmetics implements Listener, CommandExecutor {
         }
         Set<String> mine = owned(p);
         String wearing = worn(p);
-        int[] layout = {10, 11, 12, 13, 14, 15, 16};
+        int rows = inv.getSize() / 9 - 2;
+        int[] layout = new int[rows * 7];
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < 7; c++) {
+                layout[r * 7 + c] = 9 * (r + 1) + 1 + c;
+            }
+        }
         int n = 0;
         for (Map.Entry<String, ConfigurationSection> e : backBlings.entrySet()) {
             if (n >= layout.length) {
@@ -548,7 +558,7 @@ public final class Cosmetics implements Listener, CommandExecutor {
         ItemMeta nm = none.getItemMeta();
         nm.setDisplayName(Text.color("&cRemove back bling"));
         none.setItemMeta(nm);
-        inv.setItem(REMOVE_SLOT, none);
+        inv.setItem(h.removeSlot, none);
     }
 
     private ItemStack icon(ConfigurationSection c, boolean withText) {
@@ -583,7 +593,7 @@ public final class Cosmetics implements Listener, CommandExecutor {
         Player p = (Player) event.getWhoClicked();
         Holder h = (Holder) event.getView().getTopInventory().getHolder();
         int slot = event.getRawSlot();
-        if (slot == REMOVE_SLOT) {
+        if (slot == h.removeSlot) {
             if (worn(p) != null) {
                 wear(p, null);
                 msg(p, "removed", null);

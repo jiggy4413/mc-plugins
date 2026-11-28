@@ -1,0 +1,405 @@
+# Valentines collection for Classic Prison 1.21.4 (needs PrisonCore 2.7.0+ and the ClassicPrison-1.21.4 pack).
+# Paste under "items:" in plugins/PrisonCore/items.yml (two-space indent), REPLACING your old Thornheart
+# entries, then /prisoncore reload.  Give with: /prisoncore give <player> <name>  (or /prisoncore items)
+#
+# Sets: thornheart, goldthornheart, cupid, goldcupid. Each has helmet, chestplate, leggings, boots and
+# sword, axe, spear, scythe, pickaxe, bow, shield (e.g. cupidspear, goldthornheartshield).
+# Full set bonuses (on the chestplate, only while all 4 pieces of the SAME set are worn):
+#   Thornheart: Thornguard I (10% of melee damage back)   Golden Thornheart: Thornguard II (20%)
+#   Cupid: Absorption I (+2 hearts)                        Golden Cupid: Absorption II (+4 hearts)
+# The spear is a melee weapon (a netherite sword underneath). Tools have no enchants yet.
+
+  # ---- Thornheart ---- #
+  thornhearthelmet:
+    material: NETHERITE_HELMET
+    item-model: "classicprison:thornheart_helmet"
+    equipment: "model"
+    set: thornheart
+    show-attributes: true
+    unbreakable: true
+    name: "&4&lThornheart Helmet"
+    lore: ["", "&6&lFULL SET BONUS", "&eThornguard I", "&7Players who hit you take 10%", "&7of the damage back.", "", "&7Wear all 4 pieces to activate.", "&7A limited Valentines Crate exclusive."]
+
+  thornheartchestplate:
+    material: NETHERITE_CHESTPLATE
+    item-model: "classicprison:thornheart_chestplate"
+    equipment: "classicprison:thornheart"
+    set: thornheart
+    show-attributes: true
+    unbreakable: true
+    name: "&4&lThornheart Chestplate"
+    lore: ["", "&6&lFULL SET BONUS", "&eThornguard I", "&7Players who hit you take 10%", "&7of the damage back.", "", "&7Wear all 4 pieces to activate.", "&7A limited Valentines Crate exclusive."]
+    enchants: {thornguard: 1}
+
+  thornheartleggings:
+    material: NETHERITE_LEGGINGS
+    item-model: "classicprison:thornheart_leggings"
+    equipment: "classicprison:thornheart"
+    set: thornheart
+    show-attributes: true
+    unbreakable: true
+    name: "&4&lThornheart Leggings"
+    lore: ["", "&6&lFULL SET BONUS", "&eThornguard I", "&7Players who hit you take 10%", "&7of the damage back.", "", "&7Wear all 4 pieces to activate.", "&7A limited Valentines Crate exclusive."]
+
+  thornheartboots:
+    material: NETHERITE_BOOTS
+    item-model: "classicprison:thornheart_boots"
+    equipment: "classicprison:thornheart"
+    set: thornheart
+    show-attributes: true
+    unbreakable: true
+    name: "&4&lThornheart Boots"
+    lore: ["", "&6&lFULL SET BONUS", "&eThornguard I", "&7Players who hit you take 10%", "&7of the damage back.", "", "&7Wear all 4 pieces to activate.", "&7A limited Valentines Crate exclusive."]
+
+  thornheartsword:
+    material: NETHERITE_SWORD
+    item-model: "classicprison:thornheartsword"
+    show-attributes: true
+    unbreakable: true
+    name: "&4&lThornheart Sword"
+    lore: ["", "&7A limited Valentines Crate exclusive."]
+
+  thornheartaxe:
+    material: NETHERITE_AXE
+    item-model: "classicprison:thornheartaxe"
+    show-attributes: true
+    unbreakable: true
+    name: "&4&lThornheart Axe"
+    lore: ["", "&7A limited Valentines Crate exclusive."]
+
+  thornheartspear:
+    material: NETHERITE_SWORD
+    item-model: "classicprison:thornheartspear"
+    show-attributes: true
+    unbreakable: true
+    name: "&4&lThornheart Spear"
+    lore: ["", "&7A limited Valentines Crate exclusive."]
+
+  thornheartscythe:
+    material: NETHERITE_HOE
+    item-model: "classicprison:thornheartscythe"
+    show-attributes: true
+    unbreakable: true
+    name: "&4&lThornheart Scythe"
+    lore: ["", "&7A limited Valentines Crate exclusive."]
+
+  thornheartpickaxe:
+    material: NETHERITE_PICKAXE
+    item-model: "classicprison:thornheartpickaxe"
+    show-attributes: true
+    unbreakable: true
+    name: "&4&lThornheart Pickaxe"
+    lore: ["", "&7A limited Valentines Crate exclusive."]
+
+  thornheartbow:
+    material: BOW
+    item-model: "classicprison:thornheartbow"
+    show-attributes: true
+    unbreakable: true
+    name: "&4&lThornheart Bow"
+    lore: ["", "&7A limited Valentines Crate exclusive."]
+
+  thornheartshield:
+    material: SHIELD
+    item-model: "classicprison:thornheartshield"
+    show-attributes: true
+    unbreakable: true
+    name: "&4&lThornheart Shield"
+    lore: ["", "&7A limited Valentines Crate exclusive."]
+
+
+  # ---- Golden Thornheart ---- #
+  goldthornhearthelmet:
+    material: NETHERITE_HELMET
+    item-model: "classicprison:goldthornheart_helmet"
+    equipment: "model"
+    set: goldthornheart
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Thornheart Helmet"
+    lore: ["", "&6&lFULL SET BONUS", "&eThornguard II", "&7Players who hit you take 20%", "&7of the damage back.", "", "&7Wear all 4 pieces to activate.", "&7A rare limited Valentines Crate exclusive."]
+
+  goldthornheartchestplate:
+    material: NETHERITE_CHESTPLATE
+    item-model: "classicprison:goldthornheart_chestplate"
+    equipment: "classicprison:goldthornheart"
+    set: goldthornheart
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Thornheart Chestplate"
+    lore: ["", "&6&lFULL SET BONUS", "&eThornguard II", "&7Players who hit you take 20%", "&7of the damage back.", "", "&7Wear all 4 pieces to activate.", "&7A rare limited Valentines Crate exclusive."]
+    enchants: {thornguard: 2}
+
+  goldthornheartleggings:
+    material: NETHERITE_LEGGINGS
+    item-model: "classicprison:goldthornheart_leggings"
+    equipment: "classicprison:goldthornheart"
+    set: goldthornheart
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Thornheart Leggings"
+    lore: ["", "&6&lFULL SET BONUS", "&eThornguard II", "&7Players who hit you take 20%", "&7of the damage back.", "", "&7Wear all 4 pieces to activate.", "&7A rare limited Valentines Crate exclusive."]
+
+  goldthornheartboots:
+    material: NETHERITE_BOOTS
+    item-model: "classicprison:goldthornheart_boots"
+    equipment: "classicprison:goldthornheart"
+    set: goldthornheart
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Thornheart Boots"
+    lore: ["", "&6&lFULL SET BONUS", "&eThornguard II", "&7Players who hit you take 20%", "&7of the damage back.", "", "&7Wear all 4 pieces to activate.", "&7A rare limited Valentines Crate exclusive."]
+
+  goldthornheartsword:
+    material: NETHERITE_SWORD
+    item-model: "classicprison:goldthornheartsword"
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Thornheart Sword"
+    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+
+  goldthornheartaxe:
+    material: NETHERITE_AXE
+    item-model: "classicprison:goldthornheartaxe"
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Thornheart Axe"
+    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+
+  goldthornheartspear:
+    material: NETHERITE_SWORD
+    item-model: "classicprison:goldthornheartspear"
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Thornheart Spear"
+    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+
+  goldthornheartscythe:
+    material: NETHERITE_HOE
+    item-model: "classicprison:goldthornheartscythe"
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Thornheart Scythe"
+    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+
+  goldthornheartpickaxe:
+    material: NETHERITE_PICKAXE
+    item-model: "classicprison:goldthornheartpickaxe"
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Thornheart Pickaxe"
+    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+
+  goldthornheartbow:
+    material: BOW
+    item-model: "classicprison:goldthornheartbow"
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Thornheart Bow"
+    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+
+  goldthornheartshield:
+    material: SHIELD
+    item-model: "classicprison:goldthornheartshield"
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Thornheart Shield"
+    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+
+
+  # ---- Cupid ---- #
+  cupidhelmet:
+    material: NETHERITE_HELMET
+    item-model: "classicprison:cupid_helmet"
+    equipment: "model"
+    set: cupid
+    show-attributes: true
+    unbreakable: true
+    name: "&d&lCupid Helmet"
+    lore: ["", "&6&lFULL SET BONUS", "&eAbsorption I", "&7+2 hearts, back 10 seconds after", "&7you last took damage.", "", "&7Wear all 4 pieces to activate.", "&7A limited Valentines Crate exclusive."]
+
+  cupidchestplate:
+    material: NETHERITE_CHESTPLATE
+    item-model: "classicprison:cupid_chestplate"
+    equipment: "classicprison:cupid"
+    set: cupid
+    show-attributes: true
+    unbreakable: true
+    name: "&d&lCupid Chestplate"
+    lore: ["", "&6&lFULL SET BONUS", "&eAbsorption I", "&7+2 hearts, back 10 seconds after", "&7you last took damage.", "", "&7Wear all 4 pieces to activate.", "&7A limited Valentines Crate exclusive."]
+    enchants: {absorption: 1}
+
+  cupidleggings:
+    material: NETHERITE_LEGGINGS
+    item-model: "classicprison:cupid_leggings"
+    equipment: "classicprison:cupid"
+    set: cupid
+    show-attributes: true
+    unbreakable: true
+    name: "&d&lCupid Leggings"
+    lore: ["", "&6&lFULL SET BONUS", "&eAbsorption I", "&7+2 hearts, back 10 seconds after", "&7you last took damage.", "", "&7Wear all 4 pieces to activate.", "&7A limited Valentines Crate exclusive."]
+
+  cupidboots:
+    material: NETHERITE_BOOTS
+    item-model: "classicprison:cupid_boots"
+    equipment: "classicprison:cupid"
+    set: cupid
+    show-attributes: true
+    unbreakable: true
+    name: "&d&lCupid Boots"
+    lore: ["", "&6&lFULL SET BONUS", "&eAbsorption I", "&7+2 hearts, back 10 seconds after", "&7you last took damage.", "", "&7Wear all 4 pieces to activate.", "&7A limited Valentines Crate exclusive."]
+
+  cupidsword:
+    material: NETHERITE_SWORD
+    item-model: "classicprison:cupidsword"
+    show-attributes: true
+    unbreakable: true
+    name: "&d&lCupid Sword"
+    lore: ["", "&7A limited Valentines Crate exclusive."]
+
+  cupidaxe:
+    material: NETHERITE_AXE
+    item-model: "classicprison:cupidaxe"
+    show-attributes: true
+    unbreakable: true
+    name: "&d&lCupid Axe"
+    lore: ["", "&7A limited Valentines Crate exclusive."]
+
+  cupidspear:
+    material: NETHERITE_SWORD
+    item-model: "classicprison:cupidspear"
+    show-attributes: true
+    unbreakable: true
+    name: "&d&lCupid Spear"
+    lore: ["", "&7A limited Valentines Crate exclusive."]
+
+  cupidscythe:
+    material: NETHERITE_HOE
+    item-model: "classicprison:cupidscythe"
+    show-attributes: true
+    unbreakable: true
+    name: "&d&lCupid Scythe"
+    lore: ["", "&7A limited Valentines Crate exclusive."]
+
+  cupidpickaxe:
+    material: NETHERITE_PICKAXE
+    item-model: "classicprison:cupidpickaxe"
+    show-attributes: true
+    unbreakable: true
+    name: "&d&lCupid Pickaxe"
+    lore: ["", "&7A limited Valentines Crate exclusive."]
+
+  cupidbow:
+    material: BOW
+    item-model: "classicprison:cupidbow"
+    show-attributes: true
+    unbreakable: true
+    name: "&d&lCupid Bow"
+    lore: ["", "&7A limited Valentines Crate exclusive."]
+
+  cupidshield:
+    material: SHIELD
+    item-model: "classicprison:cupidshield"
+    show-attributes: true
+    unbreakable: true
+    name: "&d&lCupid Shield"
+    lore: ["", "&7A limited Valentines Crate exclusive."]
+
+
+  # ---- Golden Cupid ---- #
+  goldcupidhelmet:
+    material: NETHERITE_HELMET
+    item-model: "classicprison:goldcupid_helmet"
+    equipment: "model"
+    set: goldcupid
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Cupid Helmet"
+    lore: ["", "&6&lFULL SET BONUS", "&eAbsorption II", "&7+4 hearts, back 10 seconds after", "&7you last took damage.", "", "&7Wear all 4 pieces to activate.", "&7A rare limited Valentines Crate exclusive."]
+
+  goldcupidchestplate:
+    material: NETHERITE_CHESTPLATE
+    item-model: "classicprison:goldcupid_chestplate"
+    equipment: "classicprison:goldcupid"
+    set: goldcupid
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Cupid Chestplate"
+    lore: ["", "&6&lFULL SET BONUS", "&eAbsorption II", "&7+4 hearts, back 10 seconds after", "&7you last took damage.", "", "&7Wear all 4 pieces to activate.", "&7A rare limited Valentines Crate exclusive."]
+    enchants: {absorption: 2}
+
+  goldcupidleggings:
+    material: NETHERITE_LEGGINGS
+    item-model: "classicprison:goldcupid_leggings"
+    equipment: "classicprison:goldcupid"
+    set: goldcupid
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Cupid Leggings"
+    lore: ["", "&6&lFULL SET BONUS", "&eAbsorption II", "&7+4 hearts, back 10 seconds after", "&7you last took damage.", "", "&7Wear all 4 pieces to activate.", "&7A rare limited Valentines Crate exclusive."]
+
+  goldcupidboots:
+    material: NETHERITE_BOOTS
+    item-model: "classicprison:goldcupid_boots"
+    equipment: "classicprison:goldcupid"
+    set: goldcupid
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Cupid Boots"
+    lore: ["", "&6&lFULL SET BONUS", "&eAbsorption II", "&7+4 hearts, back 10 seconds after", "&7you last took damage.", "", "&7Wear all 4 pieces to activate.", "&7A rare limited Valentines Crate exclusive."]
+
+  goldcupidsword:
+    material: NETHERITE_SWORD
+    item-model: "classicprison:goldcupidsword"
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Cupid Sword"
+    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+
+  goldcupidaxe:
+    material: NETHERITE_AXE
+    item-model: "classicprison:goldcupidaxe"
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Cupid Axe"
+    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+
+  goldcupidspear:
+    material: NETHERITE_SWORD
+    item-model: "classicprison:goldcupidspear"
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Cupid Spear"
+    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+
+  goldcupidscythe:
+    material: NETHERITE_HOE
+    item-model: "classicprison:goldcupidscythe"
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Cupid Scythe"
+    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+
+  goldcupidpickaxe:
+    material: NETHERITE_PICKAXE
+    item-model: "classicprison:goldcupidpickaxe"
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Cupid Pickaxe"
+    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+
+  goldcupidbow:
+    material: BOW
+    item-model: "classicprison:goldcupidbow"
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Cupid Bow"
+    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+
+  goldcupidshield:
+    material: SHIELD
+    item-model: "classicprison:goldcupidshield"
+    show-attributes: true
+    unbreakable: true
+    name: "&6&lGolden Cupid Shield"
+    lore: ["", "&7A rare limited Valentines Crate exclusive."]

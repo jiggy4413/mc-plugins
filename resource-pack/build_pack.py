@@ -39,7 +39,19 @@ R = G['R']
 Image = G['Image']
 from PIL import ImageDraw  # noqa: E402
 
-SETS = ['winter', 'goldwinter', 'thornheart', 'agamemnon', 'tidecaller']
+import importlib.util  # noqa: E402
+sys.path.insert(0, CONCEPTS)
+sys.path.insert(0, os.path.join(CONCEPTS, 'weapons'))
+_spec = importlib.util.spec_from_file_location('cupid_armor', os.path.join(CONCEPTS, 'new-sets', 'cupid.py'))
+CU = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(CU)   # Cupid armor (layers + 3D helmet)
+os.chdir(cwd)
+import goldify  # noqa: E402
+import thornheart as VT  # noqa: E402  Thornheart tools + back blings
+import cupid as VC  # noqa: E402       Cupid tools + back blings
+
+SETS = ['winter', 'goldwinter', 'thornheart', 'goldthornheart', 'cupid', 'goldcupid', 'agamemnon', 'tidecaller']
+# gold versions of the Valentines sets: (source set, vines stay darker than the plate)
+VGOLD = {'goldthornheart': ('thornheart', True), 'goldcupid': ('cupid', False)}
 PIECES = ['helmet', 'chestplate', 'leggings', 'boots']
 
 def p(*parts):
@@ -134,6 +146,9 @@ L1_BOXES = [(16, 16, 8, 12, 4), (40, 16, 4, 12, 4), (0, 16, 4, 12, 4)]   # body,
 L2_BOXES = [(16, 16, 8, 12, 4), (0, 16, 4, 12, 4)]                    # waist, leg
 fill_bottoms(LAYERS['winter'][0], L1_BOXES); fill_bottoms(LAYERS['winter'][1], L2_BOXES)
 LAYERS['goldwinter'] = (gold_image(LAYERS['winter'][0]), gold_image(LAYERS['winter'][1]))
+LAYERS['cupid'] = CU.cupid_layers()
+for g, (src, vd) in VGOLD.items():
+    LAYERS[g] = (goldify.gold_image(LAYERS[src][0], vines_dark=vd), goldify.gold_image(LAYERS[src][1], vines_dark=vd))
 for s, (l1, l2) in LAYERS.items():
     fill_bottoms(l1, L1_BOXES)
     fill_bottoms(l2, L2_BOXES)
@@ -154,18 +169,21 @@ def capture(fn, *args):
     boxes = []
     def rec(x0, y0, z0, w, h, d, f):
         boxes.append((x0, y0, z0, w, h, d, f)); return []
-    saved = (R.solid, G['solid'], G['parts_mod']['solid'])
-    R.solid = G['solid'] = G['parts_mod']['solid'] = rec
+    saved = (R.solid, G['solid'], G['parts_mod']['solid'], CU.solid)
+    R.solid = G['solid'] = G['parts_mod']['solid'] = CU.solid = rec
     try:
         fn(*args)
     finally:
-        R.solid, G['solid'], G['parts_mod']['solid'] = saved
+        R.solid, G['solid'], G['parts_mod']['solid'], CU.solid = saved
     return boxes
 
 HELMETS = {
     'winter': (LAYERS['winter'][0], lambda: G['winter_parts']()),
     'goldwinter': (LAYERS['goldwinter'][0], lambda: G['winter_parts']()),
     'thornheart': (None, lambda: G['thornheart_helmet3d'](0)),        # a cap + crown, no full helmet
+    'goldthornheart': (None, lambda: G['thornheart_helmet3d'](0)),
+    'cupid': (None, lambda: CU.cupid_helmet3d(0)),                    # winged circlet + halo, face visible
+    'goldcupid': (None, lambda: CU.cupid_helmet3d(0)),
     'agamemnon': (R.H, lambda: R.helmet3d(0, 0, 0)),
     'tidecaller': (LAYERS['tidecaller'][0], lambda: G['tidecaller_helmet3d'](0)),
 }
@@ -222,6 +240,19 @@ def helmet_model(name, shell_tex, builder):
     boxes = capture(builder)
     if name == 'goldwinter':
         boxes = [(x0, y0, z0, w, h, d, (lambda f: (lambda *a: (gold(f(*a)) if f(*a) else None)))(fn))
+                 for (x0, y0, z0, w, h, d, fn) in boxes]
+    if name in VGOLD:
+        cols = []
+        for (x0, y0, z0, w, h, d, fn) in boxes:
+            W_, H_, D_ = max(1, int(w*2)), max(1, int(h*2)), max(1, int(d*2))
+            for face, (fw, fh) in {'front': (W_, H_), 'top': (W_, D_), 'left': (D_, H_)}.items():
+                for v in range(fh):
+                    for u in range(fw):
+                        c = fn(face, u, v, fw, fh)
+                        if c and (len(c) < 4 or c[3] > 0):
+                            cols.append(c)
+        gd = goldify.Golder(cols, vines_dark=VGOLD[name][1])
+        boxes = [(x0, y0, z0, w, h, d, (lambda f: (lambda *a: ((gd(f(*a)) + (255,)) if f(*a) else None)))(fn))
                  for (x0, y0, z0, w, h, d, fn) in boxes]
     for (x0, y0, z0, w, h, d, fn) in boxes:
         W_, H_, D_ = max(1, int(w*2)), max(1, int(h*2)), max(1, int(d*2))
@@ -359,6 +390,32 @@ def tide_icons():
         return st(TD, x, y)
     return {'chestplate': icon(CHEST, chest), 'leggings': icon(LEGS, legs), 'boots': icon(BOOTS, boots)}
 
+def cupid_icons():
+    PE, PEL, PED = CU.PE, CU.PEL, CU.PED
+    PK, PKL, PKD, HT, GD, GDD = CU.PK, CU.PKL, CU.PKD, CU.HT, CU.GD, CU.GDD
+    pearl = lambda x, y: CU.pearl(x, y, 7)[:3]
+    heart = CU.heart
+    def chest(x, y):
+        if y < 10 and (x < 11 or x > 20):                       # feathered shoulders
+            return PKL if y >= 7 else (PED if (x + (y // 3)) % 3 == 0 else PEL)
+        if y <= 7: return GD
+        if 26 <= y <= 27: return HT if 14 <= x <= 17 else GD
+        if heart(x, y, 15.5, 14, 4.2): return HT
+        if heart(x, y, 15.5, 14, 5.4): return GD
+        if y >= 21: return PK if (x // 2) % 2 else PKD
+        return pearl(x, y)
+    def legs(x, y):
+        if y < 7: return GD if y < 6 else GDD
+        if 17 <= y <= 22:
+            if heart(x, y, 8.5 if x < 16 else 23.5, 19.5, 2.2): return GD
+        return PK if (x + y // 3) % 6 else PKL
+    def boots(x, y):
+        if y >= 28: return GD if y == 28 else GDD
+        if y in (12, 13): return GD
+        if heart(x, y, 7.5 if x < 16 else 24.5, 22, 1.8): return HT
+        return pearl(x, y)
+    return {'chestplate': icon(CHEST, chest), 'leggings': icon(LEGS, legs), 'boots': icon(BOOTS, boots)}
+
 ICONS = {
     'winter': {k: Image.open(os.path.join(OLD, 'textures', 'item', 'nova', f'winter_nova_{k}.png')).convert('RGBA')
                for k in ('chestplate', 'leggings', 'boots')},
@@ -370,6 +427,9 @@ ICONS = {
 }
 
 ICONS['goldwinter'] = {k: gold_image(v) for k, v in ICONS['winter'].items()}
+ICONS['cupid'] = cupid_icons()
+for g, (src, vd) in VGOLD.items():
+    ICONS[g] = {k: goldify.gold_image(v, OUTLINE[:3], vines_dark=vd) for k, v in ICONS[src].items()}
 for s in SETS:
     for piece in PIECES:
         model_id = f'{NS}:item/{s}_{piece}'
@@ -454,6 +514,107 @@ for bid, kind in (('snowflake', 'blue'), ('goldsnowflake', 'gold')):
                'assets', NS, 'models', 'item', 'backbling', bid + '.json')
     write_json({'model': {'type': 'minecraft:model', 'model': f'{NS}:item/backbling/{bid}'}},
                'assets', NS, 'items', bid + '_backbling.json')
+
+# ---------------------------------------------------------------- Valentines tools (item-model, 32x32)
+# Every tool gets its own item model (items.yml `item-model: "classicprison:<id>"`), so no custom_model_data
+# numbers are needed. Gold versions are recoloured with concepts/goldify.py (red roses/hearts stay red).
+HANDHELD = json.load(open(os.path.join(OLD, 'models', 'item', 'frost', 'frost_sword.json')))['display']
+VTOOLS = ['sword', 'axe', 'spear', 'scythe', 'pickaxe', 'bow', 'shield']
+VSETS = [('thornheart', VT, False, False), ('goldthornheart', VT, True, True),
+         ('cupid', VC, False, False), ('goldcupid', VC, True, False)]
+
+def vsprite(mod, fn, gold, vines_dark, *args):
+    s_ = getattr(mod, fn)(*args)
+    img = s_.image()
+    return goldify.gold_image(img, s_.outline, vines_dark=vines_dark) if gold else img
+
+def vtex(name, img):
+    img.save(p('assets', NS, 'textures', 'item', 'valentines', name + '.png'))
+    return f'{NS}:item/valentines/{name}'
+
+def shield_model(name, front):
+    """3D shield in the same spot as vanilla's (plate 12x22, handle behind), the sprite on its face."""
+    tex = Image.new('RGBA', (64, 32), (0, 0, 0, 0))
+    tex.alpha_composite(front, (0, 0))
+    back = Image.new('RGBA', (32, 32), (0, 0, 0, 0)); bp = back.load(); fp = front.load()
+    rim = fp[16, 4]
+    for y in range(32):
+        for x in range(32):
+            if fp[x, y][3]:
+                c = fp[x, y]
+                bp[31 - x, y] = rim if (x in (0, 31) or not fp[max(0, x-1), y][3] or not fp[min(31, x+1), y][3]
+                                       or not fp[x, max(0, y-1)][3] or not fp[x, min(31, y+1)][3]) \
+                    else tuple(int(ch * 0.55) for ch in rim[:3]) + (255,)
+    tex.alpha_composite(back, (32, 0))
+    t = vtex(name + '_model', tex)
+    fu = [1, 1.5, 7, 14.5]                     # the heater area of the 32x32 sprite, in the 64x32 texture
+    bu = [15, 1.5, 9, 14.5]
+    ru = [4, 1, 4.25, 1.25]                    # one rim pixel for the edges and the handle
+    plate = {'from': [-6, -11, 1], 'to': [6, 11, 2],
+             'faces': {'south': {'uv': fu, 'texture': '#0'}, 'north': {'uv': bu, 'texture': '#0'},
+                       'east': {'uv': ru, 'texture': '#0'}, 'west': {'uv': ru, 'texture': '#0'},
+                       'up': {'uv': ru, 'texture': '#0'}, 'down': {'uv': ru, 'texture': '#0'}}}
+    handle = {'from': [-1, -3, -5], 'to': [1, 3, 1],
+              'faces': {f: {'uv': ru, 'texture': '#0'} for f in ('north', 'south', 'east', 'west', 'up', 'down')}}
+    base = {'gui_light': 'front', 'textures': {'0': t, 'particle': t}, 'elements': [plate, handle]}
+    held = dict(base, display={
+        'thirdperson_righthand': {'rotation': [0, 90, 0], 'translation': [10, 6, -4], 'scale': [1, 1, 1]},
+        'thirdperson_lefthand': {'rotation': [0, 90, 0], 'translation': [10, 6, 12], 'scale': [1, 1, 1]},
+        'firstperson_righthand': {'rotation': [0, 180, 5], 'translation': [-10, 2, -10], 'scale': [1.25, 1.25, 1.25]},
+        'firstperson_lefthand': {'rotation': [0, 180, 5], 'translation': [10, 0, -10], 'scale': [1.25, 1.25, 1.25]},
+        'gui': {'rotation': [15, -25, -5], 'translation': [2, 3, 0], 'scale': [0.65, 0.65, 0.65]},
+        'fixed': {'rotation': [0, 180, 0], 'translation': [-4.5, 4.5, -5], 'scale': [0.55, 0.55, 0.55]},
+        'ground': {'rotation': [0, 0, 0], 'translation': [2, 4, 2], 'scale': [0.25, 0.25, 0.25]}})
+    blocking = dict(base, display=dict(held['display'], **{
+        'thirdperson_righthand': {'rotation': [45, 135, 0], 'translation': [3.51, 11, -2], 'scale': [1, 1, 1]},
+        'thirdperson_lefthand': {'rotation': [45, 135, 0], 'translation': [13.51, 3, 5], 'scale': [1, 1, 1]},
+        'firstperson_righthand': {'rotation': [0, 180, -5], 'translation': [-15, 5, -11], 'scale': [1.25, 1.25, 1.25]},
+        'firstperson_lefthand': {'rotation': [0, 180, -5], 'translation': [5, 5, -11], 'scale': [1.25, 1.25, 1.25]}}))
+    write_json(held, 'assets', NS, 'models', 'item', 'valentines', name + '.json')
+    write_json(blocking, 'assets', NS, 'models', 'item', 'valentines', name + '_blocking.json')
+    write_json({'model': {'type': 'minecraft:condition', 'property': 'minecraft:using_item',
+                          'on_false': m(f'{NS}:item/valentines/{name}'),
+                          'on_true': m(f'{NS}:item/valentines/{name}_blocking')}},
+               'assets', NS, 'items', name + '.json')
+
+VITEMS = []
+for vset, mod, gold_, vd in VSETS:
+    for tool in VTOOLS:
+        name = f'{vset}{tool}'
+        VITEMS.append(name)
+        if tool == 'bow':
+            frames = []
+            for k in range(4):
+                t = vtex(f'{name}' if k == 0 else f'{name}_pulling_{k-1}', vsprite(mod, 'bow', gold_, vd, k))
+                mid = f'{NS}:item/valentines/{name}' if k == 0 else f'{NS}:item/valentines/{name}_pulling_{k-1}'
+                write_json({'parent': 'minecraft:item/bow', 'textures': {'layer0': t}},
+                           'assets', NS, 'models', 'item', 'valentines', mid.split('/')[-1] + '.json')
+                frames.append(mid)
+            write_json({'model': bow(*frames)}, 'assets', NS, 'items', name + '.json')
+            continue
+        if tool == 'shield':
+            shield_model(name, vsprite(mod, 'shield', gold_, vd))
+            continue
+        t = vtex(name, vsprite(mod, tool, gold_, vd))
+        write_json({'parent': 'minecraft:item/handheld', 'textures': {'layer0': t}, 'display': HANDHELD},
+                   'assets', NS, 'models', 'item', 'valentines', name + '.json')
+        write_json({'model': m(f'{NS}:item/valentines/{name}')}, 'assets', NS, 'items', name + '.json')
+
+# ---------------------------------------------------------------- Valentines back blings (48x48)
+VBLINGS = [('heartofthorns', VT, 'backbling'), ('thornwings', VT, 'backbling_wings'), ('blackrose', VT, 'backbling_rose'),
+           ('angelwings', VC, 'backbling_wings'), ('cupidquiver', VC, 'backbling_quiver'), ('wingedheart', VC, 'backbling_heart')]
+for bid, mod, fn in VBLINGS:
+    for gold_ in (False, True):
+        full = ('gold' + bid) if gold_ else bid
+        img = vsprite(mod, fn, gold_, gold_ and mod is VT)
+        img.save(p('assets', NS, 'textures', 'item', 'backbling', full + '.png'))
+        write_json({'parent': 'minecraft:item/generated',
+                    'textures': {'layer0': f'{NS}:item/backbling/{full}'},
+                    'display': {'fixed': {'rotation': [0, 180, 0], 'translation': [0, 0, 0], 'scale': [1, 1, 1]},
+                                'gui': {'rotation': [0, 0, 0], 'translation': [0, 0, 0], 'scale': [1, 1, 1]}}},
+                   'assets', NS, 'models', 'item', 'backbling', full + '.json')
+        write_json({'model': {'type': 'minecraft:model', 'model': f'{NS}:item/backbling/{full}'}},
+                   'assets', NS, 'items', full + '_backbling.json')
 
 # ---------------------------------------------------------------- brighter armor glint
 def armor_glint(size=128):

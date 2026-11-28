@@ -11,7 +11,7 @@ the "Latest build" release. See README.md for commands and setup.
 - Mine names on the server: A-K are `amine`, `bmine` ... `kmine`; L-Z are just the letter: `l`, `m` ... `z`.
   Plus `woodmine` and `pvpmine`. Never rename them or assume `lmine`-`zmine`.
 - Special item names in the server's items.yml have no dashes (easier to type in game): armor is
-  `winterhelmet`, `winterchestplate`, `winterleggings`, `winterboots` (same for goldwinter/thornheart/agamemnon/tidecaller; items.yml `set:` ties them into a set whose
+  `winterhelmet`, `winterchestplate`, `winterleggings`, `winterboots` (same for goldwinter/thornheart/goldthornheart/cupid/goldcupid/agamemnon/tidecaller; items.yml `set:` ties them into a set whose
   armor enchants only work as a full set), weapons are
   `frostsword`, `frostaxe`, `frostbow`, `frostscythe`.
 - `prison-core/src/main/resources/warps-menu.yml` is the server's own warps config, copied exactly
@@ -41,3 +41,11 @@ the "Latest build" release. See README.md for commands and setup.
   - The Agamemnon (Warlord) black/gold set with the custom helmet is part of the plan; concepts are in
     `resource-pack/concepts/`.
   - Frost weapons keep their textures/models, converted to the 1.21.4 item model format.
+- Valentines collection (decided Nov 2026): two sets, Thornheart (dark) and Cupid (light), each with a gold
+  version. Per set: 4 armor + 7 tools (sword, axe, spear (melee, netherite sword), scythe, pickaxe, bow, shield)
+  + 3 back blings, so 56 pieces with gold. Items in `resource-pack/valentines-items.yml` (names like `cupidspear`,
+  `goldthornheartshield`), tools use `item-model: classicprison:<name>`. Set bonuses on the chestplate:
+  Thornheart Thornguard I/II (10%/20% melee damage back), Cupid Absorption I/II (hearts refill 10 s after last hit).
+  Gold versions: vanilla gold palette, red roses/hearts stay red, Gold Thornheart plate bright + vines darker
+  (`concepts/goldify.py`). Art: `concepts/weapons/` (tools, back blings), `concepts/new-sets/cupid.py` (armor),
+  full sheet `concepts/valentines-collection.png`.

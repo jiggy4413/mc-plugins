@@ -91,48 +91,7 @@
     enchants: {speed: 2}
 
 
-  # ---- Thornheart ---- #
-  thornhearthelmet:
-    material: NETHERITE_HELMET
-    item-model: "classicprison:thornheart_helmet"
-    equipment: "model"
-    set: thornheart
-    show-attributes: true
-    unbreakable: true
-    name: "&4&lThornheart Helmet"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
-
-  thornheartchestplate:
-    material: NETHERITE_CHESTPLATE
-    item-model: "classicprison:thornheart_chestplate"
-    equipment: "classicprison:thornheart"
-    set: thornheart
-    show-attributes: true
-    unbreakable: true
-    name: "&4&lThornheart Chestplate"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
-
-  thornheartleggings:
-    material: NETHERITE_LEGGINGS
-    item-model: "classicprison:thornheart_leggings"
-    equipment: "classicprison:thornheart"
-    set: thornheart
-    show-attributes: true
-    unbreakable: true
-    name: "&4&lThornheart Leggings"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
-
-  thornheartboots:
-    material: NETHERITE_BOOTS
-    item-model: "classicprison:thornheart_boots"
-    equipment: "classicprison:thornheart"
-    set: thornheart
-    show-attributes: true
-    unbreakable: true
-    name: "&4&lThornheart Boots"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
-
-
+  # ---- Thornheart: moved to valentines-items.yml (with Golden Thornheart, Cupid, Golden Cupid) ---- #
 
   # ---- Agamemnon ---- #
   agamemnonhelmet:
