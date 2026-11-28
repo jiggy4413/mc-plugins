@@ -110,10 +110,18 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
         }
 
         boolean fits(ItemStack item) {
+            String type = item.getType().name();
+            if (type.equals("SHIELD")) {
+                for (String a : appliesTo) {
+                    if (a.equalsIgnoreCase("SHIELD")) {
+                        return true;
+                    }
+                }
+                return false;
+            }
             if (appliesTo.isEmpty()) {
                 return true;
             }
-            String type = item.getType().name();
             for (String a : appliesTo) {
                 if (type.endsWith(a.toUpperCase(Locale.ROOT))) {
                     return true;
@@ -301,7 +309,9 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
             return Category.PICKAXE;
         }
         // axes, hoes (scythes) and bows use the sword page and enchants
-        if (t.endsWith("_SWORD") || t.endsWith("_AXE") || t.endsWith("_HOE") || t.equals("BOW") || t.equals("CROSSBOW")) {
+        // shields too, but only enchants that name SHIELD in only-for go on them (see Def.fits)
+        if (t.endsWith("_SWORD") || t.endsWith("_AXE") || t.endsWith("_HOE") || t.equals("BOW") || t.equals("CROSSBOW")
+                || t.equals("SHIELD")) {
             return Category.SWORD;
         }
         if (t.endsWith("_HELMET") || t.endsWith("_CHESTPLATE") || t.endsWith("_LEGGINGS") || t.endsWith("_BOOTS")) {
@@ -503,6 +513,58 @@ public final class Enchants implements Listener, CommandExecutor, org.bukkit.com
             center.getWorld().playSound(center.getLocation(), org.bukkit.Sound.ENTITY_GENERIC_EXPLODE, 0.4f, 1.2f);
             center.getWorld().spawnParticle(org.bukkit.Particle.EXPLOSION, center.getLocation().add(0.5, 0.5, 0.5), 1);
             give(p, items, center);
+        }
+    }
+
+    /**
+     * Creeping Vines (crate pickaxes): sometimes a vine creeps out from the mined block and breaks a short,
+     * winding trail of blocks next to it (only inside the same mine). Drops go to the inventory like Explosive.
+     */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onVines(BlockBreakEvent event) {
+        Player p = event.getPlayer();
+        int lvl = heldLevel(p, Category.PICKAXE, "creeping-vines");
+        if (lvl <= 0) {
+            return;
+        }
+        Def d = def(Category.PICKAXE, "creeping-vines");
+        if (ThreadLocalRandom.current().nextDouble() * 100 >= d.effect(lvl)) {
+            return;
+        }
+        Block at = event.getBlock();
+        Mine m = mines.mineAt(at);
+        if (m == null || m.isResetting()) {
+            return;
+        }
+        org.bukkit.configuration.ConfigurationSection s = config.getConfigurationSection("enchant-settings.creeping-vines");
+        int length = Math.max(1, Math.min(32, s == null ? 8 : s.getInt("blocks", 8)));
+        ItemStack tool = p.getInventory().getItemInMainHand();
+        boolean smelt = config.getBoolean("explosive-auto-smelt", true) || (autoSmelt != null && autoSmelt.test(p));
+        List<ItemStack> items = new ArrayList<ItemStack>();
+        int[][] dirs = {{1, 0, 0}, {-1, 0, 0}, {0, 0, 1}, {0, 0, -1}, {0, -1, 0}, {0, 1, 0}};
+        int broken = 0;
+        int tries = 0;
+        Block cur = at;
+        while (broken < length && tries++ < length * 6) {
+            int[] dir = dirs[ThreadLocalRandom.current().nextInt(dirs.length)];
+            Block b = cur.getRelative(dir[0], dir[1], dir[2]);
+            if (b.getType().isAir() || b.getType() == Material.BEDROCK
+                    || !m.contains(b.getWorld(), b.getX(), b.getY(), b.getZ())) {
+                continue;
+            }
+            for (ItemStack drop : b.getDrops(tool)) {
+                items.add(smelt ? smelted(drop) : drop.clone());
+            }
+            b.getWorld().spawnParticle(org.bukkit.Particle.BLOCK, b.getLocation().add(0.5, 0.5, 0.5), 6, 0.3, 0.3, 0.3,
+                    Material.OAK_LEAVES.createBlockData());
+            b.setType(Material.AIR, false);
+            broken++;
+            cur = b;
+        }
+        if (broken > 0) {
+            mines.blocksChanged(m, broken);
+            at.getWorld().playSound(at.getLocation(), org.bukkit.Sound.BLOCK_SWEET_BERRY_BUSH_BREAK, 0.8f, 0.9f);
+            give(p, items, at);
         }
     }
 

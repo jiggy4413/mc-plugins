@@ -7,7 +7,9 @@
 # Full set bonuses (on the chestplate, only while all 4 pieces of the SAME set are worn):
 #   Thornheart: Thornguard I (10% of melee damage back)   Golden Thornheart: Thornguard II (20%)
 #   Cupid: Absorption I (+2 hearts)                        Golden Cupid: Absorption II (+4 hearts)
-# The spear is a melee weapon (a netherite sword underneath). Tools have no enchants yet.
+# The spear is a melee weapon (a netherite sword underneath).
+# Tool enchants (PrisonCore 2.8.0+, enchants.yml): regular tools roll level I-IV (40/30/20/10%) each time
+# they're given, gold tools are always level V. In the lore, {enchant} becomes the rolled strength.
 
   # ---- Thornheart ---- #
   thornhearthelmet:
@@ -57,7 +59,9 @@
     show-attributes: true
     unbreakable: true
     name: "&4&lThornheart Sword"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
+    lore: ["&e{rosebleed}% chance to make your", "&etarget bleed.", "", "&7A limited Valentines Crate exclusive."]
+    enchants:
+      rosebleed: {1: 40, 2: 30, 3: 20, 4: 10}
 
   thornheartaxe:
     material: NETHERITE_AXE
@@ -65,7 +69,9 @@
     show-attributes: true
     unbreakable: true
     name: "&4&lThornheart Axe"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
+    lore: ["&e+{lacerate}% damage to bleeding targets.", "", "&7A limited Valentines Crate exclusive."]
+    enchants:
+      lacerate: {1: 40, 2: 30, 3: 20, 4: 10}
 
   thornheartspear:
     material: NETHERITE_SWORD
@@ -73,7 +79,9 @@
     show-attributes: true
     unbreakable: true
     name: "&4&lThornheart Spear"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
+    lore: ["&e{impale}% chance to pin your target", "&ein place for a moment.", "", "&7A limited Valentines Crate exclusive."]
+    enchants:
+      impale: {1: 40, 2: 30, 3: 20, 4: 10}
 
   thornheartscythe:
     material: NETHERITE_HOE
@@ -81,7 +89,9 @@
     show-attributes: true
     unbreakable: true
     name: "&4&lThornheart Scythe"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
+    lore: ["&eHeal {reap} hearts when you", "&ekill a player.", "", "&7A limited Valentines Crate exclusive."]
+    enchants:
+      reap: {1: 40, 2: 30, 3: 20, 4: 10}
 
   thornheartpickaxe:
     material: NETHERITE_PICKAXE
@@ -89,7 +99,9 @@
     show-attributes: true
     unbreakable: true
     name: "&4&lThornheart Pickaxe"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
+    lore: ["&e{creeping-vines}% chance per block for a vine", "&eto break a trail of blocks.", "", "&7A limited Valentines Crate exclusive."]
+    enchants:
+      creeping-vines: {1: 40, 2: 30, 3: 20, 4: 10}
 
   thornheartbow:
     material: BOW
@@ -97,7 +109,9 @@
     show-attributes: true
     unbreakable: true
     name: "&4&lThornheart Bow"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
+    lore: ["&e{thorn-arrow}% chance for your arrows to", "&emake the target bleed.", "", "&7A limited Valentines Crate exclusive."]
+    enchants:
+      thorn-arrow: {1: 40, 2: 30, 3: 20, 4: 10}
 
   thornheartshield:
     material: SHIELD
@@ -105,7 +119,9 @@
     show-attributes: true
     unbreakable: true
     name: "&4&lThornheart Shield"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
+    lore: ["&eBlocking a hit deals {thornwall} hearts", "&eback and knocks the attacker away.", "", "&7A limited Valentines Crate exclusive."]
+    enchants:
+      thornwall: {1: 40, 2: 30, 3: 20, 4: 10}
 
 
   # ---- Golden Thornheart ---- #
@@ -156,7 +172,9 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Thornheart Sword"
-    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+    lore: ["&e{rosebleed}% chance to make your", "&etarget bleed.", "", "&7A rare limited Valentines Crate exclusive."]
+    enchants:
+      rosebleed: 5
 
   goldthornheartaxe:
     material: NETHERITE_AXE
@@ -164,7 +182,9 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Thornheart Axe"
-    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+    lore: ["&e+{lacerate}% damage to bleeding targets.", "", "&7A rare limited Valentines Crate exclusive."]
+    enchants:
+      lacerate: 5
 
   goldthornheartspear:
     material: NETHERITE_SWORD
@@ -172,7 +192,9 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Thornheart Spear"
-    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+    lore: ["&e{impale}% chance to pin your target", "&ein place for a moment.", "", "&7A rare limited Valentines Crate exclusive."]
+    enchants:
+      impale: 5
 
   goldthornheartscythe:
     material: NETHERITE_HOE
@@ -180,7 +202,9 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Thornheart Scythe"
-    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+    lore: ["&eHeal {reap} hearts when you", "&ekill a player.", "", "&7A rare limited Valentines Crate exclusive."]
+    enchants:
+      reap: 5
 
   goldthornheartpickaxe:
     material: NETHERITE_PICKAXE
@@ -188,7 +212,9 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Thornheart Pickaxe"
-    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+    lore: ["&e{creeping-vines}% chance per block for a vine", "&eto break a trail of blocks.", "", "&7A rare limited Valentines Crate exclusive."]
+    enchants:
+      creeping-vines: 5
 
   goldthornheartbow:
     material: BOW
@@ -196,7 +222,9 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Thornheart Bow"
-    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+    lore: ["&e{thorn-arrow}% chance for your arrows to", "&emake the target bleed.", "", "&7A rare limited Valentines Crate exclusive."]
+    enchants:
+      thorn-arrow: 5
 
   goldthornheartshield:
     material: SHIELD
@@ -204,7 +232,9 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Thornheart Shield"
-    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+    lore: ["&eBlocking a hit deals {thornwall} hearts", "&eback and knocks the attacker away.", "", "&7A rare limited Valentines Crate exclusive."]
+    enchants:
+      thornwall: 5
 
 
   # ---- Cupid ---- #
@@ -255,7 +285,9 @@
     show-attributes: true
     unbreakable: true
     name: "&d&lCupid Sword"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
+    lore: ["&e{lovestruck}% chance to weaken your", "&etarget for 3 seconds.", "", "&7A limited Valentines Crate exclusive."]
+    enchants:
+      lovestruck: {1: 40, 2: 30, 3: 20, 4: 10}
 
   cupidaxe:
     material: NETHERITE_AXE
@@ -263,7 +295,9 @@
     show-attributes: true
     unbreakable: true
     name: "&d&lCupid Axe"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
+    lore: ["&e+{heartsplitter}% damage to targets", "&eat full health.", "", "&7A limited Valentines Crate exclusive."]
+    enchants:
+      heartsplitter: {1: 40, 2: 30, 3: 20, 4: 10}
 
   cupidspear:
     material: NETHERITE_SWORD
@@ -271,7 +305,9 @@
     show-attributes: true
     unbreakable: true
     name: "&d&lCupid Spear"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
+    lore: ["&e{smitten}% chance to slow your target", "&eand speed yourself up.", "", "&7A limited Valentines Crate exclusive."]
+    enchants:
+      smitten: {1: 40, 2: 30, 3: 20, 4: 10}
 
   cupidscythe:
     material: NETHERITE_HOE
@@ -279,7 +315,9 @@
     show-attributes: true
     unbreakable: true
     name: "&d&lCupid Scythe"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
+    lore: ["&eHeal {soul-harvest}% of the damage you deal.", "", "&7A limited Valentines Crate exclusive."]
+    enchants:
+      soul-harvest: {1: 40, 2: 30, 3: 20, 4: 10}
 
   cupidpickaxe:
     material: NETHERITE_PICKAXE
@@ -287,7 +325,9 @@
     show-attributes: true
     unbreakable: true
     name: "&d&lCupid Pickaxe"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
+    lore: ["&e{lucky-charm}% chance per block to find", "&ebonus tokens or money.", "", "&7A limited Valentines Crate exclusive."]
+    enchants:
+      lucky-charm: {1: 40, 2: 30, 3: 20, 4: 10}
 
   cupidbow:
     material: BOW
@@ -295,7 +335,9 @@
     show-attributes: true
     unbreakable: true
     name: "&d&lCupid Bow"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
+    lore: ["&e{cupids-arrow}% chance for your arrows to make", "&ethe target glow and slow down.", "", "&7A limited Valentines Crate exclusive."]
+    enchants:
+      cupids-arrow: {1: 40, 2: 30, 3: 20, 4: 10}
 
   cupidshield:
     material: SHIELD
@@ -303,7 +345,9 @@
     show-attributes: true
     unbreakable: true
     name: "&d&lCupid Shield"
-    lore: ["", "&7A limited Valentines Crate exclusive."]
+    lore: ["&eBlocking a hit gives you {sanctuary}s", "&eof Regeneration.", "", "&7A limited Valentines Crate exclusive."]
+    enchants:
+      sanctuary: {1: 40, 2: 30, 3: 20, 4: 10}
 
 
   # ---- Golden Cupid ---- #
@@ -354,7 +398,9 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Cupid Sword"
-    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+    lore: ["&e{lovestruck}% chance to weaken your", "&etarget for 3 seconds.", "", "&7A rare limited Valentines Crate exclusive."]
+    enchants:
+      lovestruck: 5
 
   goldcupidaxe:
     material: NETHERITE_AXE
@@ -362,7 +408,9 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Cupid Axe"
-    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+    lore: ["&e+{heartsplitter}% damage to targets", "&eat full health.", "", "&7A rare limited Valentines Crate exclusive."]
+    enchants:
+      heartsplitter: 5
 
   goldcupidspear:
     material: NETHERITE_SWORD
@@ -370,7 +418,9 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Cupid Spear"
-    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+    lore: ["&e{smitten}% chance to slow your target", "&eand speed yourself up.", "", "&7A rare limited Valentines Crate exclusive."]
+    enchants:
+      smitten: 5
 
   goldcupidscythe:
     material: NETHERITE_HOE
@@ -378,7 +428,9 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Cupid Scythe"
-    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+    lore: ["&eHeal {soul-harvest}% of the damage you deal.", "", "&7A rare limited Valentines Crate exclusive."]
+    enchants:
+      soul-harvest: 5
 
   goldcupidpickaxe:
     material: NETHERITE_PICKAXE
@@ -386,7 +438,9 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Cupid Pickaxe"
-    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+    lore: ["&e{lucky-charm}% chance per block to find", "&ebonus tokens or money.", "", "&7A rare limited Valentines Crate exclusive."]
+    enchants:
+      lucky-charm: 5
 
   goldcupidbow:
     material: BOW
@@ -394,7 +448,9 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Cupid Bow"
-    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+    lore: ["&e{cupids-arrow}% chance for your arrows to make", "&ethe target glow and slow down.", "", "&7A rare limited Valentines Crate exclusive."]
+    enchants:
+      cupids-arrow: 5
 
   goldcupidshield:
     material: SHIELD
@@ -402,4 +458,6 @@
     show-attributes: true
     unbreakable: true
     name: "&6&lGolden Cupid Shield"
-    lore: ["", "&7A rare limited Valentines Crate exclusive."]
+    lore: ["&eBlocking a hit gives you {sanctuary}s", "&eof Regeneration.", "", "&7A rare limited Valentines Crate exclusive."]
+    enchants:
+      sanctuary: 5

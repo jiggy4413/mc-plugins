@@ -520,6 +520,7 @@ public final class EnchantEffects implements Listener {
         }
         keyFinder(p);
         moneyFinder(p);
+        luckyCharm(p);
         int xp = enchants.heldLevel(p, Enchants.Category.PICKAXE, "xp-boost");
         if (xp > 0 && roll(strength(Enchants.Category.PICKAXE, "xp-boost", xp))) {
             p.giveExp(1); // goes through Mending like any other XP
@@ -586,6 +587,26 @@ public final class EnchantEffects implements Listener {
             return;
         }
         enchants.actionBar(p, "&aMoney Finder: +$" + new java.text.DecimalFormat("#,##0").format(amount));
+    }
+
+    /** Lucky Charm (crate pickaxes): a small chance per block to find bonus tokens or bonus money. */
+    private void luckyCharm(Player p) {
+        int lvl = enchants.heldLevel(p, Enchants.Category.PICKAXE, "lucky-charm");
+        if (lvl <= 0 || !roll(strength(Enchants.Category.PICKAXE, "lucky-charm", lvl))) {
+            return;
+        }
+        ConfigurationSection s = settings("lucky-charm");
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            long t = s.getLong("tokens", 25);
+            tokens.add(p, t);
+            enchants.actionBar(p, "&dLucky Charm: &e+" + Tokens.format(t) + " tokens");
+        } else {
+            double amount = s.getDouble("money", 2500);
+            if (pay(p, amount)) {
+                enchants.actionBar(p, "&dLucky Charm: &a+$" + new java.text.DecimalFormat("#,##0").format(amount));
+            }
+        }
+        p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.6f, 1.8f);
     }
 
     private boolean pay(Player p, double amount) {

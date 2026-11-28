@@ -90,6 +90,7 @@ public final class PrisonCore extends JavaPlugin {
                 "io.github.jiggy4413.prisoncore.enchants.EnchantMenu",
                 "io.github.jiggy4413.prisoncore.store.Store",
                 "io.github.jiggy4413.prisoncore.enchants.EnchantEffects",
+                "io.github.jiggy4413.prisoncore.enchants.WeaponEnchants",
                 "io.github.jiggy4413.prisoncore.enchants.SpecialItems",
                 "io.github.jiggy4413.prisoncore.store.Store$Menu");
         hotSwap = new HotSwap(this, getFile());
@@ -139,6 +140,7 @@ public final class PrisonCore extends JavaPlugin {
         enchants.start();
         enchantEffects = new io.github.jiggy4413.prisoncore.enchants.EnchantEffects(enchants, mines, tokens);
         getServer().getPluginManager().registerEvents(enchantEffects, this);
+        getServer().getPluginManager().registerEvents(new io.github.jiggy4413.prisoncore.enchants.WeaponEnchants(enchants), this);
         enchantEffects.start();
         cosmetics = new io.github.jiggy4413.prisoncore.cosmetics.Cosmetics(this);
         cosmetics.load();
