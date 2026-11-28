@@ -233,16 +233,27 @@ def backbling_rose():
 
 
 def pickaxe():
-    """Black-steel pick with crimson points, thorn spikes on top and a rose where it meets the haft."""
+    """Big black-steel pick: one end a long crimson spike, the other a forked thorn; thorns along the
+    top and a big rose where it meets the vine-wrapped haft."""
     s = base()
-    s.line((4, 28.5), (19.5, 13), 1.2, 'steel')
-    vine_wrap(s, (5, 27), (16, 16), 3)
+    s.line((3.5, 29), (18.5, 14), 1.3, 'steel')
+    vine_wrap(s, (5, 27), (15, 17), 3)
     H = (19, 13)
-    parts.pick_head(s, H, 'steel', tip_mat='edge')
-    for o in (-5, 0, 5):                                         # thorn spikes on the top of the head
-        a = 1.5 - 0.045 * o * o
-        p = parts.local(H, [(a + 2.2, o)])[0]
-        q = parts.local(H, [(a + 3.6, o - .6)])[0]
-        s.line(p, q, .45, 'edge')
-    s.stamp(17, 10, ROSE5, RKEY)
+    parts.pick_head(s, H, 'steel', half=13.5, thick=2.7, bow=0.04, tip_mat='edge', tip_len=4.5)
+    fork = parts.local(H, [(1.5 - 0.04 * 144, -12), (1.5 - 0.04 * 144 + 3.2, -14.2)])
+    s.line(fork[0], fork[1], .6, 'edge')                       # second prong of the forked end
+    for o in (-5, 5.5):                                         # thorn spikes on the top
+        a2 = 1.5 - 0.04 * o * o
+        p, q = parts.local(H, [(a2 + 2.6, o), (a2 + 4.8, o - 1.1)])
+        s.line(p, q, .55, 'edge')
+    big = ["..LLRR..",
+           ".LRRRRR.",
+           "LRRddRRR",
+           "RRdKKdRR",
+           "RRdKKdRD",
+           "RRRddRRD",
+           ".RRRRDD.",
+           "..RDDD.."]
+    s.stamp(15, 9, big, RKEY)
+    s.color(14, 15, LEAF); s.color(23, 15, LEAF); s.color(24, 15, LEAFD)
     return s

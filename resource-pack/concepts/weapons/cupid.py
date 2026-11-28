@@ -223,15 +223,31 @@ def backbling_heart():
 
 
 def pickaxe():
-    """Pearl pick shaped like a pair of spread wings, pink feather points, gold haft, heart centre."""
+    """Cupid's arrow through a heart: the head is a gold arrow piercing a big pink heart. The sharp
+    pink arrowhead is the pick; white feather fletching on the other end."""
     s = base()
-    s.line((4, 28.5), (19.5, 13), 1.2, 'gold')
+    s.line((3.5, 29), (18.5, 14), 1.2, 'gold')
+    for t in (0.3, 0.6):
+        x, y = 3.5 + 15 * t, 29 - 15 * t
+        s.put(int(x), int(y), 'pearl')
     H = (19, 13)
-    parts.pick_head(s, H, 'pearl', thick=2.1, tip_mat='pink', tip_len=3)
-    for o in (-7, -4, 4, 7):                                     # feather notches along the underside
-        a = 1.5 - 0.045 * o * o
-        p = parts.local(H, [(a - 1.6, o)])[0]
-        s.color(int(p[0]), int(p[1]), FEATHER[2])
-    s.disc((19, 13), 2.0, 'gold')
-    s.stamp(17, 11, HEART5, HKEY)
+    a0 = 2.0
+    p, q = parts.local(H, [(a0, -11), (a0, 10)])
+    s.line(p, q, .9, 'gold')                                     # arrow shaft across the top
+    s.poly(parts.local(H, [(a0 - 3.2, 9), (a0, 15.5), (a0 + 3.2, 9), (a0, 10.5)]), 'heart')   # arrowhead
+    s.path(parts.local(H, [(a0 - 2.6, 9.6), (a0, 14.8)]), .4, 'pink')
+    for k in range(3):                                           # fletching
+        o = -8.5 - k * 1.6
+        for side in (-1, 1):
+            p1, q1 = parts.local(H, [(a0, o), (a0 + side * 3.0, o - 2.2)])
+            s.line(p1, q1, .6, 'feather' if k < 2 else 'pink')
+    # big heart pierced by the arrow
+    def heart(x, y):
+        X, Y = x + .5, y + .5
+        c = parts.local(H, [(a0 + 1.2, 0)])[0]
+        u = (X - c[0]) / 6.2; v = -(Y - c[1] + .8) / 6.2 * 1.15 + .15
+        return (u * u + v * v - 1) ** 3 - u * u * v ** 3 <= 0
+    s.where(heart, 'heart')
+    s.where(lambda x, y: heart(x, y) and not heart(x - 1, y - 1), 'pink')
+    s.stamp(int(parts.local(H, [(a0 + 1.2, 0)])[0][0]) - 3, int(parts.local(H, [(a0 + 1.2, 0)])[0][1]) - 3, ['.LL.', 'LL..', 'L...'], {'L': PINK[0]})
     return s
