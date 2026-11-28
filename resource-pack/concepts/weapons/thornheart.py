@@ -49,31 +49,43 @@ def vine_wrap(s, a, b, every=3):
 
 
 def sword():
+    """Thornblade: a black-steel blade whose edges grow sharp thorns, with a guard of curling thorny
+    branches and a rose at the centre."""
     s = base()
-    s.line((12, 20), (25, 7), 2.6, 'steel')
-    s.line((24, 8), (28.5, 3.5), 1.7, 'steel')
-    s.line((14.8, 21.2), (27, 9), 0.8, 'edge')            # crimson cutting edge
-    s.line((13.5, 18.5), (24, 8), 0.6, 'wine')            # fuller
-    s.line((7, 13), (18, 24), 1.6, 'steel')               # crossguard
-    s.line((4, 27.5), (10, 21.5), 1.3, 'steel')
+    s.line((12, 20), (25, 7), 2.2, 'steel')
+    s.line((24, 8), (29, 3), 1.3, 'steel')
+    # thorn barbs pointing back towards the hilt along both edges
+    for t in (0.22, 0.5, 0.78):
+        x, y = 12 + 13 * t, 20 - 13 * t
+        for side in (1, -1):
+            nx, ny = .707 * side, .707 * side
+            bx, by = x + nx * 2.2, y + ny * 2.2
+            s.line((bx, by), (bx + nx * 1.6 - .707 * 1.8, by + ny * 1.6 + .707 * 1.8), .5, 'edge')
+    s.line((13.5, 18.5), (25.5, 6.5), 0.55, 'edge')        # crimson core
+    # guard: two thorny branches curling up towards the blade
+    s.path([(12, 20), (9, 18), (7.5, 15), (8.5, 12.5)], .9, 'vine')
+    s.path([(12, 20), (14, 23), (17, 24.5), (19.5, 23.5)], .9, 'vine')
+    thorns(s, [(7, 13), (9, 11), (20, 24), (18, 25), (8, 17), (15, 24)])
+    s.line((4.5, 27), (10.5, 21.5), 1.2, 'steel')
     vine_wrap(s, (4, 27), (10, 21), 2)
-    s.stamp(10, 16, ROSE5, RKEY)                          # rose on the guard
-    s.stamp(1, 27, ROSE5[:4], RKEY)                       # rose pommel
+    s.stamp(10, 17, ROSE5, RKEY)
+    s.stamp(1, 27, ROSE5[:4], RKEY)
     return s
 
 
 def axe():
+    """Bearded black-steel axe with hooked, razor points top and bottom and a thorn spike on the back."""
     s = base()
-    s.line((4, 28.5), (20, 12.5), 1.3, 'steel')
-    vine_wrap(s, (5, 27), (17, 15), 3)
-    # broad crescent blade swinging out to the upper left of the head
-    s.where(lambda x, y: (x + .5 - 14) ** 2 + (y + .5 - 11) ** 2 <= 92 and (x + .5 - 21) ** 2 + (y + .5 - 15) ** 2 >= 40
-            and x + y <= 27 and y <= 17, 'steel')
-    s.where(lambda x, y: s.mat[y][x] == 'steel' and (x + .5 - 14) ** 2 + (y + .5 - 11) ** 2 >= 62
-            and x + y <= 26, 'edge')
-    s.poly([(17, 9), (23, 4), (28, 9), (22, 15), (18, 14)], 'steel')   # head block
-    s.stamp(20, 7, ROSE5, RKEY)
-    s.color(26, 12, LEAF); s.color(27, 12, LEAFD); s.color(19, 5, LEAF); s.color(18, 5, LEAFD)
+    s.line((4, 28.5), (21.5, 11), 1.2, 'steel')
+    vine_wrap(s, (5, 27), (16, 16), 3)
+    H = (18.5, 13.5)
+    blade = parts.local(H, [(-2.5, 1), (-9, 7.5), (-7.5, 10.5), (-2, 8.5), (2.5, 9), (7.5, 11), (6.5, 6.5), (3, 1)])
+    s.poly(blade, 'steel')
+    edge = parts.local(H, [(-8.5, 9.6), (-2, 7.8), (2.5, 8.2), (7, 10.2)])
+    s.path(edge, .6, 'edge')
+    s.poly(parts.local(H, [(-2, -1.2), (2.5, -1.2), (0.5, -6)]), 'steel')          # thorn spike on the back
+    s.put(int(parts.local(H, [(0.5, -5)])[0][0]), int(parts.local(H, [(0.5, -5)])[0][1]), 'edge')
+    s.stamp(17, 11, ROSE3, RKEY)
     return s
 
 

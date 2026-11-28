@@ -49,28 +49,32 @@ def wing(s, root, direction, length, mat='feather', rows=3):
 
 
 def sword():
+    """Heartpiercer: a slim pearl rapier with a gold swept hilt whose cup guard is a pink heart."""
     s = base()
-    s.line((12, 20), (25, 7), 2.6, 'pearl')
-    s.line((24, 8), (28.5, 3.5), 1.7, 'pearl')
-    s.line((14.8, 21.2), (27, 9), 0.8, 'pink')                 # blush cutting edge
-    s.line((13.5, 18.5), (24, 8), 0.5, 'gold')                 # gold fuller
-    wing(s, (11, 18), (-1, -1.4), 7, rows=2)                    # winged crossguard
-    wing(s, (14, 21), (1.4, 1), 7, rows=2)
-    s.line((4.5, 27), (10, 21.5), 1.2, 'gold')
-    s.stamp(9, 17, HEART5, HKEY)
-    s.stamp(1, 27, HEART5[:4], HKEY)                           # heart pommel
+    s.line((12.5, 19.5), (29, 3), 1.1, 'pearl')
+    s.line((13.5, 19.5), (28.5, 4.5), 0.4, 'pink')
+    # swept gold hilt: rings curving round the grip
+    s.path([(13, 19), (10, 15), (7, 15), (6, 18), (9, 22)], .55, 'gold')
+    s.path([(13, 19), (17, 22), (17, 25), (14, 26), (10, 23)], .55, 'gold')
+    s.stamp(9, 16, HEART7, HKEY)                                # heart cup guard
+    s.line((4.5, 27), (9.5, 22), 1.1, 'gold')
+    s.disc((3.5, 28.5), 1.6, 'heart')
     return s
 
 
 def axe():
+    """Sharp pearl axe: one blade whose cutting edge ends in pointed feather tips (pink), gold haft
+    and a heart on the head."""
     s = base()
-    s.line((4, 28.5), (20, 12.5), 1.2, 'gold')
-    s.where(lambda x, y: (x + .5 - 14) ** 2 + (y + .5 - 11) ** 2 <= 92 and (x + .5 - 21) ** 2 + (y + .5 - 15) ** 2 >= 40
-            and x + y <= 27 and y <= 17, 'pearl')
-    s.where(lambda x, y: s.mat[y][x] == 'pearl' and (x + .5 - 14) ** 2 + (y + .5 - 11) ** 2 >= 62 and x + y <= 26, 'pink')
-    s.poly([(17, 9), (23, 4), (28, 9), (22, 15), (18, 14)], 'gold')
-    s.stamp(12, 8, HEART5, HKEY)                                # heart set in the blade
-    wing(s, (25, 8), (1, 1.6), 5, rows=2)
+    s.line((4, 28.5), (21.5, 11), 1.2, 'gold')
+    H = (18.5, 13.5)
+    tips = [(-8.5, 9.5), (-5.5, 8.2), (-3.5, 11.6), (-1, 9.2), (1.5, 12), (3.5, 9.2), (6.5, 11.2), (7, 6.5)]
+    s.poly(parts.local(H, [(-3, 1)] + tips + [(3.5, 1)]), 'pearl')
+    for (a1, o1), (a2, o2) in [((-5.5, 8.2), (-3.5, 11.6)), ((-1, 9.2), (1.5, 12)), ((3.5, 9.2), (6.5, 11.2))]:
+        s.poly(parts.local(H, [(a1, o1 - .3), (a2, o2), (a2 + .6, o2 - 2.2)]), 'pink')
+    s.poly(parts.local(H, [(-8.5, 9.5), (-6.5, 7.5), (-5.5, 8.2)]), 'pink')
+    s.poly(parts.local(H, [(-3.5, -1.5), (3.5, -1.5), (3.5, 2.5), (-3.5, 2.5)]), 'gold')
+    s.stamp(16, 11, HEART5, HKEY)
     return s
 
 

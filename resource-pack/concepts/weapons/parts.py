@@ -97,3 +97,8 @@ def wing_shape(cx, side, root_y=22, span=21, rise=17, drop=13, scallops=5):
             return (u, (Y - top) / (bottom - top), bottom - Y < 2.2)
         return None
     return f
+
+
+def local(center, pts, along=(0.707, -0.707), out=(-0.707, -0.707)):
+    """points given as (distance along the haft, distance out from it) -> sprite coordinates."""
+    return [(center[0] + a * along[0] + o * out[0], center[1] + a * along[1] + o * out[1]) for a, o in pts]
