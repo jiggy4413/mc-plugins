@@ -64,6 +64,7 @@ public final class PrisonCore extends JavaPlugin {
     private io.github.jiggy4413.prisoncore.auto.AutoMine autoMine;
     private io.github.jiggy4413.prisoncore.enchants.DamageTooltip damageTooltip;
     private io.github.jiggy4413.prisoncore.cosmetics.Cosmetics cosmetics;
+    private io.github.jiggy4413.prisoncore.soulbound.Soulbound soulbound;
     private io.github.jiggy4413.prisoncore.enchants.ItemsMenu itemsMenu;
     /** The PlaceholderAPI expansion, kept as Object so this class never needs PlaceholderAPI. */
     private Object placeholders;
@@ -91,6 +92,7 @@ public final class PrisonCore extends JavaPlugin {
                 "io.github.jiggy4413.prisoncore.store.Store",
                 "io.github.jiggy4413.prisoncore.enchants.EnchantEffects",
                 "io.github.jiggy4413.prisoncore.enchants.WeaponEnchants",
+                "io.github.jiggy4413.prisoncore.soulbound.Soulbound",
                 "io.github.jiggy4413.prisoncore.enchants.SpecialItems",
                 "io.github.jiggy4413.prisoncore.store.Store$Menu");
         hotSwap = new HotSwap(this, getFile());
@@ -147,6 +149,12 @@ public final class PrisonCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(cosmetics, this);
         getCommand("cosmetics").setExecutor(cosmetics);
         cosmetics.start();
+        soulbound = new io.github.jiggy4413.prisoncore.soulbound.Soulbound(this);
+        String soulboundProblem = soulbound.load();
+        if (soulboundProblem != null) {
+            getLogger().warning(soulboundProblem);
+        }
+        getServer().getPluginManager().registerEvents(soulbound, this);
         damageTooltip = new io.github.jiggy4413.prisoncore.enchants.DamageTooltip(this);
         getServer().getPluginManager().registerEvents(damageTooltip, this);
         // after every plugin is up, so OldCombatMechanics' config is readable
@@ -160,7 +168,7 @@ public final class PrisonCore extends JavaPlugin {
         specialItems = new io.github.jiggy4413.prisoncore.enchants.SpecialItems(this, enchants);
         specialItems.load();
         io.github.jiggy4413.prisoncore.enchants.ItemsMenu itemsMenuTmp =
-                new io.github.jiggy4413.prisoncore.enchants.ItemsMenu(specialItems, cosmetics);
+                new io.github.jiggy4413.prisoncore.enchants.ItemsMenu(specialItems, cosmetics, soulbound);
         getServer().getPluginManager().registerEvents(itemsMenuTmp, this);
         itemsMenu = itemsMenuTmp;
         totemDebug = new io.github.jiggy4413.prisoncore.debug.TotemDebug(this);
@@ -440,6 +448,12 @@ public final class PrisonCore extends JavaPlugin {
             return true;
         }
 
+        // /prisoncore soulbound <player> [amount] (crate rewards / Tebex, run from the console)
+        if (args.length > 0 && args[0].equalsIgnoreCase("soulbound")) {
+            soulbound.command(sender, args);
+            return true;
+        }
+
         // /prisoncore sellall <player> (for sell NPCs, run from the console)
         if (args.length > 0 && args[0].equalsIgnoreCase("sellall")) {
             io.github.jiggy4413.prisoncore.sell.SellAllCommand.run(sender, args);
@@ -496,6 +510,10 @@ public final class PrisonCore extends JavaPlugin {
                 }
                 String enchantsProblem = enchants.load();
                 cosmetics.load();
+                String soulProblem = soulbound.load();
+                if (soulProblem != null) {
+                    sender.sendMessage(ChatColor.RED + soulProblem);
+                }
                 damageTooltip.load(enchants.flag("damage-tooltip", true));
                 damageTooltip.updateAllOnline();
                 String itemsProblem = specialItems.load();
@@ -517,7 +535,7 @@ public final class PrisonCore extends JavaPlugin {
                     sender.sendMessage(Text.color("&cranks-menu.yml has a mistake, so nothing changed:"));
                     sender.sendMessage(ChatColor.GRAY + problem);
                 } else {
-                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml, warps-menu.yml, help.yml, tokens.yml, scoreboard.yml, enchants.yml, store.yml, items.yml, npc-commands.yml, autominer.yml). No new jar found."));
+                    sender.sendMessage(Text.color("&aPrisonCore reloaded &7(ranks-menu.yml, mines.yml, warps-menu.yml, help.yml, tokens.yml, scoreboard.yml, enchants.yml, store.yml, items.yml, npc-commands.yml, autominer.yml, soulbound.yml). No new jar found."));
                 }
             } catch (Exception e) {
                 sender.sendMessage(Text.color("&cReload failed: " + e.getMessage() + " &7(check ranks-menu.yml for a YAML mistake)"));
@@ -549,7 +567,7 @@ public final class PrisonCore extends JavaPlugin {
         }
         List<String> options = command.getName().equalsIgnoreCase("prisonranks")
                 ? Arrays.asList("ranks", "prestiges")
-                : (sender.hasPermission("prisoncore.admin") ? Arrays.asList("reload", "give", "items", "sellall", "cosmetic", "debug") : Collections.<String>emptyList());
+                : (sender.hasPermission("prisoncore.admin") ? Arrays.asList("reload", "give", "items", "sellall", "cosmetic", "soulbound", "debug") : Collections.<String>emptyList());
         List<String> out = new ArrayList<String>();
         for (String o : options) {
             if (o.startsWith(args[0].toLowerCase())) {

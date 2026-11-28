@@ -1,0 +1,36 @@
+# Soulbound Scrolls
+#
+# Players click a scroll onto a weapon, tool or armor piece in their inventory (hold the scroll on the
+# cursor, click the item). The item becomes Soulbound: the next time they die it stays with them instead of
+# dropping. That uses the protection up (one save), so it needs a new scroll to be protected again.
+#
+#   Give scrolls (crate command reward / Tebex, run from console):
+#     prisoncore soulbound {player} 1
+#
+# Apply changes with /prisoncore reload.
+
+scroll:
+  material: PAPER
+  # optional custom look from the resource pack, e.g. "classicprison:soulbound_scroll"
+  item-model: "classicprison:soulbound_scroll"
+  name: "&d&lSoulbound Scroll"
+  glow: true
+  lore:
+    - "&7Click this onto a weapon, tool or"
+    - "&7armor piece to make it &dSoulbound&7."
+    - ""
+    - "&7A Soulbound item stays with you"
+    - "&7the next time you die (one save)."
+
+# added to the item's lore while it's protected
+lore-line: "&d✦ Soulbound"
+
+# worlds where Soulbound items drop as normal (e.g. a hardcore PvP world). Empty = works everywhere.
+disabled-worlds: []
+
+messages:
+  applied: "&dYour item is now Soulbound! &7It stays with you the next time you die."
+  already: "&cThat item is already Soulbound."
+  invalid: "&cSoulbound Scrolls only work on weapons, tools and armor."
+  received: "&dYou received {amount} Soulbound Scroll(s)! &7Click one onto a weapon, tool or armor piece."
+  saved: "&dSoulbound saved {count} item(s)! &7They're not protected anymore: apply a new scroll to protect them again."

@@ -637,6 +637,13 @@ for bid, mod, fn in VBLINGS:
         write_json({'model': {'type': 'minecraft:model', 'model': f'{NS}:item/backbling/{full}'}},
                    'assets', NS, 'items', full + '_backbling.json')
 
+# ---------------------------------------------------------------- Soulbound Scroll (soulbound.yml item-model)
+import scroll as SCROLL  # noqa: E402
+SCROLL.scroll().image().save(p('assets', NS, 'textures', 'item', 'soulbound_scroll.png'))
+write_json({'parent': 'minecraft:item/generated', 'textures': {'layer0': f'{NS}:item/soulbound_scroll'}},
+           'assets', NS, 'models', 'item', 'soulbound_scroll.json')
+write_json({'model': m(f'{NS}:item/soulbound_scroll')}, 'assets', NS, 'items', 'soulbound_scroll.json')
+
 # ---------------------------------------------------------------- brighter armor glint
 def armor_glint(size=128):
     """Armor enchant glint that stays on constantly, like the item glint on the 3D helmets.

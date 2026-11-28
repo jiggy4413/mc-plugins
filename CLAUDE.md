@@ -55,3 +55,6 @@ the "Latest build" release. See README.md for commands and setup.
 - Custom weapon enchants (rule from the server owner): every weapon enchant has 5 levels. Regular crate
   weapons roll level I-IV at random each time they're given (items.yml `enchants: {id: {1: 40, 2: 30, 3: 20,
   4: 10}}`, like the frost weapons); gold versions always get level V.
+- Soulbound (PrisonCore 2.9.0, `soulbound.yml`): Soulbound Scrolls (`/prisoncore soulbound <player> [amount]`)
+  are clicked onto a weapon/tool/armor piece; that item survives the owner's next death, then loses the
+  protection (one save, the server owner's choice). Pack icon `classicprison:soulbound_scroll`.

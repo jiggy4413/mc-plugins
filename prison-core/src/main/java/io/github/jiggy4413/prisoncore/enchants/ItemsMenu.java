@@ -33,10 +33,12 @@ public final class ItemsMenu implements Listener {
 
     private final SpecialItems items;
     private final Cosmetics cosmetics;
+    private final io.github.jiggy4413.prisoncore.soulbound.Soulbound soulbound;
 
-    public ItemsMenu(SpecialItems items, Cosmetics cosmetics) {
+    public ItemsMenu(SpecialItems items, Cosmetics cosmetics, io.github.jiggy4413.prisoncore.soulbound.Soulbound soulbound) {
         this.items = items;
         this.cosmetics = cosmetics;
+        this.soulbound = soulbound;
     }
 
     private static final class Holder implements InventoryHolder {
@@ -71,6 +73,7 @@ public final class ItemsMenu implements Listener {
         for (String id : cosmetics.ids()) {
             out.add("cosmetic:" + id);
         }
+        out.add("scroll:soulbound");
         return out;
     }
 
@@ -91,6 +94,9 @@ public final class ItemsMenu implements Listener {
                 if (icon == null) {
                     continue;
                 }
+                addHint(icon, "&eClick to get one");
+            } else if (e.startsWith("scroll:")) {
+                icon = soulbound.scroll(1);
                 addHint(icon, "&eClick to get one");
             } else {
                 icon = cosmetics.menuIcon(e.substring(9));
@@ -113,7 +119,7 @@ public final class ItemsMenu implements Listener {
             inv.setItem(NEXT, named(Material.ARROW, "&eNext page"));
         }
         inv.setItem(INFO, named(Material.BOOK, "&6" + all.size() + " custom items",
-                "&7Everything in items.yml and cosmetics.yml.", "&7Items are built fresh on every click."));
+                "&7Everything in items.yml and cosmetics.yml,", "&7plus the Soulbound Scroll.", "&7Items are built fresh on every click."));
         p.openInventory(inv);
     }
 
@@ -181,6 +187,12 @@ public final class ItemsMenu implements Listener {
             }
             for (String problem : problems) {
                 p.sendMessage(Text.color("&e" + problem));
+            }
+            p.playSound(p.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.6f, 1.2f);
+        } else if (e.startsWith("scroll:")) {
+            if (!p.getInventory().addItem(soulbound.scroll(1)).isEmpty()) {
+                p.sendMessage(Text.color("&cYour inventory is full."));
+                return;
             }
             p.playSound(p.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.6f, 1.2f);
         } else {
