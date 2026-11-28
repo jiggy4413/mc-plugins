@@ -547,16 +547,37 @@ def shield_model(name, front):
                     else tuple(int(ch * 0.55) for ch in rim[:3]) + (255,)
     tex.alpha_composite(back, (32, 0))
     t = vtex(name + '_model', tex)
-    fu = [1, 1.5, 7, 14.5]                     # the heater area of the 32x32 sprite, in the 64x32 texture
-    bu = [15, 1.5, 9, 14.5]
-    ru = [4, 1, 4.25, 1.25]                    # one rim pixel for the edges and the handle
-    plate = {'from': [-6, -11, 1], 'to': [6, 11, 2],
-             'faces': {'south': {'uv': fu, 'texture': '#0'}, 'north': {'uv': bu, 'texture': '#0'},
-                       'east': {'uv': ru, 'texture': '#0'}, 'west': {'uv': ru, 'texture': '#0'},
-                       'up': {'uv': ru, 'texture': '#0'}, 'down': {'uv': ru, 'texture': '#0'}}}
+    # Extrude the sprite's own outline (one element per run of pixels in each row), so the shield has the
+    # heater shape from every side instead of a rectangular plate. Same size/spot as vanilla: x -6..6, y -11..11.
+    xs = [x for y in range(32) for x in range(32) if fp[x, y][3]]
+    ys = [y for y in range(32) for x in range(32) if fp[x, y][3]]
+    x0, x1, y0, y1 = min(xs), max(xs) + 1, min(ys), max(ys) + 1
+    U = lambda px_: round(px_ * 16 / 64, 4)          # texture is 64x32: u in 1/4 px steps, v in 1/2 px steps
+    V = lambda py_: round(py_ * 16 / 32, 4)
+    MX = lambda px_: round(-6 + (px_ - x0) * 12 / (x1 - x0), 4)
+    MY = lambda py_: round(11 - (py_ - y0) * 22 / (y1 - y0), 4)
+    elements = []
+    for y in range(y0, y1):
+        x = x0
+        while x < x1:
+            if not fp[x, y][3]:
+                x += 1; continue
+            e = x
+            while e < x1 and fp[e, y][3]:
+                e += 1
+            front = [U(x), V(y), U(e), V(y + 1)]
+            back = [U(32 + 32 - x), V(y), U(32 + 32 - e), V(y + 1)]
+            edge_l = [U(x), V(y), U(x + 1), V(y + 1)]
+            edge_r = [U(e - 1), V(y), U(e), V(y + 1)]
+            elements.append({'from': [MX(x), MY(y + 1), 1], 'to': [MX(e), MY(y), 2],
+                             'faces': {'south': {'uv': front, 'texture': '#0'}, 'north': {'uv': back, 'texture': '#0'},
+                                       'west': {'uv': edge_l, 'texture': '#0'}, 'east': {'uv': edge_r, 'texture': '#0'},
+                                       'up': {'uv': front, 'texture': '#0'}, 'down': {'uv': front, 'texture': '#0'}}})
+            x = e
+    ru = [U(16), V(y0 + 1), U(17), V(y0 + 2)]          # a rim pixel for the handle
     handle = {'from': [-1, -3, -5], 'to': [1, 3, 1],
               'faces': {f: {'uv': ru, 'texture': '#0'} for f in ('north', 'south', 'east', 'west', 'up', 'down')}}
-    base = {'gui_light': 'front', 'textures': {'0': t, 'particle': t}, 'elements': [plate, handle]}
+    base = {'gui_light': 'front', 'textures': {'0': t, 'particle': t}, 'elements': elements + [handle]}
     held = dict(base, display={
         'thirdperson_righthand': {'rotation': [0, 90, 0], 'translation': [10, 6, -4], 'scale': [1, 1, 1]},
         'thirdperson_lefthand': {'rotation': [0, 90, 0], 'translation': [10, 6, 12], 'scale': [1, 1, 1]},
@@ -566,8 +587,8 @@ def shield_model(name, front):
         'fixed': {'rotation': [0, 180, 0], 'translation': [-4.5, 4.5, -5], 'scale': [0.55, 0.55, 0.55]},
         'ground': {'rotation': [0, 0, 0], 'translation': [2, 4, 2], 'scale': [0.25, 0.25, 0.25]}})
     blocking = dict(base, display=dict(held['display'], **{
-        'thirdperson_righthand': {'rotation': [45, 135, 0], 'translation': [3.51, 11, -2], 'scale': [1, 1, 1]},
-        'thirdperson_lefthand': {'rotation': [45, 135, 0], 'translation': [13.51, 3, 5], 'scale': [1, 1, 1]},
+        'thirdperson_righthand': {'rotation': [45, 155, 0], 'translation': [-3.49, 11, -2], 'scale': [1, 1, 1]},
+        'thirdperson_lefthand': {'rotation': [45, 155, 0], 'translation': [11.51, 7, 2.5], 'scale': [1, 1, 1]},
         'firstperson_righthand': {'rotation': [0, 180, -5], 'translation': [-15, 5, -11], 'scale': [1.25, 1.25, 1.25]},
         'firstperson_lefthand': {'rotation': [0, 180, -5], 'translation': [5, 5, -11], 'scale': [1.25, 1.25, 1.25]}}))
     write_json(held, 'assets', NS, 'models', 'item', 'valentines', name + '.json')
