@@ -70,7 +70,7 @@ final class PacketBackBling {
     /** Spawns the fake display for one viewer and seats it on the wearer. */
     void show(Player wearer, Player viewer) {
         Location l = wearer.getLocation();
-        float yaw = wearer.getBodyYaw();
+        float yaw = Float.isNaN(lastYaw) ? wearer.getBodyYaw() : lastYaw;
         send(viewer, new WrapperPlayServerSpawnEntity(entityId, Optional.of(uuid), EntityTypes.ITEM_DISPLAY,
                 new Vector3d(l.getX(), l.getY(), l.getZ()), 0f, yaw, yaw, 0, Optional.<Vector3d>empty()));
         List<EntityData> data = new ArrayList<EntityData>();

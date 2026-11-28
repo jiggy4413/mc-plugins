@@ -69,6 +69,8 @@ public final class Cosmetics implements Listener, CommandExecutor {
     /** Client-side back blings (PacketEvents), by wearer. Null map entries never stored. */
     private final Map<UUID, PacketBackBling> packets = new HashMap<UUID, PacketBackBling>();
     private Boolean packetMode;
+    /** Our own copy of each wearer's body rotation, worked out like the game does on players' screens. */
+    private final Map<UUID, float[]> body = new HashMap<UUID, float[]>();   // {bodyYaw, lastX, lastZ}
 
     public Cosmetics(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -282,19 +284,66 @@ public final class Cosmetics implements Listener, CommandExecutor {
                     (float) config.getDouble("rider-up", -0.5),
                     (float) -config.getDouble("back-offset", 0.32));
             packets.put(p.getUniqueId(), b);
+            b.lastYaw = bodyYaw(p);
             for (Player v : viewers(p)) {
                 b.show(p, v);
             }
-            b.lastYaw = p.getBodyYaw();
             return;
         }
-        float yaw = p.getBodyYaw();
-        if (Float.isNaN(b.lastYaw) || Math.abs(yaw - b.lastYaw) > 0.5f) {
+        float yaw = bodyYaw(p);
+        if (Float.isNaN(b.lastYaw) || Math.abs(wrap(yaw - b.lastYaw)) > 0.3f) {
             b.lastYaw = yaw;
             for (Player v : viewers(p)) {
                 b.rotate(v, yaw);
             }
         }
+    }
+
+    private static float wrap(float d) {
+        d %= 360f;
+        if (d >= 180f) {
+            d -= 360f;
+        }
+        if (d < -180f) {
+            d += 360f;
+        }
+        return d;
+    }
+
+    /**
+     * The body's facing, worked out every tick the same way Minecraft does on players' screens (the server's
+     * own copy of a player's body rotation trails behind after fast turns):
+     * - while walking, the body turns toward the direction of movement (facing forward when walking backwards)
+     * - it eases 30% of the way toward that each tick
+     * - and it never lets the head get more than 50 degrees ahead, so fast mouse turns pull it round instantly.
+     */
+    private float bodyYaw(Player p) {
+        Location l = p.getLocation();
+        float head = l.getYaw();
+        float[] st = body.get(p.getUniqueId());
+        if (st == null) {
+            st = new float[] {head, (float) l.getX(), (float) l.getZ()};
+            body.put(p.getUniqueId(), st);
+            return head;
+        }
+        double dx = l.getX() - st[1], dz = l.getZ() - st[2];
+        st[1] = (float) l.getX();
+        st[2] = (float) l.getZ();
+        float target = st[0];
+        if (dx * dx + dz * dz > 0.0025) {
+            target = (float) Math.toDegrees(Math.atan2(dz, dx)) - 90f;
+            float off = Math.abs(wrap(head - target));
+            if (off > 95f && off < 265f) {
+                target -= 180f;                                  // walking backwards: body still faces forward
+            }
+        }
+        st[0] += wrap(target - st[0]) * 0.3f;
+        float lead = wrap(head - st[0]);
+        if (Math.abs(lead) > 50f) {
+            st[0] += lead - Math.signum(lead) * 50f;
+        }
+        st[0] = wrap(st[0]);
+        return st[0];
     }
 
     /** Send the wearer's back bling again (after respawn, world change, teleport...). */
@@ -366,7 +415,7 @@ public final class Cosmetics implements Listener, CommandExecutor {
 
     private Location backLocation(Player p) {
         Location l = p.getLocation();
-        float yaw = p.getBodyYaw();
+        float yaw = bodyYaw(p);
         double rad = Math.toRadians(yaw);
         double fx = -Math.sin(rad), fz = Math.cos(rad);          // the way the body faces
         double back = config.getDouble("back-offset", 0.32);
@@ -422,6 +471,7 @@ public final class Cosmetics implements Listener, CommandExecutor {
     public void onQuit(PlayerQuitEvent event) {
         remove(event.getPlayer().getUniqueId());
         packets.remove(event.getPlayer().getUniqueId());   // viewers drop the player and its riders anyway
+        body.remove(event.getPlayer().getUniqueId());
     }
 
     // ------------------------------------------------------------------ /cosmetics menu
