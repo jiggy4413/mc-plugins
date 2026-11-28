@@ -102,3 +102,16 @@ def wing_shape(cx, side, root_y=22, span=21, rise=17, drop=13, scallops=5):
 def local(center, pts, along=(0.707, -0.707), out=(-0.707, -0.707)):
     """points given as (distance along the haft, distance out from it) -> sprite coordinates."""
     return [(center[0] + a * along[0] + o * out[0], center[1] + a * along[1] + o * out[1]) for a, o in pts]
+
+
+def pick_head(s, H, mat, half=10.5, thick=1.9, bow=0.045, tip_mat=None, tip_len=2.5):
+    """pickaxe head: a bar across the top of the haft, bowed up in the middle, tapering to points."""
+    pts = []
+    for k in range(-20, 21):
+        o = half * k / 20
+        a = 1.5 - bow * o * o
+        r = thick * (1 - (abs(o) / half) ** 2.2) + .45
+        pts.append((local(H, [(a, o)])[0], r, abs(o)))
+    for (p, rp, ap), (q, rq, aq) in zip(pts, pts[1:]):
+        m = tip_mat if (tip_mat and min(ap, aq) > half - tip_len) else mat
+        s.line(p, q, (rp + rq) / 2, m)

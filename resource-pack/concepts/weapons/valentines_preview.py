@@ -6,7 +6,7 @@ S = '/tmp/claude-0/-home-claude/d56c6e2b-0be7-5200-b38a-cd1da8a4abf2/scratchpad/
 rows = []
 for M in (T, C):
     rows.append([M.sword().image(), M.axe().image(), M.spear().image(), M.scythe().image(),
-                 M.bow().image(), M.bow(3).image(), M.shield().image()])
+                 M.pickaxe().image(), M.bow().image(), M.bow(3).image(), M.shield().image()])
 w = sheet(rows, scale=6)
 blings = sheet([[T.backbling().image(), T.backbling_wings().image(), T.backbling_rose().image()],
                 [C.backbling_wings().image(), C.backbling_quiver().image(), C.backbling_heart().image()]], scale=5)
@@ -17,7 +17,7 @@ H = 70 + max(w.height, blings.height)
 out = Image.new('RGBA', (W, H), (28, 30, 40, 255)); d = ImageDraw.Draw(out)
 out.alpha_composite(w, (200, 60)); out.alpha_composite(blings, (200 + w.width + 30, 60))
 cell = 32 * 6 + 16
-for i, c in enumerate(['Sword', 'Axe', 'Spear', 'Scythe', 'Bow', 'Bow (drawn)', 'Shield']):
+for i, c in enumerate(['Sword', 'Axe', 'Spear', 'Scythe', 'Pickaxe', 'Bow', 'Bow (drawn)', 'Shield']):
     d.text((200 + 16 + i * cell + 96, 35), c, font=g, fill=(200, 205, 220), anchor='mm')
 bc = 48 * 5 + 16
 for i in range(3):

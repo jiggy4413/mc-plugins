@@ -220,3 +220,18 @@ def backbling_heart():
         a = math.radians(t)
         s.line((24 + 9 * math.cos(a), 5 + 2.2 * math.sin(a)), (24 + 9 * math.cos(a) + .1, 5 + 2.2 * math.sin(a)), .7, 'gold')
     return s
+
+
+def pickaxe():
+    """Pearl pick shaped like a pair of spread wings, pink feather points, gold haft, heart centre."""
+    s = base()
+    s.line((4, 28.5), (19.5, 13), 1.2, 'gold')
+    H = (19, 13)
+    parts.pick_head(s, H, 'pearl', thick=2.1, tip_mat='pink', tip_len=3)
+    for o in (-7, -4, 4, 7):                                     # feather notches along the underside
+        a = 1.5 - 0.045 * o * o
+        p = parts.local(H, [(a - 1.6, o)])[0]
+        s.color(int(p[0]), int(p[1]), FEATHER[2])
+    s.disc((19, 13), 2.0, 'gold')
+    s.stamp(17, 11, HEART5, HKEY)
+    return s

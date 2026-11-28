@@ -230,3 +230,19 @@ def backbling_rose():
     s.where(ring(5, 3, 0.3), 'p3')
     s.where(ring(2.4, 3, 0), 'edge')
     return s
+
+
+def pickaxe():
+    """Black-steel pick with crimson points, thorn spikes on top and a rose where it meets the haft."""
+    s = base()
+    s.line((4, 28.5), (19.5, 13), 1.2, 'steel')
+    vine_wrap(s, (5, 27), (16, 16), 3)
+    H = (19, 13)
+    parts.pick_head(s, H, 'steel', tip_mat='edge')
+    for o in (-5, 0, 5):                                         # thorn spikes on the top of the head
+        a = 1.5 - 0.045 * o * o
+        p = parts.local(H, [(a + 2.2, o)])[0]
+        q = parts.local(H, [(a + 3.6, o - .6)])[0]
+        s.line(p, q, .45, 'edge')
+    s.stamp(17, 10, ROSE5, RKEY)
+    return s
