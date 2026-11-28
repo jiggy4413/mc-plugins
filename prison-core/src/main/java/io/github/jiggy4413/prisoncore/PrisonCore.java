@@ -64,6 +64,7 @@ public final class PrisonCore extends JavaPlugin {
     private io.github.jiggy4413.prisoncore.auto.AutoMine autoMine;
     private io.github.jiggy4413.prisoncore.enchants.DamageTooltip damageTooltip;
     private io.github.jiggy4413.prisoncore.cosmetics.Cosmetics cosmetics;
+    private io.github.jiggy4413.prisoncore.enchants.ItemsMenu itemsMenu;
     /** The PlaceholderAPI expansion, kept as Object so this class never needs PlaceholderAPI. */
     private Object placeholders;
 
@@ -156,6 +157,10 @@ public final class PrisonCore extends JavaPlugin {
         });
         specialItems = new io.github.jiggy4413.prisoncore.enchants.SpecialItems(this, enchants);
         specialItems.load();
+        io.github.jiggy4413.prisoncore.enchants.ItemsMenu itemsMenuTmp =
+                new io.github.jiggy4413.prisoncore.enchants.ItemsMenu(specialItems, cosmetics);
+        getServer().getPluginManager().registerEvents(itemsMenuTmp, this);
+        itemsMenu = itemsMenuTmp;
         totemDebug = new io.github.jiggy4413.prisoncore.debug.TotemDebug(this);
         getServer().getPluginManager().registerEvents(totemDebug, this);
         autoMine = new io.github.jiggy4413.prisoncore.auto.AutoMine(this);
@@ -421,6 +426,12 @@ public final class PrisonCore extends JavaPlugin {
             return true;
         }
 
+        // /prisoncore items: admin menu with every custom item and cosmetic
+        if (args.length > 0 && args[0].equalsIgnoreCase("items")) {
+            itemsMenu.command(sender);
+            return true;
+        }
+
         // /prisoncore cosmetic unlock|lock <player> <id> (crate rewards, run from the console)
         if (args.length > 0 && args[0].equalsIgnoreCase("cosmetic")) {
             cosmetics.adminCommand(sender, args);
@@ -518,6 +529,7 @@ public final class PrisonCore extends JavaPlugin {
         sender.sendMessage(Text.color("&7Ranks menu: " + (isRanksMenuAvailable() ? "&aactive" : "&cinactive (Rankup not found)")));
         if (sender.hasPermission("prisoncore.admin")) {
             sender.sendMessage(Text.color("&e/prisoncore reload &7- reload ranks-menu.yml, or load a newer PrisonCore jar"));
+            sender.sendMessage(Text.color("&e/prisoncore items &7- menu with every custom item and cosmetic (click to get)"));
             sender.sendMessage(Text.color("&e/prisoncore sellall <player> &7- sell a player's inventory at shop prices (sell NPCs)"));
             sender.sendMessage(Text.color("&e/prisoncore cosmetic <unlock|lock> <player> <id> &7- give/take a cosmetic (crates)"));
             sender.sendMessage(Text.color("&e/prisoncore debug totems &7- find out why totems don't save players"));
@@ -535,7 +547,7 @@ public final class PrisonCore extends JavaPlugin {
         }
         List<String> options = command.getName().equalsIgnoreCase("prisonranks")
                 ? Arrays.asList("ranks", "prestiges")
-                : (sender.hasPermission("prisoncore.admin") ? Arrays.asList("reload", "give", "sellall", "cosmetic", "debug") : Collections.<String>emptyList());
+                : (sender.hasPermission("prisoncore.admin") ? Arrays.asList("reload", "give", "items", "sellall", "cosmetic", "debug") : Collections.<String>emptyList());
         List<String> out = new ArrayList<String>();
         for (String o : options) {
             if (o.startsWith(args[0].toLowerCase())) {

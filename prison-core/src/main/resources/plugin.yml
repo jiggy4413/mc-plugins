@@ -13,7 +13,7 @@ loadbefore: [Multiverse-Core, PL-Hide, PL-Hide-Free, PLHide]
 commands:
   prisoncore:
     description: PrisonCore info and admin commands.
-    usage: /prisoncore [reload | give <player> <item> [amount] | sellall <player> | cosmetic <unlock|lock> <player> <id> | debug totems]
+    usage: /prisoncore [reload | give <player> <item> [amount] | items | sellall <player> | cosmetic <unlock|lock> <player> <id> | debug totems]
     aliases: [pcore]
   pmine:
     description: Set up and manage PrisonCore mines.

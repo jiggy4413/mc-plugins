@@ -620,6 +620,28 @@ public final class Cosmetics implements Listener, CommandExecutor {
         }
     }
 
+    /** The cosmetic's menu icon (name + lore), or null if there's no such cosmetic. */
+    public ItemStack menuIcon(String id) {
+        ConfigurationSection c = backBlings.get(id.toLowerCase(Locale.ROOT));
+        return c == null ? null : icon(c, true);
+    }
+
+    /** Unlocks a cosmetic for a player (from the admin items menu). */
+    public void unlock(Player p, String id) {
+        String key = id.toLowerCase(Locale.ROOT);
+        ConfigurationSection c = backBlings.get(key);
+        if (c == null) {
+            return;
+        }
+        Set<String> ids = owned(p);
+        if (ids.add(key)) {
+            saveOwned(p, ids);
+            msg(p, "unlocked", c);
+        } else {
+            p.sendMessage(Text.color("&7You already have " + c.getString("name", key) + "&7."));
+        }
+    }
+
     public List<String> ids() {
         return new ArrayList<String>(backBlings.keySet());
     }
