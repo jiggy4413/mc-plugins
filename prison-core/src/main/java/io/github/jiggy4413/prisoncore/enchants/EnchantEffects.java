@@ -39,7 +39,7 @@ import org.bukkit.scheduler.BukkitTask;
 /**
  * What the prison enchants do (everything that isn't a normal Minecraft enchant):
  * sword: Bleed, Freeze, Executioner, Thunder, Bounty Hunter, Head Hunter (Lifesteal is in Enchants);
- * armor: Dodge, Last Stand, Speed; pickaxe: Key Finder, Money Finder, XP Boost.
+ * armor: Dodge, Last Stand, Speed, Absorption, Thornguard; pickaxe: Key Finder, Money Finder, XP Boost.
  * Each enchant's strength per level comes from its "strength:" list in enchants.yml.
  */
 public final class EnchantEffects implements Listener {
@@ -48,6 +48,9 @@ public final class EnchantEffects implements Listener {
     private final MineManager mines;
     private final Tokens tokens;
     private BukkitTask effectTask;
+    private BukkitTask absorptionTask;
+    /** When each player last took damage (Absorption only refills after a quiet spell). */
+    private final Map<UUID, Long> lastHurt = new HashMap<UUID, Long>();
 
     /** Key Finder limits, per player: when the last key was found, and how many today. */
     private final Map<UUID, Long> lastKey = new HashMap<UUID, Long>();
@@ -77,6 +80,92 @@ public final class EnchantEffects implements Listener {
                 }
             }
         }, 40L, 40L);
+        absorptionTask = Bukkit.getScheduler().runTaskTimer(enchants.plugin(), new Runnable() {
+            @Override
+            public void run() {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    absorption(p);
+                }
+            }
+        }, 20L, 10L);
+    }
+
+    /**
+     * Absorption set bonus: keeps an endless (ambient, no particles) Absorption effect on the wearer, which
+     * gives the room for the extra hearts. The hearts themselves are only filled back up once the wearer
+     * hasn't taken damage for refill-after-seconds, so they don't regenerate mid-fight.
+     */
+    private void absorption(Player p) {
+        int lvl = worn(p, "absorption");
+        PotionEffect cur = p.getPotionEffect(PotionEffectType.ABSORPTION);
+        boolean ours = cur != null && cur.isInfinite() && cur.isAmbient();
+        if (lvl <= 0) {
+            if (ours) {
+                p.removePotionEffect(PotionEffectType.ABSORPTION);
+            }
+            return;
+        }
+        int level = (int) Math.round(strength(Enchants.Category.ARMOR, "absorption", lvl));
+        if (level <= 0) {
+            return;
+        }
+        double hearts = 4.0 * level;
+        if (cur == null || (ours && cur.getAmplifier() != level - 1)) {
+            p.removePotionEffect(PotionEffectType.ABSORPTION);
+            p.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, PotionEffect.INFINITE_DURATION, level - 1, true, false, true));
+            p.setAbsorptionAmount(hearts);
+            return;
+        }
+        if (!ours) {
+            return;   // a golden apple's Absorption is running; leave it alone until it ends
+        }
+        long quiet = Math.max(0, settings("absorption").getLong("refill-after-seconds", 10)) * 1000L;
+        Long hurt = lastHurt.get(p.getUniqueId());
+        if (p.getAbsorptionAmount() < hearts - 0.01 && (hurt == null || System.currentTimeMillis() - hurt >= quiet)) {
+            p.setAbsorptionAmount(hearts);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onHurt(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player && event.getFinalDamage() > 0) {
+            lastHurt.put(event.getEntity().getUniqueId(), System.currentTimeMillis());
+        }
+    }
+
+    @EventHandler
+    public void onQuit(org.bukkit.event.player.PlayerQuitEvent event) {
+        lastHurt.remove(event.getPlayer().getUniqueId());
+    }
+
+    /** Thornguard set bonus: part of a melee hit's damage goes back to the player who hit you. */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onThornguard(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player)) {
+            return;
+        }
+        if (event.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK
+                && event.getCause() != EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK) {
+            return;   // melee only (the reflected damage is THORNS, so it can never bounce back and forth)
+        }
+        Player victim = (Player) event.getEntity();
+        Player hitter = (Player) event.getDamager();
+        int lvl = worn(victim, "thornguard");
+        if (lvl <= 0) {
+            return;
+        }
+        double back = event.getFinalDamage() * strength(Enchants.Category.ARMOR, "thornguard", lvl) / 100.0;
+        if (back <= 0) {
+            return;
+        }
+        org.bukkit.damage.DamageSource src = org.bukkit.damage.DamageSource.builder(org.bukkit.damage.DamageType.THORNS)
+                .withCausingEntity(victim).withDirectEntity(victim).build();
+        hitter.damage(back, src);
+        hitter.getWorld().playSound(hitter.getLocation(), Sound.ENCHANT_THORNS_HIT, 0.8f, 1.0f);
+        String msg = settings("thornguard").getString("message", "&cThornguard!");
+        if (msg != null && !msg.isEmpty()) {
+            enchants.actionBar(hitter, msg);
+        }
     }
 
     /** Full set the player had at the last check, to tell them when the set bonus turns on or off. */
@@ -108,6 +197,10 @@ public final class EnchantEffects implements Listener {
         if (effectTask != null) {
             effectTask.cancel();
             effectTask = null;
+        }
+        if (absorptionTask != null) {
+            absorptionTask.cancel();
+            absorptionTask = null;
         }
     }
 

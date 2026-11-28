@@ -101,12 +101,18 @@ enchant-settings:
   last-stand:
     below-health-percent: 25
     cooldown-seconds: 60
+  absorption:
+    # The extra hearts come back this long after the wearer last took damage (not during a fight).
+    refill-after-seconds: 10
+  thornguard:
+    # Action bar shown to the attacker when their hit is sent back ("" = none).
+    message: "&cThornguard!"
 
 # Weapon tooltips like 1.16.5: the "Attack Damage" number includes Sharpness (Minecraft 1.21 stopped doing
 # that). Uses OldCombatMechanics' old-tool-damage values when that module is on. false = vanilla tooltips.
 damage-tooltip: true
 
-# Armor sets (items.yml `set: <id>`): a set piece's armor enchants (Speed, Dodge, Last Stand...) only work
+# Armor sets (items.yml `set: <id>`): a set piece's armor enchants (Speed, Absorption, Thornguard...) only work
 # while all 4 pieces of that set are worn. Action bar messages when the set bonus turns on/off ("" = none).
 set-bonus:
   active: "&a&lSET BONUS ACTIVE"
@@ -529,4 +535,26 @@ enchants:
         - 2          # level 2
       icon: RABBIT_FOOT
       description: ["Speed while wearing these boots."]
+      in-menu: false
+
+    absorption:
+      name: Absorption
+      only-for: [CHESTPLATE]
+      # Absorption level while the full set is worn (I = 2 extra hearts, II = 4)
+      strength:
+        - 1          # level 1
+        - 2          # level 2
+      icon: GOLDEN_APPLE
+      description: ["Extra absorption hearts while the full set is worn.", "They come back 10 seconds after you last took damage."]
+      in-menu: false
+
+    thornguard:
+      name: Thornguard
+      only-for: [CHESTPLATE]
+      # % of a melee hit's damage sent back to the player who hit you
+      strength:
+        - 10         # level 1
+        - 20         # level 2
+      icon: ROSE_BUSH
+      description: ["Players who hit you take part of", "the damage back. 10% / 20%."]
       in-menu: false
