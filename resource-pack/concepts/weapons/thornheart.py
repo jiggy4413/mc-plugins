@@ -138,3 +138,83 @@ def backbling():
     for x, y in [(16, 8), (32, 10), (29, 41)]:
         s.color(x, y, LEAFD)
     return s
+
+
+def spear():
+    s = base()
+    parts.spear_shaft(s, 'steel', 1.0)
+    vine_wrap(s, (3, 28), (17, 14), 3)
+    parts.spear_head(s, 'steel', 'edge', length=10, width=2.7)
+    s.line((20.5, 11.5), (27, 5), 0.5, 'wine')
+    s.stamp(17, 12, ROSE5, RKEY)                         # rose where the head meets the shaft
+    s.color(16, 16, LEAF); s.color(22, 17, LEAF); s.color(23, 16, LEAFD)
+    return s
+
+
+def shield():
+    """Black-steel heater shield, crimson rim, a big rose with thorny vines across it."""
+    s = base()
+    s.where(lambda x, y: parts.heater(x + .5, y + .5), 'edge')
+    s.where(lambda x, y: parts.heater(x + .5, y + .5, top=4.6, bottom=27, half=10.4), 'steel')
+    s.path([(6.5, 7), (12, 12), (16, 15), (21, 20), (24, 24)], 0.8, 'vine')
+    s.path([(25.5, 7), (20, 12), (12, 20), (9, 22)], 0.8, 'vine')
+    thorns(s, [(8, 7), (11, 10), (21, 19), (23, 22), (24, 8), (19, 11), (11, 19)])
+    big = ["..LLRR..",
+           ".LRRRRR.",
+           "LRRddRRR",
+           "RRdKKdRR",
+           "RRdKKdRD",
+           "RRRddRRD",
+           ".RRRRDD.",
+           "..RDDD.."]
+    s.stamp(12, 11, big, RKEY)
+    s.color(11, 18, LEAF); s.color(20, 18, LEAF); s.color(21, 18, LEAFD)
+    return s
+
+
+def backbling_wings():
+    """Thorn Wings: two raised black-steel wings, crimson blade tips, a thorny vine along the top edge."""
+    s = base(48)
+    for side in (-1, 1):
+        f = parts.wing_shape(24, side, root_y=20, span=21, rise=12, drop=17)
+        s.where(lambda x, y: f(x, y) is not None, 'steel')
+        s.where(lambda x, y: f(x, y) is not None and f(x, y)[2], 'edge')
+        for k in range(1, 5):                                     # wing bones fanning out
+            u = k / 5
+            s.line((24 + side * 4, 19), (24 + side * (3 + 21 * u), 20 - 12 * u ** .75 + 13),
+                   0.45, 'wine')
+        top = [(24 + side * (3 + 21 * u / 10), 20 - 12 * (u / 10) ** .75) for u in range(0, 11)]
+        s.path(top, 0.9, 'vine')
+        thorns(s, [(int(x), int(y) - 2) for x, y in top[2::2]])
+    s.stamp(20, 15, ["..LLRR..",
+                     ".LRRRRR.",
+                     "LRRddRRR",
+                     "RRdKKdRR",
+                     "RRdKKdRD",
+                     "RRRddRRD",
+                     ".RRRRDD.",
+                     "..RDDD.."], RKEY)
+    return s
+
+
+def backbling_rose():
+    """Black Rose: one giant dark rose with a crimson heart, on a thorny stem with leaves."""
+    import math
+    s = base(48)
+    s.ramp('p1', (110, 60, 88), (70, 36, 58), (42, 18, 34))
+    s.ramp('p2', (92, 46, 72), (54, 26, 44), (32, 12, 24))
+    s.ramp('p3', (150, 30, 60), (104, 18, 42), (70, 10, 30))
+    s.line((24, 30), (22, 47), 1.4, 'vine')
+    thorns(s, [(25, 34), (20, 38), (25, 42), (20, 45)])
+    s.poly([(22, 40), (13, 35), (11, 37), (17, 42)], 'vine')
+    s.poly([(23, 36), (32, 31), (35, 33), (28, 38)], 'vine')
+    c = (24, 19)
+    def ring(R, lobes, ph):
+        return lambda x, y: math.hypot(x + .5 - c[0], y + .5 - c[1]) <= R + R * .13 * math.cos(
+            math.atan2(y + .5 - c[1], x + .5 - c[0]) * lobes + ph)
+    s.where(ring(17, 5, 0), 'p1')
+    s.where(ring(12.5, 5, 0.6), 'p2')
+    s.where(ring(8.5, 4, 1.4), 'p1')
+    s.where(ring(5, 3, 0.3), 'p3')
+    s.where(ring(2.4, 3, 0), 'edge')
+    return s
