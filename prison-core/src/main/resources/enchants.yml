@@ -317,9 +317,11 @@ enchants:
       name: Freeze
       # % chance per hit
       strength:
-        - 5          # level 1
-        - 8          # level 2
-        - 12         # level 3
+        - 4          # level 1
+        - 6          # level 2
+        - 8          # level 3
+        - 10         # level 4
+        - 12         # level 5
       icon: PACKED_ICE
       description: ["Chance to slow your target for 2 seconds."]
       in-menu: false
@@ -329,10 +331,12 @@ enchants:
       # % more damage to low-health targets
       strength:
         - 10         # level 1
-        - 20         # level 2
-        - 30         # level 3
+        - 15         # level 2
+        - 20         # level 3
+        - 25         # level 4
+        - 30         # level 5
       icon: IRON_AXE
-      description: ["More damage to targets below 30% health.", "+10% / +20% / +30%."]
+      description: ["More damage to targets below 30% health.", "+10% / +15% / +20% / +25% / +30%."]
       in-menu: false
 
     thunder:
@@ -373,9 +377,11 @@ enchants:
       only-for: [SWORD]
       # % chance per hit to get Speed (level and seconds in enchant-settings)
       strength:
-        - 8          # level 1
-        - 12         # level 2
-        - 15         # level 3
+        - 7          # level 1
+        - 9          # level 2
+        - 11         # level 3
+        - 13         # level 4
+        - 15         # level 5
       icon: SUGAR
       description: ["Chance to gain Speed II for 3 seconds", "when you hit something."]
       in-menu: false
@@ -385,9 +391,11 @@ enchants:
       only-for: [HOE]
       # % chance per hit to ignore armor
       strength:
-        - 0.5        # level 1
-        - 0.75       # level 2
-        - 1          # level 3 (about 1 in 100 hits)
+        - 0.4        # level 1
+        - 0.55       # level 2
+        - 0.7        # level 3
+        - 0.85       # level 4
+        - 1          # level 5
       icon: TRIDENT
       description: ["Rare chance for a hit to", "ignore armor completely."]
       in-menu: false
@@ -397,9 +405,11 @@ enchants:
       only-for: [BOW]
       # cooldown in seconds at each level
       strength:
-        - 20         # level 1
-        - 15         # level 2
-        - 10         # level 3
+        - 24         # level 1
+        - 20         # level 2
+        - 16         # level 3
+        - 13         # level 4
+        - 10         # level 5
       icon: ENDER_PEARL
       description: ["Sneak while shooting: you teleport", "where the arrow lands."]
       in-menu: false
